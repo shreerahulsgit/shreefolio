@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Home, User, Briefcase, Mail, FileText, Wrench } from "lucide-react";
-import '../styles/navigation-bar.css';
+import "../styles/navigation-bar.css";
 
 const NavigationBar = ({
   isLoaded = true,
   currentPage = "Home",
   onHomeClick,
   onAboutClick,
+  onProjectsClick,
   onResumeClick,
   onContactClick,
   onSpecialClick,
@@ -101,6 +102,11 @@ const NavigationBar = ({
                       typeof onAboutClick === "function"
                     )
                       onAboutClick();
+                    if (
+                      item.label === "Projects" &&
+                      typeof onProjectsClick === "function"
+                    )
+                      onProjectsClick();
                     if (
                       item.label === "Resume" &&
                       typeof onResumeClick === "function"
@@ -214,6 +220,6 @@ const NavigationBar = ({
       </div>
     </div>
   );
-}
+};
 
 export default NavigationBar;

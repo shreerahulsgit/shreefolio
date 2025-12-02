@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   SiExpress,
   SiNodedotjs,
@@ -27,6 +28,7 @@ import {
   FaGlobe,
   FaDatabase,
   FaTools,
+  FaCertificate,
 } from "react-icons/fa";
 import Spline from "@splinetool/react-spline";
 
@@ -488,6 +490,7 @@ const CategorySection = ({ category, index }) => {
 };
 
 const SkillsMain = () => {
+  const navigate = useNavigate();
   const [scrollY, setScrollY] = useState(0);
   const [splineLoaded, setSplineLoaded] = useState(false);
   const [splineError, setSplineError] = useState(false);
@@ -555,6 +558,47 @@ const SkillsMain = () => {
         {skillCategories.map((category, index) => (
           <CategorySection key={index} category={category} index={index} />
         ))}
+
+        {/* Certificate Button */}
+        <div className="text-center mt-16 mb-24">
+          <button
+            onClick={() => navigate("/skills/certificates")}
+            className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-xl transition-all duration-300 hover:scale-105 active:scale-95"
+            style={{
+              background:
+                "linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(147, 51, 234, 0.15))",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              border: "1px solid rgba(59, 130, 246, 0.3)",
+              boxShadow: "0 8px 32px rgba(59, 130, 246, 0.2)",
+            }}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="transition-all duration-300 group-hover:scale-110 group-hover:rotate-12"
+                style={{
+                  color: "#3B82F6",
+                  filter: "drop-shadow(0 0 8px rgba(59, 130, 246, 0.5))",
+                }}
+              >
+                <FaCertificate className="text-xl" />
+              </div>
+              <span className="text-white font-semibold text-lg group-hover:text-blue-200 transition-colors duration-300">
+                View Certificates
+              </span>
+            </div>
+
+            {/* Glow effect on hover */}
+            <div
+              className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none"
+              style={{
+                background:
+                  "linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1))",
+                filter: "blur(8px)",
+              }}
+            />
+          </button>
+        </div>
       </div>
 
       {!splineLoaded && (
@@ -569,6 +613,6 @@ const SkillsMain = () => {
       )}
     </div>
   );
-}
+};
 
 export default SkillsMain;
