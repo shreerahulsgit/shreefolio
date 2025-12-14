@@ -110,8 +110,8 @@ const ResumeMain = () => {
                                 >
                                     <div className="relative">
                                         <div
-                                            className="overflow-auto rounded-lg border border-white/30 bg-white/5"
-                                            style={{ height: '103.75vh' }}
+                                            className="rounded-lg border border-white/30 bg-white/5"
+                                            style={{ height: '135vh', overflow: 'hidden' }}
                                         >
                                             <iframe
                                                 src="https://drive.google.com/file/d/1Oyv6Rxij87SRkI9SNGpOE4022jd53SUv/preview"

@@ -7,21 +7,12 @@ const BeyondMain = () => {
     const navigate = useNavigate();
     const [isVisible, setIsVisible] = useState(false);
     const [currentSlide, setCurrentSlide] = useState(0);
-    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
     const [isAnimating, setIsAnimating] = useState(false)
     const [suppressNext, setSuppressNext] = useState(false)
     const [splineLoaded, setSplineLoaded] = useState(false);
 
     useEffect(() => {
         setIsVisible(true);
-    }, []);
-
-    useEffect(() => {
-        const handleMouseMove = (e) => {
-            setMousePosition({ x: e.clientX, y: e.clientY });
-        };
-        window.addEventListener('mousemove', handleMouseMove);
-        return () => window.removeEventListener('mousemove', handleMouseMove);
     }, []);
 
     const cards = [
@@ -104,14 +95,6 @@ const BeyondMain = () => {
                 />
                 <div className="absolute inset-0 bg-black/20" />
             </div>
-
-            <div
-                className="absolute w-96 h-96 bg-blue-500/5 rounded-full blur-3xl pointer-events-none transition-all duration-500 ease-out"
-                style={{
-                    left: mousePosition.x - 192,
-                    top: mousePosition.y - 192,
-                }}
-            />
 
             <div className="relative z-10 w-full h-full flex">
                 <div className="w-1/2 flex flex-col justify-center px-12 lg:px-16">
