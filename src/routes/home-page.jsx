@@ -23,7 +23,7 @@ const HomePage = () => {
         if (!typingStarted) return;
         const currentMessage = messages[msgIdx];
         let typeSpeed = isDeleting ? (msgIdx === 0 ? 80 : 30) : 55;
-        let holdTime = 3000;
+        let holdTime = 2000;
 
         if (!isDeleting && displayedText.length < currentMessage.length) {
             typingTimeout.current = setTimeout(() => {
@@ -56,6 +56,17 @@ const HomePage = () => {
 
     const [isLoaded, setIsLoaded] = useState(false);
     const [splineLoaded, setSplineLoaded] = useState(false);
+    const [showOverlays, setShowOverlays] = useState(false);
+
+    useEffect(() => {
+        if (!splineLoaded) return;
+
+        const timer = setTimeout(() => {
+            setShowOverlays(true);
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [splineLoaded]);
 
     return (
         <div
@@ -82,10 +93,6 @@ const HomePage = () => {
             </div>
 
             <div className="absolute top-0 left-0 h-full flex items-center z-10 w-full md:w-1/2 px-6 md:px-16 lg:px-24">
-                <link
-                    href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap"
-                    rel="stylesheet"
-                />
                 <h1
                     className="text-3xl md:text-5xl lg:text-6xl font-semibold transition-all duration-300 ease-in-out cursor-pointer w-full"
                     style={{
@@ -143,33 +150,35 @@ const HomePage = () => {
                     })()}
                     <span className="inline-block w-2 h-8 md:h-10 bg-gray-800 align-bottom animate-blink ml-1"></span>
                 </h1>
-                <style>{`
-          @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
-          }
-          .animate-blink {
-            animation: blink 1s steps(2, start) infinite;
-          }
-          .filled-word {
-            color: #1f2937;
-            font-family: 'Poppins', Arial, sans-serif !important;
-          }
-          .highlight-word {
-            color: transparent;
-            -webkit-text-stroke: 2px #1f2937;
-            font-family: 'Poppins', Arial, sans-serif !important;
-          }
-        `}</style>
+                <style>
+                    {`
+                        @keyframes blink {
+                            0%, 50% { opacity: 1; }
+                            51%, 100% { opacity: 0; }
+                        }
+                        .animate-blink {
+                            animation: blink 1s steps(2, start) infinite;
+                        }
+                        .filled-word {
+                            color: #1f2937;
+                            font-family: 'Poppins', Arial, sans-serif !important;
+                        }
+                        .highlight-word {
+                            color: transparent;
+                            -webkit-text-stroke: 2px #1f2937;
+                            font-family: 'Poppins', Arial, sans-serif !important;
+                        }
+                    `}
+                </style>
             </div>
 
             <div className="absolute inset-0 bg-gradient-to-br from-gray-900/20 via-transparent to-gray-900/30 pointer-events-none"></div>
 
             <div
-                className={`absolute bottom-4 right-4 z-30 transition-all duration-1000 ${
+                className={`absolute bottom-4 right-4 z-30 transition-all duration-0 ${
                     isLoaded
-                        ? 'translate-x-0 opacity-100'
-                        : 'translate-x-8 opacity-0'
+                        ? 'opacity-100'
+                        : 'opacity-0'
                 }`}
             >
                 <div className="bg-black/20 backdrop-blur-xl rounded-2xl px-6 py-3 border border-white/10 shadow-2xl">
@@ -179,33 +188,32 @@ const HomePage = () => {
                 </div>
             </div>
 
-            <div className="absolute inset-0 pointer-events-none z-5">
-                {[...Array(20)].map((_, i) => (
-                    <div
-                        key={i}
-                        className="absolute w-1 h-1 bg-white/30 rounded-full animate-pulse"
-                        style={{
-                            left: `${Math.random() * 100}%`,
-                            top: `${Math.random() * 100}%`,
-                            animationDelay: `${Math.random() * 5}s`,
-                            animationDuration: `${3 + Math.random() * 4}s`,
-                        }}
-                    />
-                ))}
-            </div>
-
-            <div className="absolute inset-0 opacity-5 pointer-events-none z-5">
-                <div
-                    className="w-full h-full"
-                    style={{
-                        backgroundImage: `
-              linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)
-            `,
-                        backgroundSize: '50px 50px',
-                    }}
-                />
-            </div>
+            {showOverlays && (
+                <><div className="absolute inset-0 pointer-events-none z-5">
+                    {[...Array(20)].map((_, i) => (
+                        <div
+                            key={i}
+                            className="absolute w-1 h-1 bg-white/30 rounded-full animate-pulse"
+                            style={{
+                                left: `${Math.random() * 100}%`,
+                                top: `${Math.random() * 100}%`,
+                                animationDelay: `${Math.random() * 5}s`,
+                                animationDuration: `${3 + Math.random() * 4}s`,
+                            }} />
+                    ))}
+                </div>
+                <div className="absolute inset-0 opacity-5 pointer-events-none z-5">
+                        <div
+                            className="w-full h-full"
+                            style={{
+                                backgroundImage: `
+                linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)
+                `,
+                                backgroundSize: '50px 50px',
+                            }} />
+                </div></>
+            )}
 
             {!splineLoaded && (
                 <div
@@ -215,7 +223,7 @@ const HomePage = () => {
                     <div
                         className="flex flex-col items-center p-8 rounded-3xl backdrop-blur-xl"
                         style={{
-                            backgroundColor: 'rgba(248, 248, 248, 0.1)',
+                            backgroundColor: 'rgba(248, 248, 248, 0.025)',
                             borderWidth: '1px',
                             borderStyle: 'solid',
                             borderColor: 'rgba(248, 248, 248, 0.2)',

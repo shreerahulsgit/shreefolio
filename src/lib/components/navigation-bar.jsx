@@ -3,15 +3,8 @@ import { Home, User, Briefcase, Mail, FileText, Wrench } from 'lucide-react';
 import '../styles/navigation-bar.css';
 
 const NavigationBar = ({
-    isLoaded = true,
-    currentPage = 'Home',
-    onHomeClick,
-    onAboutClick,
-    onProjectsClick,
-    onResumeClick,
-    onContactClick,
-    onSpecialClick,
-    onSkillsClick,
+    isLoaded = true, currentPage = 'Home', onHomeClick, onAboutClick, onProjectsClick,
+    onResumeClick, onContactClick, onSpecialClick, onSkillsClick,
 }) => {
     const [hoverIndex, setHoverIndex] = useState(null);
 
@@ -67,7 +60,7 @@ const NavigationBar = ({
 
     return (
         <div
-            className={`fixed bottom-8 left-1/2 transform -translate-x-1/2 z-30 transition-all duration-1000 ${
+            className={`fixed bottom-6 left-1/2 transform -translate-x-1/2 z-30 transition-all duration-1000 ${
                 isLoaded
                     ? 'translate-y-0 opacity-100'
                     : 'translate-y-8 opacity-0'
@@ -106,10 +99,14 @@ const NavigationBar = ({
                                             onAboutClick();
                                         if (
                                             item.label === 'Projects' &&
-                                            typeof onProjectsClick ===
-                                                'function'
+                                            typeof onProjectsClick === 'function'
                                         )
                                             onProjectsClick();
+                                        if (
+                                            item.label === 'Special' &&
+                                            typeof onSpecialClick === 'function'
+                                        )
+                                            onSpecialClick();
                                         if (
                                             item.label === 'Resume' &&
                                             typeof onResumeClick === 'function'
@@ -120,11 +117,6 @@ const NavigationBar = ({
                                             typeof onContactClick === 'function'
                                         )
                                             onContactClick();
-                                        if (
-                                            item.label === 'Special' &&
-                                            typeof onSpecialClick === 'function'
-                                        )
-                                            onSpecialClick();
                                         if (
                                             item.label === 'Skills' &&
                                             typeof onSkillsClick === 'function'

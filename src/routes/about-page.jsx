@@ -17,19 +17,18 @@ const AboutPage = () => {
         const [imageError, setImageError] = useState(false);
 
         return (
-            <div className="w-full h-full bg-gray-100 overflow-hidden">
+            <div className="w-full h-full bg-black overflow-hidden">
                 {!imageError ? (
                     <img
-                        src="/api/placeholder/600/800"
+                        src="/img/developer.png"
                         alt="Profile"
                         className="w-full h-full object-cover object-center transition-all duration-700"
                         onError={() => setImageError(true)}
-                        style={{ filter: 'grayscale(100%) contrast(1.1)' }}
                     />
                 ) : (
                     <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
                         <div className="text-9xl font-bold text-gray-400">
-                            D
+                            S
                         </div>
                     </div>
                 )}
@@ -41,23 +40,23 @@ const AboutPage = () => {
         <div
             className="min-h-screen"
             style={{
-                backgroundColor: '#F8F8F8',
+                backgroundColor: '#070707',
                 fontFamily:
                     'Aeonik Trial, system-ui, -apple-system, sans-serif',
             }}
         >
             <div className="absolute top-8 left-8 flex flex-col items-center z-40">
-                <span className="text-2xl lg:text-3xl font-bold text-[#222222] mb-2">
+                <span className="text-2xl lg:text-3xl font-bold text-[#dddddd] mb-2">
                     Developer
                 </span>
                 <div
-                    className="w-1 h-[calc(100vh-120px)] bg-[#222222]"
+                    className="w-1 h-[calc(100vh-120px)] bg-[#dddddd]"
                     style={{ minHeight: '200px' }}
                 ></div>
             </div>
 
             <div className="absolute bottom-8 left-8 z-40">
-                <span className="text-lg lg:text-xl font-bold text-[#7B7B7B]">
+                <span className="text-lg lg:text-xl font-bold text-[#848484]">
                     2024
                 </span>
             </div>
@@ -76,13 +75,13 @@ const AboutPage = () => {
                                 <div>
                                     <div
                                         className="text-4xl font-bold mb-1"
-                                        style={{ color: '#222222' }}
+                                        style={{ color: '#dddddd' }}
                                     >
                                         +200
                                     </div>
                                     <div
                                         className="text-sm font-medium"
-                                        style={{ color: '#7B7B7B' }}
+                                        style={{ color: '#848484' }}
                                     >
                                         Project completed
                                     </div>
@@ -90,13 +89,13 @@ const AboutPage = () => {
                                 <div>
                                     <div
                                         className="text-4xl font-bold mb-1"
-                                        style={{ color: '#222222' }}
+                                        style={{ color: '#dddddd' }}
                                     >
                                         +50
                                     </div>
                                     <div
                                         className="text-sm font-medium"
-                                        style={{ color: '#7B7B7B' }}
+                                        style={{ color: '#848484' }}
                                     >
                                         Startup raised
                                     </div>
@@ -105,9 +104,9 @@ const AboutPage = () => {
 
                             <div className="space-y-6">
                                 <h1
-                                    className="text-[8rem] lg:text-[15rem] font-bold leading-none tracking-tight"
+                                    className="text-[8rem] lg:text-[15rem] font-black leading-none tracking-tight"
                                     style={{
-                                        color: '#222222',
+                                        color: '#eeeeee',
                                         lineHeight: '0.9',
                                     }}
                                 >
@@ -116,11 +115,11 @@ const AboutPage = () => {
                                 <div className="flex items-center space-x-4">
                                     <div
                                         className="w-12 h-px"
-                                        style={{ backgroundColor: '#222222' }}
+                                        style={{ backgroundColor: '#dddddd' }}
                                     ></div>
                                     <p
                                         className="text-lg font-medium"
-                                        style={{ color: '#7B7B7B' }}
+                                        style={{ color: '#848484' }}
                                     >
                                         I'm a developer, a design wizard
                                     </p>
@@ -135,7 +134,7 @@ const AboutPage = () => {
                                     : 'opacity-0 translate-x-8'
                             }`}
                         >
-                            <div className="aspect-[3/4] w-full max-w-md ml-auto">
+                            <div className="w-full max-w-[415px] ml-auto">
                                 <ProfileImage />
                             </div>
                         </div>
@@ -145,13 +144,13 @@ const AboutPage = () => {
                         <div className="flex flex-col items-center space-y-2 animate-bounce">
                             <span
                                 className="text-sm font-medium"
-                                style={{ color: '#7B7B7B' }}
+                                style={{ color: '#848484' }}
                             >
                                 Scroll down
                             </span>
                             <svg
                                 className="w-4 h-4"
-                                style={{ color: '#7B7B7B' }}
+                                style={{ color: '#848484' }}
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -168,15 +167,15 @@ const AboutPage = () => {
                 </div>
             </div>
 
-            <div className="relative z-25 space-y-8">
+            <div className="relative z-25 space-y-2">
                 <div>
-                    <div className="bg-white rounded-3xl p-12 shadow-lg min-h-screen flex flex-col justify-center">
+                    <div className="bg-black p-16 shadow-[0_-6px_0px_rgba(255,255,255,0.12)] flex flex-col justify-center">
                         <div className="max-w-6xl mx-auto">
                             <div className="grid lg:grid-cols-2 gap-0 items-center">
                                 <div className="space-y-6 ml-2 lg:ml-4">
-                                    <div className="max-w-[225px] rounded-2xl overflow-hidden bg-white p-2">
+                                    <div className="max-w-[225px] rounded-2xl overflow-hidden bg-black p-2">
                                         <img
-                                            src="https://res.cloudinary.com/dqqrrgdwd/image/upload/v1758473995/g1755_amtkgg.png"
+                                            src="/img/work.png"
                                             alt="Development process"
                                             className="w-full h-auto object-contain hover:scale-105 transition-transform duration-500"
                                         />
@@ -184,14 +183,14 @@ const AboutPage = () => {
                                 </div>
                                 <div className="ml-2 lg:ml-4">
                                     <h2
-                                        className="text-5xl lg:text-6xl font-bold mb-8"
-                                        style={{ color: '#222222' }}
+                                        className="text-4xl lg:text-5xl font-bold mb-6"
+                                        style={{ color: '#dddddd' }}
                                     >
                                         About Me
                                     </h2>
                                     <p
                                         className="text-xl lg:text-2x1 leading-relaxed"
-                                        style={{ color: '#7B7B7B' }}
+                                        style={{ color: '#848484' }}
                                     >
                                         Caffeine-powered full-stack developer
                                         fluent in MERN and Cloud Computing.
@@ -211,32 +210,32 @@ const AboutPage = () => {
                 </div>
 
                 <div>
-                    <div className="bg-white rounded-3xl p-8 shadow-lg flex flex-col justify-center">
+                    <div className="bg-black p-16 flex flex-col justify-center">
                         <div className="max-w-6xl mx-auto">
                             <div className="grid lg:grid-cols-2 gap-8 items-center">
                                 <div>
                                     <h2
                                         className="text-4xl lg:text-5xl font-bold mb-6"
-                                        style={{ color: '#222222' }}
+                                        style={{ color: '#dddddd' }}
                                     >
                                         Education
                                     </h2>
-                                    <div className="flex items-start space-x-4 p-4 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-colors duration-300">
-                                        <div className="flex-shrink-0 w-10 h-10 bg-black rounded-full flex items-center justify-center">
-                                            <span className="text-white text-lg font-bold">
+                                    <div className="flex items-start space-x-4 p-4 rounded-2xl bg-black transition-colors duration-300">
+                                        <div className="flex-shrink-0 w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                                            <span className="text-black text-lg font-bold">
                                                 1
                                             </span>
                                         </div>
                                         <div>
                                             <h3
                                                 className="text-xl font-bold mb-1"
-                                                style={{ color: '#222222' }}
+                                                style={{ color: '#dddddd' }}
                                             >
                                                 Chennai Institute of Technology
                                             </h3>
                                             <p
                                                 className="text-lg leading-relaxed"
-                                                style={{ color: '#7B7B7B' }}
+                                                style={{ color: '#848484' }}
                                             >
                                                 Bachelor of Technology in
                                                 Computer Science and Business
@@ -253,7 +252,7 @@ const AboutPage = () => {
                                 <div className="space-y-6 flex justify-center">
                                     <div className="w-1/2 rounded-2xl overflow-hidden">
                                         <img
-                                            src="https://res.cloudinary.com/dqqrrgdwd/image/upload/v1758475434/Reading_o26m3p.png"
+                                            src="/img/read.png"
                                             alt="Education reading illustration"
                                             className="w-full h-auto object-contain"
                                         />
@@ -265,33 +264,33 @@ const AboutPage = () => {
                 </div>
 
                 <div>
-                    <div className="bg-white rounded-3xl p-12 shadow-lg min-h-screen flex flex-col justify-center">
+                    <div className="bg-black p-20 shadow-[0_-6px_0px_rgba(255,255,255,0.12)] flex flex-col justify-center">
                         <div className="max-w-4xl mx-auto">
                             <h2
-                                className="text-5xl lg:text-6xl font-bold mb-12"
-                                style={{ color: '#222222' }}
+                                className="text-4xl lg:text-5xl font-bold mb-10"
+                                style={{ color: '#dddddd' }}
                             >
                                 Experience
                             </h2>
 
                             <div className="space-y-8">
-                                <div className="flex items-start space-x-6 p-6 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-colors duration-300">
-                                    <div className="flex-shrink-0 w-12 h-12 bg-black rounded-full flex items-center justify-center">
-                                        <span className="text-white text-lg font-bold">
+                                <div className="flex items-start space-x-6 p-6 rounded-2xl bg-black transition-colors duration-300">
+                                    <div className="flex-shrink-0 w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                                        <span className="text-black text-lg font-bold">
                                             1
                                         </span>
                                     </div>
                                     <div>
                                         <h3
                                             className="text-xl font-bold mb-2"
-                                            style={{ color: '#222222' }}
+                                            style={{ color: '#dddddd' }}
                                         >
                                             Web Development Intern | Smart Qart,
                                             Bengaluru
                                         </h3>
                                         <p
                                             className="text-lg leading-relaxed"
-                                            style={{ color: '#7B7B7B' }}
+                                            style={{ color: '#848484' }}
                                         >
                                             Nov 2024 – Dec 2024
                                             <br />
@@ -308,23 +307,23 @@ const AboutPage = () => {
                                 </div>
 
                                 {/* Research Intern */}
-                                <div className="flex items-start space-x-6 p-6 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-colors duration-300">
-                                    <div className="flex-shrink-0 w-12 h-12 bg-black rounded-full flex items-center justify-center">
-                                        <span className="text-white text-lg font-bold">
+                                <div className="flex items-start space-x-6 p-6 rounded-2xl bg-black transition-colors duration-300">
+                                    <div className="flex-shrink-0 w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                                        <span className="text-black text-lg font-bold">
                                             2
                                         </span>
                                     </div>
                                     <div>
                                         <h3
                                             className="text-xl font-bold mb-2"
-                                            style={{ color: '#222222' }}
+                                            style={{ color: '#dddddd' }}
                                         >
                                             Research Intern | Chennai Institute
                                             of Technology, Chennai
                                         </h3>
                                         <p
                                             className="text-lg leading-relaxed"
-                                            style={{ color: '#7B7B7B' }}
+                                            style={{ color: '#848484' }}
                                         >
                                             Apr 2025 – May 2025
                                             <br />
@@ -352,17 +351,17 @@ const AboutPage = () => {
                 </div>
 
                 <div>
-                    <div className="bg-white rounded-3xl p-12 shadow-lg min-h-screen flex flex-col justify-center">
+                    <div className="bg-black p-20 shadow-[0_-6px_0px_rgba(255,255,255,0.12)] flex flex-col justify-center">
                         <div className="max-w-7xl mx-auto w-full">
                             <h2
-                                className="text-5xl lg:text-6xl font-bold mb-16 text-center"
-                                style={{ color: '#222222' }}
+                                className="text-4xl lg:text-5xl font-bold mb-12 text-center"
+                                style={{ color: '#dddddd' }}screen
                             >
                                 Certifications
                             </h2>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                                <div className="group bg-gray-50 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col text-center items-center overflow-hidden">
+                                <div className="group bg-black rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col text-center items-center overflow-hidden">
                                     <div className="w-full aspect-video bg-gray-200">
                                         <img
                                             src="https://res.cloudinary.com/dqqrrgdwd/image/upload/c_scale,w_600/v1758553490/SHREE_RAHUL_AWS_Certified_Cloud_Practitioner_certificate__page-0001_sieyqs.jpg"
@@ -380,7 +379,7 @@ const AboutPage = () => {
                                         </div>
                                         <h3
                                             className="text-xl font-bold mb-4"
-                                            style={{ color: '#222222' }}
+                                            style={{ color: '#dddddd' }}
                                         >
                                             AWS Cloud Practitioner
                                         </h3>
@@ -388,14 +387,14 @@ const AboutPage = () => {
                                             href="https://res.cloudinary.com/dqqrrgdwd/image/upload/v1758553490/SHREE_RAHUL_AWS_Certified_Cloud_Practitioner_certificate__page-0001_sieyqs.jpg"
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="w-full mt-auto px-6 py-3 font-semibold text-white bg-black rounded-full transition-all duration-300 hover:bg-gray-800 active:scale-95"
+                                            className="w-full mt-auto px-6 py-3 font-semibold text-black bg-white rounded-full transition-all duration-300 hover:bg-gray-400 active:scale-95"
                                         >
                                             View Certificate
                                         </a>
                                     </div>
                                 </div>
 
-                                <div className="group bg-gray-50 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col text-center items-center overflow-hidden">
+                                <div className="group bg-black rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col text-center items-center overflow-hidden">
                                     <div className="w-full aspect-video bg-gray-200">
                                         <img
                                             src="https://res.cloudinary.com/dqqrrgdwd/image/upload/c_scale,w_600/v1758553504/SHREE_RAHUL_S_RESPONSIVE_WEBSITE_page-0001_tvwvuy.jpg"
@@ -404,12 +403,12 @@ const AboutPage = () => {
                                         />
                                     </div>
                                     <div className="p-6 flex flex-col items-center flex-grow w-full">
-                                        <div className="w-20 h-20 bg-black text-white rounded-full flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110 -mt-16 border-4 border-white z-10">
+                                        <div className="w-20 h-20 bg-black text-black rounded-full flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110 -mt-16 border-4 border-white z-10">
                                             <Globe className="h-10 w-10 text-white" />
                                         </div>
                                         <h3
                                             className="text-xl font-bold mb-4"
-                                            style={{ color: '#222222' }}
+                                            style={{ color: '#dddddd' }}
                                         >
                                             Dynamic Web Development
                                         </h3>
@@ -417,14 +416,14 @@ const AboutPage = () => {
                                             href="https://res.cloudinary.com/dqqrrgdwd/image/upload/v1758553504/SHREE_RAHUL_S_RESPONSIVE_WEBSITE_page-0001_tvwvuy.jpg"
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="w-full mt-auto px-6 py-3 font-semibold text-white bg-black rounded-full transition-all duration-300 hover:bg-gray-800 active:scale-95"
+                                            className="w-full mt-auto px-6 py-3 font-semibold text-black bg-white rounded-full transition-all duration-300 hover:bg-gray-400 active:scale-95"
                                         >
                                             View Certificate
                                         </a>
                                     </div>
                                 </div>
 
-                                <div className="group bg-gray-50 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col text-center items-center overflow-hidden">
+                                <div className="group bg-black rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col text-center items-center overflow-hidden">
                                     <div className="w-full aspect-video bg-gray-200">
                                         <img
                                             src="https://res.cloudinary.com/dqqrrgdwd/image/upload/c_scale,w_600/v1758553481/python_page-0001_gjzsq9.jpg"
@@ -442,7 +441,7 @@ const AboutPage = () => {
                                         </div>
                                         <h3
                                             className="text-xl font-bold mb-4"
-                                            style={{ color: '#222222' }}
+                                            style={{ color: '#dddddd' }}
                                         >
                                             Python Programming
                                         </h3>
@@ -450,7 +449,7 @@ const AboutPage = () => {
                                             href="https://res.cloudinary.com/dqqrrgdwd/image/upload/v1758553481/python_page-0001_gjzsq9.jpg"
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="w-full mt-auto px-6 py-3 font-semibold text-white bg-black rounded-full transition-all duration-300 hover:bg-gray-800 active:scale-95"
+                                            className="w-full mt-auto px-6 py-3 font-semibold text-black bg-white rounded-full transition-all duration-300 hover:bg-gray-400 active:scale-95"
                                         >
                                             View Certificate
                                         </a>
@@ -458,14 +457,10 @@ const AboutPage = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="mt-16 text-center">
+                        <div className="mt-10 text-center">
                             <button
-                                className="px-8 py-4 font-semibold text-black bg-white border-2 border-gray-200 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-md active:scale-95"
-                                onClick={() =>
-                                    alert(
-                                        'Navigate to all certifications page!'
-                                    )
-                                } // Replace with your navigation logic
+                                className="px-8 py-4 font-semibold text-white bg-black border-2 border-gray-300 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-md active:scale-95"
+                                onClick={() => navigate('/skills/certificates') }
                             >
                                 View All Certifications
                             </button>
@@ -474,7 +469,7 @@ const AboutPage = () => {
                 </div>
 
                 <div>
-                    <div className="bg-gradient-to-br from-gray-900 to-black rounded-3xl p-12 shadow-lg min-h-screen flex flex-col justify-center text-white">
+                    <div className="bg-gradient-to-br from-gray-900 to-black p-48 shadow-lg flex flex-col justify-center text-white">
                         <div className="max-w-4xl mx-auto text-center">
                             <h2 className="text-5xl lg:text-6xl font-bold mb-8">
                                 Let's Work Together
@@ -495,7 +490,7 @@ const AboutPage = () => {
 
                                 <button
                                     className="px-10 py-5 font-semibold border-2 border-white rounded-full transition-all duration-300 hover:scale-105 hover:bg-white hover:text-black active:scale-95"
-                                    onClick={() => navigate('/work')}
+                                    onClick={() => navigate('/projects')}
                                 >
                                     View My Work
                                 </button>

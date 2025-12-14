@@ -8,6 +8,9 @@ const BeyondMain = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [currentSlide, setCurrentSlide] = useState(0);
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+    const [isAnimating, setIsAnimating] = useState(false)
+    const [suppressNext, setSuppressNext] = useState(false)
+    const [splineLoaded, setSplineLoaded] = useState(false);
 
     useEffect(() => {
         setIsVisible(true);
@@ -55,7 +58,7 @@ const BeyondMain = () => {
     ];
 
     const totalCards = cards.length;
-    const cardWidth = 250;
+    const cardWidth = 275;
     const gap = 28;
 
     const scrollToSlide = (index) => {
@@ -68,9 +71,22 @@ const BeyondMain = () => {
     };
 
     const handleNext = () => {
-        const newSlide = currentSlide < totalCards - 1 ? currentSlide + 1 : 0;
-        scrollToSlide(newSlide);
-    };
+        if (isAnimating) return
+
+        // arrow always implies moving to +1
+        setSuppressNext(true)
+        setIsAnimating(true)
+
+        const newSlide =
+            currentSlide < totalCards - 1 ? currentSlide + 1 : 0
+
+        scrollToSlide(newSlide)
+
+        setTimeout(() => {
+            setIsAnimating(false)
+            setSuppressNext(false)
+        }, 200)
+    }
 
     const handleCardClick = (link) => {
         navigate(link);
@@ -84,6 +100,7 @@ const BeyondMain = () => {
                 <Spline
                     scene="https://prod.spline.design/aBrOEZccG5o-XuUp/scene.splinecode"
                     className="w-full h-full"
+                    onLoad={() => setSplineLoaded(true)}
                 />
                 <div className="absolute inset-0 bg-black/20" />
             </div>
@@ -113,7 +130,7 @@ const BeyondMain = () => {
                             </div>
                         </div>
 
-                        <h1 className="text-6xl lg:text-7xl font-black mb-6 leading-none">
+                        <h1 className="text-5xl lg:text-6xl font-black mb-6 leading-none">
                             <span className="block text-white">
                                 LET'S EXPLORE
                             </span>
@@ -129,7 +146,7 @@ const BeyondMain = () => {
 
                         <div className="flex gap-4">
                             <button
-                                onClick={() => navigate('/beyond')}
+                                onClick={() => navigate('/')}
                                 className="px-8 py-4 bg-white/5 hover:bg-white/10 backdrop-blur-sm border border-white/20 rounded-full font-semibold transition-all duration-300 flex items-center gap-2 hover:scale-105"
                             >
                                 <ChevronLeft className="w-5 h-5" />
@@ -166,7 +183,7 @@ const BeyondMain = () => {
                                 const isActive = index === currentSlide;
                                 const distance = index - currentSlide;
 
-                                const isVisible = Math.abs(distance) <= 1;
+                                const isVisible = Math.abs(distance) <= 1 && !(isAnimating && suppressNext && distance === 1)
                                 if (!isVisible) return null;
 
                                 const scale = isActive ? 1.0 : 0.75;
@@ -192,15 +209,23 @@ const BeyondMain = () => {
                                                 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
                                         }}
                                         onClick={() => {
-                                            if (isActive) {
-                                                handleCardClick(card.link);
-                                            } else {
-                                                scrollToSlide(index);
+                                            if (isActive) { handleCardClick(card.link); return; }
+                                            if (isAnimating) return
+
+                                            if (distance === 1) {
+                                                setSuppressNext(true)
                                             }
+                                            setIsAnimating(true)
+                                            scrollToSlide(index)
+
+                                            setTimeout(() => {
+                                                setIsAnimating(false)
+                                                setSuppressNext(false)
+                                            }, 200)
                                         }}
                                     >
                                         <div
-                                            className="relative h-[350px] rounded-3xl overflow-hidden backdrop-blur-lg border border-white/20 shadow-2xl hover:border-white/40"
+                                            className="relative h-[375px] rounded-3xl overflow-hidden backdrop-blur-lg border border-white/20 shadow-2xl hover:border-white/40"
                                             style={{
                                                 transition:
                                                     'all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
@@ -261,12 +286,12 @@ const BeyondMain = () => {
             <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 z-20 flex items-center gap-8">
                 <button
                     onClick={handlePrev}
-                    className="w-12 h-12 rounded-full bg-white hover:bg-gray-200 border-2 border-white flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg"
+                    className="w-12 h-12 rounded-full bg-white text-black hover:bg-gray-200 border-2 border-white flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg"
                 >
-                    <ChevronLeft className="w-5 h-5 text-gray-600" />
+                    {'<'}
                 </button>
 
-                <div className="w-64 h-1 bg-white/10 rounded-full overflow-hidden">
+                <div className="w-72 h-1 bg-white/10 rounded-full overflow-hidden">
                     <div
                         className="h-full bg-gradient-to-r from-white to-gray-300 transition-all duration-500 rounded-full"
                         style={{ width: `${progressPercentage}%` }}
@@ -275,14 +300,10 @@ const BeyondMain = () => {
 
                 <button
                     onClick={handleNext}
-                    className="w-12 h-12 rounded-full bg-white hover:bg-gray-200 border-2 border-white flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg"
+                    className="w-12 h-12 rounded-full bg-white text-black hover:bg-gray-200 border-2 border-white flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg"
                 >
-                    <ChevronRight className="w-5 h-5 text-gray-600" />
+                    {'>'}
                 </button>
-
-                <div className="text-4xl font-bold text-white/80 ml-4">
-                    {currentSlide + 1}
-                </div>
             </div>
 
             <div
@@ -292,7 +313,7 @@ const BeyondMain = () => {
                         : 'opacity-0 translate-y-8'
                 }`}
             >
-                <p className="text-white/80 text-base italic text-center font-medium mr-10">
+                <p className="text-white/80 text-base italic text-center font-medium mr-10 pl-10">
                     "Every story has a rhythm — this is mine."
                 </p>
             </div>
@@ -320,6 +341,54 @@ const BeyondMain = () => {
                     scrollbar-width: none;
                 }
             `}</style>
+
+            <div
+                className={`absolute bottom-4 right-4 z-30 transition-all duration-0 ${
+                    splineLoaded
+                        ? 'opacity-100'
+                        : 'opacity-0'
+                }`}
+            >
+                <div className="bg-black/20 backdrop-blur-xl rounded-2xl px-6 py-3 border border-white/10 shadow-2xl">
+                    <p className="text-white text-sm font-medium">
+                        @ Code by Shree Rahul
+                    </p>
+                </div>
+            </div>
+
+            {!splineLoaded && (
+                <div
+                    className="fixed inset-0 backdrop-blur-md z-[100] flex items-center justify-center"
+                    style={{ backgroundColor: 'rgba(34, 34, 34, 0.5)' }}
+                >
+                    <div
+                        className="flex flex-col items-center p-8 rounded-3xl backdrop-blur-xl"
+                        style={{
+                            backgroundColor: 'rgba(248, 248, 248, 0.025)',
+                            borderWidth: '1px',
+                            borderStyle: 'solid',
+                            borderColor: 'rgba(248, 248, 248, 0.2)',
+                        }}
+                    >
+                        <div
+                            className="w-16 h-16 border-2 rounded-full animate-spin mb-6"
+                            style={{
+                                borderColor: 'rgba(248, 248, 248, 0.2)',
+                                borderTopColor: 'rgba(248, 248, 248, 0.8)',
+                            }}
+                        ></div>
+                        <p
+                            className="text-lg font-medium mb-2"
+                            style={{ color: '#F8F8F8' }}
+                        >
+                            Loading Interactive Experience...
+                        </p>
+                        <p className="text-sm" style={{ color: '#7B7B7B' }}>
+                            Preparing your skills experience
+                        </p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -491,19 +491,12 @@ const CategorySection = ({ category, index }) => {
 
 const SkillsMain = () => {
     const navigate = useNavigate();
-    const [scrollY, setScrollY] = useState(0);
     const [splineLoaded, setSplineLoaded] = useState(false);
     const [splineError, setSplineError] = useState(false);
 
-    useEffect(() => {
-        const handleScroll = () => setScrollY(window.scrollY);
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
-
     return (
         <div className="min-h-screen py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-            <div className="fixed inset-0 z-0">
+            <div className="fixed inset-0 z-0 pointer-events-none">
                 {!splineError ? (
                     <Spline
                         scene="https://prod.spline.design/G37RxiKQ-OEWy4XU/scene.splinecode"
@@ -528,7 +521,7 @@ const SkillsMain = () => {
             />
 
             <div className="max-w-7xl mx-auto relative z-10">
-                <div className="text-center mb-20">
+                <div className="text-center mb-16">
                     <div
                         className="inline-block mb-6 px-6 py-2 rounded-full text-sm font-medium"
                         style={{
@@ -542,7 +535,7 @@ const SkillsMain = () => {
                     >
                         ✨ Explore My Expertise
                     </div>
-                    <h1 className="text-6xl md:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-gray-200 via-white to-gray-300">
+                    <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-gray-200 via-white to-gray-300">
                         Technical Skills
                     </h1>
                     <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
@@ -605,12 +598,49 @@ const SkillsMain = () => {
                 </div>
             </div>
 
+            <div
+                className={`fixed bottom-4 right-4 z-30 transition-all duration-0 ${
+                    splineLoaded
+                        ? 'opacity-100'
+                        : 'opacity-0'
+                }`}
+            >
+                <div className="bg-black/20 backdrop-blur-xl rounded-2xl px-6 py-3 border border-white/10 shadow-2xl">
+                    <p className="text-white text-sm font-medium">
+                        @ Code by Shree Rahul
+                    </p>
+                </div>
+            </div>
+
             {!splineLoaded && (
-                <div className="fixed inset-0 bg-gray-900 z-[100] flex items-center justify-center">
-                    <div className="flex flex-col items-center">
-                        <div className="w-12 h-12 border-2 border-white/20 border-t-white rounded-full animate-spin mb-4"></div>
-                        <p className="text-white/70 text-sm">
+                <div
+                    className="fixed inset-0 backdrop-blur-md z-[100] flex items-center justify-center"
+                    style={{ backgroundColor: 'rgba(34, 34, 34, 0.5)' }}
+                >
+                    <div
+                        className="flex flex-col items-center p-8 rounded-3xl backdrop-blur-xl"
+                        style={{
+                            backgroundColor: 'rgba(248, 248, 248, 0.025)',
+                            borderWidth: '1px',
+                            borderStyle: 'solid',
+                            borderColor: 'rgba(248, 248, 248, 0.2)',
+                        }}
+                    >
+                        <div
+                            className="w-16 h-16 border-2 rounded-full animate-spin mb-6"
+                            style={{
+                                borderColor: 'rgba(248, 248, 248, 0.2)',
+                                borderTopColor: 'rgba(248, 248, 248, 0.8)',
+                            }}
+                        ></div>
+                        <p
+                            className="text-lg font-medium mb-2"
+                            style={{ color: '#F8F8F8' }}
+                        >
                             Loading Interactive Experience...
+                        </p>
+                        <p className="text-sm" style={{ color: '#7B7B7B' }}>
+                            Preparing your skills experience
                         </p>
                     </div>
                 </div>
