@@ -9,7 +9,7 @@ const BackgroundMusic = () => {
     const [duration, setDuration] = useState(0);
     const [volume, setVolume] = useState(0.7);
     const audioRef = useRef(null);
-    const audioSrc = '/mp3/loml-taylor-swift.mp3';
+    const audioSrc = '/mp3/golden-brown-slowed.mp3';
 
     useEffect(() => {
         const audio = audioRef.current;
@@ -100,7 +100,7 @@ const BackgroundMusic = () => {
                         <div className="flex-shrink-0">
                             <div className="w-48 h-48 rounded-2xl overflow-hidden bg-white/5 border border-white/10 shadow-xl relative group">
                                 <img
-                                    src="https://i.scdn.co/image/ab67616d00001e028ecc33f195df6aa257c39eaa"
+                                    src="https://i.scdn.co/image/ab67616d00001e022ff8e7ddcedf9076522e8cd7"
                                     alt="Album Cover"
                                     className={`w-full h-full object-cover transition-all duration-700 ${
                                         isPlaying
@@ -121,11 +121,10 @@ const BackgroundMusic = () => {
                                 <div className="flex items-start justify-between mb-1">
                                     <div className="flex-1 min-w-0">
                                         <h3 className="text-xl font-bold text-white truncate mb-1">
-                                            loml
+                                            Golden Brown - Slowed Down Version
                                         </h3>
                                         <p className="text-sm text-gray-300 truncate">
-                                            Taylor Swift — The Tortured Poets
-                                            Department
+                                            The Stranglers — Golden Brown
                                         </p>
                                     </div>
                                     {/* AirPlay Icon */}
@@ -702,7 +701,7 @@ const MusicPage = () => {
                         </h2>
                         <div className="h-1 w-24 mx-auto bg-gradient-to-r from-blue-500 to-green-500 rounded-full"></div>
                     </div>
-                    <div style={{ height: '1000px', position: 'relative' }}>
+                    <div style={{ height: '850px', position: 'relative' }}>
                         <ChromaGrid
                             radius={300}
                             damping={0.45}

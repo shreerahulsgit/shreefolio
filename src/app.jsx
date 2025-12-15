@@ -26,7 +26,6 @@ const routeMap = {
     '/resume': 'Resume',
     '/contact': 'Contact',
     '/skills': 'Skills',
-    '/skills/details': 'Skills',
     '/skills/certificates': 'Skills',
 };
 
@@ -109,10 +108,7 @@ export default function App() {
                         />
 
                         <Route path="/skills" element={<SkillsMain />} />
-                        <Route
-                            path="/skills/certificates"
-                            element={<CertificatePage />}
-                        />
+                        <Route path="/skills/certificates" element={<CertificatePage />} />
                         <Route
                             path="/skills/*"
                             element={<Navigate to="/skills" replace />}

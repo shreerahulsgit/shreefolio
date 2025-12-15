@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { BookOpen, Sparkles, ArrowRight, Star } from 'lucide-react';
 import '../../lib/styles/beyond-books.css';
 
@@ -61,27 +60,6 @@ const books = [
 ];
 
 const BeyondBooks = () => {
-    const [scrollY, setScrollY] = useState(0);
-    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-    const [activeCard, setActiveCard] = useState(null);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            setScrollY(window.scrollY);
-        };
-
-        const handleMouseMove = (e) => {
-            setMousePos({ x: e.clientX, y: e.clientY });
-        };
-
-        window.addEventListener('scroll', handleScroll);
-        window.addEventListener('mousemove', handleMouseMove);
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-            window.removeEventListener('mousemove', handleMouseMove);
-        };
-    }, []);
-
     return (
         <div className="relative min-h-screen bg-black overflow-x-hidden">
             <div className="fixed inset-0 bg-black">
@@ -89,13 +67,6 @@ const BeyondBooks = () => {
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-purple-900/10 via-transparent to-transparent" />
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyan-900/5 via-transparent to-transparent" />
             </div>
-
-            <div
-                className="fixed inset-0 opacity-20 pointer-events-none transition-opacity duration-300"
-                style={{
-                    background: `radial-gradient(circle 600px at ${mousePos.x}px ${mousePos.y}px, rgba(59, 130, 246, 0.15), transparent 80%)`,
-                }}
-            />
 
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 {[...Array(40)].map((_, i) => (
@@ -155,8 +126,6 @@ const BeyondBooks = () => {
                             key={book.id}
                             className="animate-slideUp"
                             style={{ animationDelay: `${index * 0.1}s` }}
-                            onMouseEnter={() => setActiveCard(book.id)}
-                            onMouseLeave={() => setActiveCard(null)}
                         >
                             <div className="group relative w-full rounded-2xl overflow-hidden transition-all duration-700 hover:scale-[1.01]">
                                 <div className="absolute inset-0 bg-gray-900/80 backdrop-blur-xl border border-white/20 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.8)]" />

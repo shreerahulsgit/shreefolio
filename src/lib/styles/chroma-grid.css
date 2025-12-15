@@ -37,8 +37,8 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    width: 320px;
-    height: auto;
+    width: 300px;
+    height: 400px;
     border-radius: 20px;
     overflow: hidden;
     border: 1px solid #333;

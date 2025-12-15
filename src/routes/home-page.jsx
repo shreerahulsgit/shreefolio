@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
+import LoadingOverlay from '../lib/components/loading-overlay.jsx';
+import SplineMasking from '../lib/components/spline-masking.jsx';
 import Spline from '@splinetool/react-spline';
 
 const HomePage = () => {
@@ -54,7 +56,6 @@ const HomePage = () => {
         return () => clearTimeout(typingTimeout.current);
     }, [displayedText, isDeleting, msgIdx, typingStarted]);
 
-    const [isLoaded, setIsLoaded] = useState(false);
     const [splineLoaded, setSplineLoaded] = useState(false);
     const [showOverlays, setShowOverlays] = useState(false);
 
@@ -86,13 +87,12 @@ const HomePage = () => {
                         height: '100vh',
                     }}
                     onLoad={() => {
-                        setIsLoaded(true);
                         setSplineLoaded(true);
                     }}
                 />
             </div>
 
-            <div className="absolute top-0 left-0 h-full flex items-center z-10 w-full md:w-1/2 px-6 md:px-16 lg:px-24">
+            <div className="absolute top-0 left-0 h-full flex items-center z-10 w-full md:w-1/2 px-6 md:px-16 lg:px-23">
                 <h1
                     className="text-3xl md:text-5xl lg:text-6xl font-semibold transition-all duration-300 ease-in-out cursor-pointer w-full"
                     style={{
@@ -174,20 +174,6 @@ const HomePage = () => {
 
             <div className="absolute inset-0 bg-gradient-to-br from-gray-900/20 via-transparent to-gray-900/30 pointer-events-none"></div>
 
-            <div
-                className={`absolute bottom-4 right-4 z-30 transition-all duration-0 ${
-                    isLoaded
-                        ? 'opacity-100'
-                        : 'opacity-0'
-                }`}
-            >
-                <div className="bg-black/20 backdrop-blur-xl rounded-2xl px-6 py-3 border border-white/10 shadow-2xl">
-                    <p className="text-white text-sm font-medium">
-                        @ Code by Shree Rahul
-                    </p>
-                </div>
-            </div>
-
             {showOverlays && (
                 <><div className="absolute inset-0 pointer-events-none z-5">
                     {[...Array(20)].map((_, i) => (
@@ -215,38 +201,10 @@ const HomePage = () => {
                 </div></>
             )}
 
+            <SplineMasking splineLoaded={splineLoaded} />
+
             {!splineLoaded && (
-                <div
-                    className="fixed inset-0 backdrop-blur-md z-[100] flex items-center justify-center"
-                    style={{ backgroundColor: 'rgba(34, 34, 34, 0.5)' }}
-                >
-                    <div
-                        className="flex flex-col items-center p-8 rounded-3xl backdrop-blur-xl"
-                        style={{
-                            backgroundColor: 'rgba(248, 248, 248, 0.025)',
-                            borderWidth: '1px',
-                            borderStyle: 'solid',
-                            borderColor: 'rgba(248, 248, 248, 0.2)',
-                        }}
-                    >
-                        <div
-                            className="w-16 h-16 border-2 rounded-full animate-spin mb-6"
-                            style={{
-                                borderColor: 'rgba(248, 248, 248, 0.2)',
-                                borderTopColor: 'rgba(248, 248, 248, 0.8)',
-                            }}
-                        ></div>
-                        <p
-                            className="text-lg font-medium mb-2"
-                            style={{ color: '#F8F8F8' }}
-                        >
-                            Loading Interactive Experience...
-                        </p>
-                        <p className="text-sm" style={{ color: '#7B7B7B' }}>
-                            Preparing your portfolio experience
-                        </p>
-                    </div>
-                </div>
+                <LoadingOverlay message="Preparing your portfolio experience" />
             )}
         </div>
     );
