@@ -4,10 +4,160 @@ import LoadingOverlay from '../lib/components/loading-overlay.jsx';
 import SplineMasking from '../lib/components/spline-masking.jsx';
 import Spline from '@splinetool/react-spline';
 
+// Glass Card Component with Apple-style shine effects
+const GlassCard = ({ children, isHovered, onMouseEnter, onMouseLeave, className = '', delay = 0, isLoaded = true }) => (
+    <div
+        className={`group relative rounded-3xl p-8 md:p-10 transition-all duration-700 ease-out ${
+            isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-16 opacity-0'
+        } ${className}`}
+        style={{
+            background: 'rgba(255, 255, 255, 0.05)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: isHovered
+                ? '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 60px rgba(255, 255, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+                : '0 10px 40px -15px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+            transitionDelay: `${delay}ms`,
+            transform: isHovered ? 'scale(1.02) translateY(-5px)' : 'scale(1) translateY(0)',
+        }}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+    >
+        {/* Top shine line */}
+        <div
+            className="absolute inset-x-0 top-0 h-px pointer-events-none"
+            style={{
+                background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent)',
+            }}
+        />
+        
+        {/* Glass gradient overlay */}
+        <div
+            className="absolute inset-0 rounded-3xl pointer-events-none"
+            style={{
+                background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%)',
+            }}
+        />
+
+        {/* Shimmer effect on hover */}
+        <div
+            className="absolute inset-0 rounded-3xl pointer-events-none overflow-hidden"
+            style={{ opacity: isHovered ? 1 : 0, transition: 'opacity 0.5s ease' }}
+        >
+            <div
+                className="absolute inset-0"
+                style={{
+                    background: 'linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.15) 45%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0.15) 55%, transparent 60%)',
+                    transform: 'translateX(-200%)',
+                    animation: isHovered ? 'shimmer 2s infinite' : 'none',
+                }}
+            />
+        </div>
+
+        {/* Radial glow effect */}
+        {isHovered && (
+            <div
+                className="absolute -inset-1 rounded-3xl pointer-events-none"
+                style={{
+                    background: 'radial-gradient(ellipse at center, rgba(255, 255, 255, 0.1) 0%, transparent 70%)',
+                    filter: 'blur(20px)',
+                }}
+            />
+        )}
+
+        {children}
+
+        <style>{`
+            @keyframes shimmer {
+                0% { transform: translateX(-200%); }
+                100% { transform: translateX(200%); }
+            }
+        `}</style>
+    </div>
+);
+
+// Glass Button Component with Apple-style effects
+const GlassButton = ({ children, onClick, className = '' }) => {
+    const [isHovered, setIsHovered] = useState(false);
+    
+    return (
+        <button
+            onClick={onClick}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            className={`group relative px-8 py-4 rounded-2xl font-semibold overflow-hidden transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 ${className}`}
+            style={{
+                background: isHovered ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.1)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                border: `1px solid ${isHovered ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.15)'}`,
+                boxShadow: isHovered
+                    ? '0 20px 40px rgba(0, 0, 0, 0.3), 0 0 40px rgba(255, 255, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+                    : '0 4px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+                color: '#FFFFFF',
+            }}
+        >
+            {/* Top shine line */}
+            <div
+                className="absolute inset-x-0 top-0 h-px pointer-events-none"
+                style={{
+                    background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent)',
+                }}
+            />
+            
+            {/* Glass gradient */}
+            <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                    background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, transparent 50%)',
+                }}
+            />
+
+            {/* Shimmer effect */}
+            <div
+                className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl"
+                style={{ opacity: isHovered ? 1 : 0, transition: 'opacity 0.3s ease' }}
+            >
+                <div
+                    style={{
+                        position: 'absolute',
+                        inset: 0,
+                        background: 'linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.2) 45%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0.2) 55%, transparent 60%)',
+                        transform: 'translateX(-200%)',
+                        animation: isHovered ? 'buttonShimmer 1.5s infinite' : 'none',
+                    }}
+                />
+            </div>
+
+            {/* Glow effect */}
+            {isHovered && (
+                <div
+                    className="absolute -inset-2 rounded-2xl pointer-events-none"
+                    style={{
+                        background: 'radial-gradient(ellipse at center, rgba(255, 255, 255, 0.2) 0%, transparent 70%)',
+                        filter: 'blur(15px)',
+                    }}
+                />
+            )}
+
+            <span className="relative z-10 flex items-center justify-center gap-3">{children}</span>
+
+            <style>{`
+                @keyframes buttonShimmer {
+                    0% { transform: translateX(-200%); }
+                    100% { transform: translateX(200%); }
+                }
+            `}</style>
+        </button>
+    );
+};
+
 const ResumeMain = () => {
     const [isLoaded, setIsLoaded] = useState(false);
     const [splineLoaded, setSplineLoaded] = useState(false);
     const [isHovering, setIsHovering] = useState(false);
+    const [headerHovered, setHeaderHovered] = useState(false);
 
     useEffect(() => {
         const timer = setTimeout(() => setIsLoaded(true), 100);
@@ -52,38 +202,47 @@ const ResumeMain = () => {
             <div className="relative z-10" style={{ pointerEvents: 'none' }}>
                 <header className="py-6" style={{ pointerEvents: 'auto' }}>
                     <div className="flex justify-center px-6 mt-6">
-                        <div className="backdrop-blur-md bg-white/10 border border-white/20 shadow-lg rounded-xl p-6">
+                        <div className="text-center">
                             <div
-                                className={`text-center transform transition-all duration-1000 ${
+                                className={`inline-block mb-6 px-6 py-2 rounded-full text-sm font-medium relative overflow-hidden transform transition-all duration-1000 ease-out ${
+                                    isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+                                }`}
+                                style={{
+                                    background: 'rgba(255, 255, 255, 0.08)',
+                                    backdropFilter: 'blur(20px)',
+                                    WebkitBackdropFilter: 'blur(20px)',
+                                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                                    boxShadow: '0 4px 24px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+                                    color: '#E5E7EB',
+                                }}
+                            >
+                                <div
+                                    className="absolute inset-x-0 top-0 h-1/2 pointer-events-none"
+                                    style={{
+                                        background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%)',
+                                    }}
+                                />
+                                <span className="relative z-10">📄 Professional Resume</span>
+                            </div>
+                            <h1
+                                className={`text-4xl md:text-5xl lg:text-6xl font-bold mb-4 transform transition-all duration-1000 ease-out bg-clip-text text-transparent bg-gradient-to-r from-gray-200 via-white to-gray-300 ${
                                     isLoaded
                                         ? 'translate-y-0 opacity-100'
-                                        : '-translate-y-4 opacity-0'
+                                        : 'translate-y-12 opacity-0'
                                 }`}
                             >
-                                <div className="flex justify-center items-center gap-3 mb-2">
-                                    <div className="p-2 rounded-lg backdrop-blur-xl bg-white/20 border border-white/30">
-                                        <FileText className="w-8 h-8 text-white drop-shadow-lg" />
-                                    </div>
-                                    <h1 className="text-4xl font-bold tracking-tight text-white drop-shadow-lg">
-                                        Resume
-                                    </h1>
-                                </div>
-                                <p className="text-lg font-medium text-white/90 drop-shadow-md">
-                                    Shree Rahul S - Full Stack Web Developer
-                                </p>
-                                <div className="flex justify-center items-center gap-2 mt-3">
-                                    <Eye
-                                        className={`w-4 h-4 transition-all duration-300 drop-shadow-md ${
-                                            isHovering
-                                                ? 'scale-125 text-white'
-                                                : 'text-white/70'
-                                        }`}
-                                    />
-                                    <span className="text-sm text-white/80 drop-shadow-md">
-                                        Interactive PDF View
-                                    </span>
-                                </div>
-                            </div>
+                                Resume
+                            </h1>
+                            <p
+                                className={`text-xl mb-2 transform transition-all duration-1000 delay-300 ease-out ${
+                                    isLoaded
+                                        ? 'translate-y-0 opacity-100'
+                                        : 'translate-y-8 opacity-0'
+                                }`}
+                                style={{ color: '#9CA3AF' }}
+                            >
+                                Shree Rahul S - Full Stack Web Developer
+                            </p>
                         </div>
                     </div>
                 </header>
@@ -94,55 +253,86 @@ const ResumeMain = () => {
                 >
                     <div className="flex justify-center px-6">
                         <div className="w-full max-w-4xl">
-                            <div
-                                className={`transform transition-all duration-1000 delay-300 ${
-                                    isLoaded
-                                        ? 'translate-y-0 opacity-100'
-                                        : 'translate-y-8 opacity-0'
-                                }`}
+                            <GlassCard
+                                isHovered={isHovering}
                                 onMouseEnter={() => setIsHovering(true)}
                                 onMouseLeave={() => setIsHovering(false)}
+                                delay={300}
+                                isLoaded={isLoaded}
+                                className="!p-5"
                             >
-                                <div
-                                    className={`backdrop-blur-xl bg-white/10 rounded-xl shadow-2xl border border-white/20 p-6 transform transition-all duration-500 ${
-                                        isHovering
-                                            ? 'shadow-[0_0_50px_rgba(255,255,255,0.3)] scale-[1.02] border-white/40'
-                                            : ''
-                                    }`}
-                                >
-                                    <div className="relative">
+                                <div className="relative z-10">
+                                    <div
+                                        className="overflow-hidden rounded-2xl relative"
+                                        style={{
+                                            height: '103.75vh',
+                                            background: 'rgba(255, 255, 255, 0.03)',
+                                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                                            boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+                                        }}
+                                    >
+                                        {/* Top shine for iframe container */}
                                         <div
-                                            className="overflow-auto rounded-lg border border-white/30 bg-white/5"
-                                            style={{ height: '103.75vh' }}
-                                        >
-                                            <iframe
-                                                src="https://drive.google.com/file/d/1Oyv6Rxij87SRkI9SNGpOE4022jd53SUv/preview"
-                                                className="w-full h-full"
-                                                allow="autoplay"
-                                                title="Shree Rahul S Resume"
-                                            />
-                                        </div>
+                                            className="absolute inset-x-0 top-0 h-px pointer-events-none z-10"
+                                            style={{
+                                                background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent)',
+                                            }}
+                                        />
+                                        <iframe
+                                            src="https://drive.google.com/file/d/1Oyv6Rxij87SRkI9SNGpOE4022jd53SUv/preview"
+                                            className="w-full h-full"
+                                            allow="autoplay"
+                                            title="Shree Rahul S Resume"
+                                        />
+                                    </div>
 
+                                    <div
+                                        className={`absolute top-8 left-8 px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-300 z-20 overflow-hidden ${
+                                            isHovering
+                                                ? 'opacity-100 transform scale-105'
+                                                : 'opacity-70'
+                                        }`}
+                                        style={{
+                                            background: isHovering ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.08)',
+                                            backdropFilter: 'blur(20px)',
+                                            WebkitBackdropFilter: 'blur(20px)',
+                                            border: `1px solid ${isHovering ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.15)'}`,
+                                            color: '#E5E7EB',
+                                            boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+                                        }}
+                                    >
                                         <div
-                                            className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-medium transition-all duration-300 backdrop-blur-md ${
-                                                isHovering
-                                                    ? 'opacity-100 transform scale-105 bg-white/90 text-gray-900 shadow-lg'
-                                                    : 'opacity-70 bg-white/20 text-white border border-white/30'
-                                            }`}
-                                        >
-                                            PDF Document
-                                        </div>
+                                            className="absolute inset-x-0 top-0 h-1/2 pointer-events-none"
+                                            style={{
+                                                background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%)',
+                                            }}
+                                        />
+                                        <span className="relative z-10">PDF Document</span>
                                     </div>
                                 </div>
-                            </div>
+                            </GlassCard>
                         </div>
                     </div>
                 </main>
 
                 <footer
-                    className="backdrop-blur-md bg-white/10 border-t border-white/20 pt-10 pb-36"
-                    style={{ pointerEvents: 'auto' }}
+                    className="relative pt-10 pb-36"
+                    style={{
+                        pointerEvents: 'auto',
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        backdropFilter: 'blur(20px)',
+                        WebkitBackdropFilter: 'blur(20px)',
+                        borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+                    }}
                 >
+                    {/* Top shine line for footer */}
+                    <div
+                        className="absolute inset-x-0 top-0 h-px pointer-events-none"
+                        style={{
+                            background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent)',
+                        }}
+                    />
+
                     <div className="max-w-6xl mx-auto px-6">
                         <div
                             className={`flex justify-center gap-6 transform transition-all duration-1000 delay-500 ${
@@ -151,26 +341,21 @@ const ResumeMain = () => {
                                     : 'translate-y-4 opacity-0'
                             }`}
                         >
-                            <button
-                                onClick={downloadResume}
-                                className="group flex items-center justify-center gap-3 px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 shadow-lg hover:shadow-2xl backdrop-blur-xl bg-white/20 border-2 border-white/40 text-white hover:bg-white/30 hover:border-white/60"
-                            >
-                                <Download className="w-5 h-4 transition-transform duration-300 group-hover:translate-y-0.5 group-hover:scale-90 drop-shadow-md" />
-                                <span className="drop-shadow-md">
-                                    Download Resume
-                                </span>
-                            </button>
+                            <GlassButton onClick={downloadResume}>
+                                <Download className="w-5 h-4 transition-transform duration-300 group-hover:translate-y-0.5 group-hover:scale-90" />
+                                <span>Download Resume</span>
+                            </GlassButton>
                         </div>
 
-                        <div className="text-center mt-8 space-y-2 ">
-                            <p className="text-sm font-medium text-white/80 drop-shadow-md">
+                        <div className="text-center mt-8 space-y-2">
+                            <p className="text-sm font-medium text-gray-400">
                                 PDF Format • Mobile Optimized • Secure Download
                             </p>
-                            <div className="flex justify-center items-center gap-4 text-xs text-white/70 drop-shadow-md ">
+                            <div className="flex justify-center items-center gap-4 text-xs text-gray-500">
                                 <span>Last Updated: January 2025</span>
-                                <span>|</span>
+                                <span className="text-gray-600">|</span>
                                 <span>File Size: ~150KB</span>
-                                <span>|</span>
+                                <span className="text-gray-600">|</span>
                                 <span>Version 2.0</span>
                             </div>
                         </div>

@@ -13,9 +13,9 @@ const BeyondMusic = lazy(() => import('./routes/beyond/beyond-music.jsx'));
 
 const ResumeMain = lazy(() => import('./routes/resume-main.jsx'));
 const ContactMain = lazy(() => import('./routes/contact-main.jsx'));
+const CertificatesPage = lazy(() => import('./routes/certificates-page.jsx'));
 
 const SkillsMain = lazy(() => import('./routes/skills/skills-main.jsx'));
-const CertificatePage = lazy(() => import('./routes/skills/skills-cert.jsx'));
 
 const routeMap = {
     '/': 'Home',
@@ -27,6 +27,7 @@ const routeMap = {
     '/contact': 'Contact',
     '/skills': 'Skills',
     '/skills/certificates': 'Skills',
+    '/certificates': 'Skills',
 };
 
 function Layout({ children }) {
@@ -107,8 +108,14 @@ export default function App() {
                             element={<Navigate to="/contact" replace />}
                         />
 
+                        <Route path="/certificates" element={<CertificatesPage />} />
+                        <Route
+                            path="/certificates/*"
+                            element={<Navigate to="/certificates" replace />}
+                        />
+
                         <Route path="/skills" element={<SkillsMain />} />
-                        <Route path="/skills/certificates" element={<CertificatePage />} />
+                        <Route path="/skills/certificates" element={<CertificatesPage />} />
                         <Route
                             path="/skills/*"
                             element={<Navigate to="/skills" replace />}

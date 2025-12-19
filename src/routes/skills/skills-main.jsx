@@ -600,8 +600,6 @@ const SkillsMain = () => {
                 </div>
             </div>
 
-            <SplineMasking splineLoaded={splineLoaded} />
-
             {!splineLoaded && (
                 <LoadingOverlay message="Preparing your skills experience" />
             )}
