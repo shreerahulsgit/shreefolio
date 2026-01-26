@@ -6,6 +6,7 @@ import {
 import {
     FaPenNib, FaRulerCombined, FaCode, FaPalette, FaGlobe, FaDatabase, FaTools,
 } from 'react-icons/fa';
+import GalaxyBackground from '../../lib/components/GalaxyBackground';
 
 const skillCategories = [
     {
@@ -872,15 +873,7 @@ const SkillsMain = () => {
 
     return (
         <div className="min-h-screen py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-            <div className="fixed inset-0 z-0 pointer-events-none">
-                <div
-                    style={{
-                        background: '#000000',
-                        width: '100%',
-                        height: '100%',
-                    }}
-                />
-            </div>
+            <GalaxyBackground variant={activeTab === 'skills' ? 'tilted' : 'default'} />
 
             <div
                 className="fixed inset-0 z-1 pointer-events-none"

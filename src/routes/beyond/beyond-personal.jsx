@@ -1,270 +1,240 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useRef, useState, Suspense } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { ScrollControls, useScroll, Text, Float, Stars, Sparkles, PerformanceMonitor, Image } from '@react-three/drei';
+import { EffectComposer, Bloom, Noise, Vignette, ChromaticAberration } from '@react-three/postprocessing';
+import * as THREE from 'three';
 
-// Custom hook for scroll-triggered animations
-const useScrollReveal = (threshold = 0.4) => {
-  const ref = useRef(null);
-  const [isVisible, setIsVisible] = useState(false);
+// --- Assets ---
+// Clean, elegant font
+const FONT_URL = 'https://fonts.gstatic.com/s/raleway/v14/1Ptrg8zYS_SKggPNwK4vaqI.woff';
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
-      },
-      { threshold }
-    );
+// --- Components ---
 
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
-    return () => {
-      if (ref.current) {
-        observer.unobserve(ref.current);
-      }
-    };
-  }, [threshold]);
-
-  return [ref, isVisible];
-};
-
-// Fade Text with delay
-const FadeBlock = ({ children, className = "", delay = 0, align = "center" }) => {
-  const [ref, isVisible] = useScrollReveal(0.5);
-
-  const alignClass = {
-    left: "text-left",
-    center: "text-center",
-    right: "text-right",
-  };
-
+const FloatingText = ({ children, size = 1, color = "white", emissive = "white", ...props }) => {
   return (
-    <div
-      ref={ref}
-      className={`transition-all duration-[1800ms] ease-out ${alignClass[align]} ${className}`}
-      style={{
-        opacity: isVisible ? 1 : 0,
-        transform: isVisible ? "translateY(0)" : "translateY(25px)",
-        transitionDelay: `${delay}ms`,
-      }}
-    >
-      {children}
-    </div>
-  );
-};
-
-// Social Link with hover
-const SocialLink = ({ platform, description }) => {
-  const [isHovered, setIsHovered] = useState(false);
-
-  const urls = {
-    instagram: "https://instagram.com",
-    snapchat: "https://snapchat.com",
-    x: "https://x.com",
-  };
-
-  return (
-    <a
-      href={urls[platform]}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="block py-2 transition-all duration-300"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <span
-        className="text-gray-400 transition-all duration-300"
-        style={{
-          textDecoration: isHovered ? "underline" : "none",
-          textDecorationColor: isHovered ? "#dc2626" : "transparent",
-          textUnderlineOffset: "4px",
-          color: isHovered ? "#f5f5f5" : undefined,
-        }}
+    <Float floatIntensity={0.5} rotationIntensity={0.2} speed={1.5}>
+      <Text
+        font={FONT_URL}
+        fontSize={size}
+        color={color}
+        anchorX="center"
+        anchorY="middle"
+        {...props}
       >
-        {platform}
-      </span>
-      <span className="text-gray-600 ml-2">— {description}</span>
-    </a>
+        {children}
+        {/* Standard Material reacts to light + Emissive for Bloom */}
+        <meshStandardMaterial 
+            color={color} 
+            emissive={emissive} 
+            emissiveIntensity={0.5} 
+            toneMapped={false} 
+        />
+      </Text>
+    </Float>
   );
 };
 
-// Main Random Page
-export default function BeyondRandom() {
-  const [showOpening1, setShowOpening1] = useState(false);
-  const [showOpening2, setShowOpening2] = useState(false);
-
-  useEffect(() => {
-    const timer1 = setTimeout(() => setShowOpening1(true), 1000);
-    const timer2 = setTimeout(() => setShowOpening2(true), 3000);
-
-    return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-    };
-  }, []);
-
+const Section = ({ z, children }) => {
   return (
-    <div className="min-h-screen bg-black text-white overflow-x-hidden">
-      {/* ========== OPENING ========== */}
-      <section className="min-h-screen flex flex-col items-center justify-center px-8">
-        <p
-          className="text-lg md:text-xl font-light text-gray-500 transition-all duration-[2000ms] ease-out"
-          style={{
-            opacity: showOpening1 ? 1 : 0,
-            transform: showOpening1 ? "translateY(0)" : "translateY(15px)",
-          }}
-        >
-          this isn't important.
-        </p>
-
-        <p
-          className="text-lg md:text-xl font-light text-gray-400 mt-12 transition-all duration-[2000ms] ease-out"
-          style={{
-            opacity: showOpening2 ? 1 : 0,
-            transform: showOpening2 ? "translateY(0)" : "translateY(15px)",
-          }}
-        >
-          but you're here anyway.
-        </p>
-      </section>
-
-      {/* ========== BLOCK 1 — IDENTITY SNEAKS IN ========== */}
-      <section className="min-h-[70vh] flex flex-col justify-center px-8 md:px-16 lg:px-24">
-        <FadeBlock align="left" className="max-w-xl space-y-2">
-          <p className="text-2xl md:text-3xl font-light text-gray-400 leading-relaxed">
-            born into a land
-          </p>
-          <p className="text-2xl md:text-3xl font-light text-gray-400 leading-relaxed">
-            that doesn't shout.
-          </p>
-        </FadeBlock>
-
-        <FadeBlock align="left" className="max-w-xl mt-8" delay={600}>
-          <p className="text-xl md:text-2xl font-light text-white">
-            it hums.
-          </p>
-        </FadeBlock>
-      </section>
-
-      {/* Offset block */}
-      <section className="min-h-[50vh] flex flex-col justify-center px-8 md:px-16 lg:px-24">
-        <FadeBlock align="right" className="max-w-xl ml-auto space-y-2">
-          <p className="text-xl md:text-2xl font-light text-gray-500 leading-relaxed">
-            some languages are picked up.
-          </p>
-          <p className="text-xl md:text-2xl font-light text-gray-300 leading-relaxed">
-            this one picked me.
-          </p>
-        </FadeBlock>
-
-        <FadeBlock align="right" className="max-w-xl ml-auto mt-12" delay={500}>
-          <p className="text-lg md:text-xl font-light text-red-600">
-            proudly kannadiga.
-          </p>
-          <p className="text-sm text-gray-600 mt-1 italic">
-            (felt, not announced.)
-          </p>
-        </FadeBlock>
-      </section>
-
-      {/* ========== BLOCK 2 — HUMOR ENTERS ========== */}
-      <section className="min-h-[60vh] flex flex-col items-center justify-center px-8">
-        <FadeBlock>
-          <p className="text-xl md:text-2xl font-light text-gray-400">
-            i tried being neutral once.
-          </p>
-        </FadeBlock>
-
-        <FadeBlock delay={500}>
-          <p className="text-xl md:text-2xl font-light text-gray-300 mt-4">
-            didn't last.
-          </p>
-        </FadeBlock>
-
-        <FadeBlock delay={1000} className="mt-8">
-          <p className="text-sm text-gray-600">
-            turns out belonging is stubborn.
-          </p>
-        </FadeBlock>
-      </section>
-
-      {/* ========== BLOCK 3 — SELF-AWARENESS ========== */}
-      <section className="min-h-[50vh] flex flex-col justify-center px-8 md:px-16 lg:px-24">
-        <FadeBlock align="left" className="max-w-xl space-y-2">
-          <p className="text-xl md:text-2xl font-light text-gray-500">
-            not everything about me
-          </p>
-          <p className="text-xl md:text-2xl font-light text-gray-500">
-            fits neatly here.
-          </p>
-        </FadeBlock>
-
-        <FadeBlock align="left" className="max-w-xl mt-12" delay={800}>
-          <p className="text-xl md:text-2xl font-light text-gray-300">
-            honestly, that's a relief.
-          </p>
-        </FadeBlock>
-      </section>
-
-      {/* ========== BLOCK 4 — PAUSE THE SCROLL ========== */}
-      <div className="h-48 bg-black" />
-
-      <section className="min-h-[40vh] flex flex-col items-center justify-center px-8">
-        <FadeBlock>
-          <p className="text-lg md:text-xl font-light text-gray-600">
-            okay, this is getting deep.
-          </p>
-        </FadeBlock>
-
-        <FadeBlock delay={600}>
-          <p className="text-lg md:text-xl font-light text-gray-400 mt-6">
-            let's fix that.
-          </p>
-        </FadeBlock>
-      </section>
-
-      <div className="h-32 bg-black" />
-
-      {/* ========== WHERE I EXIST ONLINE ========== */}
-      <section className="min-h-[60vh] flex flex-col justify-center px-8 md:px-16 lg:px-24">
-        <FadeBlock align="left" className="max-w-xl space-y-2">
-          <p className="text-xl md:text-2xl font-light text-gray-500">
-            if this felt familiar,
-          </p>
-          <p className="text-xl md:text-2xl font-light text-gray-400">
-            you already know where to find me.
-          </p>
-        </FadeBlock>
-
-        <FadeBlock align="left" className="max-w-xl mt-12" delay={400}>
-          <div className="space-y-1">
-            <SocialLink platform="instagram" description="visuals pretending to be intentional" />
-            <SocialLink platform="snapchat" description="nothing here is serious" />
-            <SocialLink platform="x" description="thoughts that escaped supervision" />
-          </div>
-        </FadeBlock>
-      </section>
-
-      {/* ========== THE EXIT ========== */}
-      <div className="h-32 bg-black" />
-
-      <section className="min-h-[60vh] flex flex-col items-center justify-center px-8">
-        <FadeBlock>
-          <p className="text-xl md:text-2xl font-light text-gray-400">
-            bye from your Kannadiga friend.
-          </p>
-        </FadeBlock>
-
-        <FadeBlock delay={800}>
-          <p className="text-xl md:text-2xl font-light text-gray-300 mt-6">
-            now close this tab emotionally.
-          </p>
-        </FadeBlock>
-      </section>
-
-      {/* Final fade */}
-      <div className="h-64 bg-black" />
-    </div>
+    <group position={[0, 0, z]}>
+      {children}
+    </group>
   );
+};
+
+const MovingSpot = ({ color, position }) => {
+    const light = useRef();
+    useFrame((state) => {
+        if(light.current) {
+            light.current.position.x = position[0] + Math.sin(state.clock.elapsedTime) * 2;
+        }
+    });
+    return <pointLight ref={light} position={position} color={color} intensity={2} distance={15} decay={2} />;
+};
+
+const Scene = () => {
+    const scroll = useScroll();
+    
+    // Smooth camera movement
+    useFrame((state, delta) => {
+        // Longer scroll distance for more content
+        const targetZ = -scroll.offset * 90; 
+        
+        state.camera.position.z = THREE.MathUtils.damp(state.camera.position.z, targetZ + 5, 2, delta);
+        
+        const { x, y } = state.pointer;
+        state.camera.position.x = THREE.MathUtils.damp(state.camera.position.x, x * 2, 2, delta);
+        state.camera.position.y = THREE.MathUtils.damp(state.camera.position.y, y * 2, 2, delta);
+    });
+
+    return (
+        <group>
+            {/* 1. INTRO - Heavy Thoughts */}
+            <Section z={0}>
+                 <FloatingText size={0.5} position={[0, 2, 0]} color="#aaa">some things stayed unsaid.</FloatingText>
+                 <FloatingText size={0.5} position={[0, 1.2, 0]} color="#aaa">not forgotten.</FloatingText>
+                 <FloatingText size={1.5} position={[0, -0.5, 0]} emissive="white">just heavy.</FloatingText>
+            </Section>
+
+            {/* 2. ORIGIN - Soil & Time */}
+            <Section z={-18}>
+                <FloatingText size={0.8} position={[-2, 3, 0]} color="#ccc">not a loud place.</FloatingText>
+                <FloatingText size={0.8} position={[2, 2, 0]} color="#ccc">no spotlight energy.</FloatingText>
+                
+                <FloatingText size={1.2} position={[0, 0, 0]} letterSpacing={0.1}>just soil. time. patience.</FloatingText>
+                
+                <FloatingText size={0.6} position={[0, -2, 0]} color="#888">it didn’t hype me.</FloatingText>
+                <FloatingText size={0.6} position={[0, -2.8, 0]} color="#fff">it shaped me.</FloatingText>
+            </Section>
+
+            {/* 3. LANGUAGE - Kannada (Red/Yellow) */}
+            <Section z={-40}>
+                {/* Symbolic Lighting */}
+                <MovingSpot position={[-5, 2, 0]} color="#FF0000" /> {/* Red */}
+                <MovingSpot position={[5, -2, 0]} color="#FFD700" /> {/* Yellow */}
+                
+                <FloatingText size={0.5} position={[-2, 4, 0]} color="#aaa">some languages are chosen.</FloatingText>
+                <FloatingText size={0.5} position={[2, 3.2, 0]} color="#fff">this one chose me.</FloatingText>
+                
+                <FloatingText size={0.6} position={[0, 1.5, 0]} color="#ccc">kannada runs in the background.</FloatingText>
+                <FloatingText size={0.4} position={[0, 0.8, 0]} color="#888">in my silences. in my spine.</FloatingText>
+
+                {/* SPLIT PROUDLY KANNADIGA */}
+                <FloatingText size={1.8} position={[0, -1, 0]} letterSpacing={0.2} color="#FF0000" emissive="#FF0000">
+                    PROUDLY
+                </FloatingText>
+                <FloatingText size={2.5} position={[0, -2.7, 0]} letterSpacing={0.05} color="#FFD700" emissive="#FFD700">
+                    KANNADIGA
+                </FloatingText>
+                <FloatingText size={0.4} position={[2, -4, 0]} rotation={[0,0,-0.1]} color="#666">btw.</FloatingText>
+                
+                 <FloatingText size={0.5} position={[0, -5, 0]} letterSpacing={0.2} color="#fff">
+                    permanent install.
+                </FloatingText>
+            </Section>
+
+            {/* 4. PERSONALITY / CONNECT */}
+            <Section z={-60}>
+                <FloatingText size={0.8} position={[-2, 3, 0]}>still here?</FloatingText>
+                <FloatingText size={1.2} position={[0, 1.5, 0]} emissive="#44aaff">yeah. you’re my kinda person.</FloatingText>
+                
+                <FloatingText size={0.6} position={[0, -0.5, 0]}>ig we should connect.</FloatingText>
+                <FloatingText size={0.6} position={[0, -1.2, 0]}>you know where to find me.</FloatingText>
+
+                {/* SOCIAL ICONS */}
+               <group position={[0, -3.5, 0]}>
+                    {/* Instagram */}
+                    <group position={[-3, 0, 0]} onClick={() => window.open('https://instagram.com', '_blank')}>
+                        <Float speed={2} rotationIntensity={0.5}>
+                            <Image 
+                                url="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/600px-Instagram_icon.png" 
+                                scale={[1.5, 1.5]} 
+                                transparent 
+                                toneMapped={false}
+                            />
+                        </Float>
+                    </group>
+
+                    {/* Snapchat */}
+                    <group position={[0, -0.5, 1]} onClick={() => window.open('https://snapchat.com', '_blank')}>
+                        <Float speed={3} rotationIntensity={0.5}>
+                              <Image 
+                                url="https://upload.wikimedia.org/wikipedia/en/thumb/c/c4/Snapchat_logo.svg/1024px-Snapchat_logo.svg.png" 
+                                scale={[1.5, 1.5]} 
+                                transparent 
+                                toneMapped={false}
+                            />
+                        </Float>
+                    </group>
+
+                    {/* X */}
+                    <group position={[3, 0, 0]} onClick={() => window.open('https://x.com', '_blank')}>
+                        <Float speed={2.5} rotationIntensity={0.5}>
+                             <Image 
+                                url="https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/X_logo_2023_%28white%29.png/600px-X_logo_2023_%28white%29.png"
+                                scale={[1.5, 1.5]} 
+                                transparent 
+                                toneMapped={false}
+                            />
+                        </Float>
+                    </group>
+                </group>
+            </Section>
+
+            {/* 5. LOGOUT */}
+            <Section z={-80}>
+                <FloatingText size={0.6} position={[0, 2, 0]} color="#666">no grand ending.</FloatingText>
+                <FloatingText size={0.6} position={[0, 1.2, 0]} color="#666">no speech.</FloatingText>
+                
+                <FloatingText size={1} position={[0, -0.5, 0]}>just this —</FloatingText>
+                
+                <FloatingText size={1.5} position={[0, -2.5, 0]} emissive="white" letterSpacing={0.1}>stay rooted. stay real.</FloatingText>
+
+                 <FloatingText size={0.5} position={[0, -5, 0]} color="#44aaff">bye from your kannadiga friend!!!!</FloatingText>
+            </Section>
+        </group>
+    );
+};
+
+export default function BeyondPersonal() {
+    const [dpr, setDpr] = useState(1.5);
+    const [highPerf, setHighPerf] = useState(true);
+
+    return (
+        <div className="w-full h-screen bg-black">
+            <Canvas 
+                camera={{ position: [0, 0, 5], fov: 50 }}
+                dpr={dpr}
+                gl={{ 
+                    powerPreference: "high-performance", 
+                    antialias: false, // Let Composer handle AA or rely on pixel density
+                    stencil: false,
+                    depth: true
+                }}
+            >
+                {/* Performance Monitoring for RTX 3050 stability */}
+                <PerformanceMonitor 
+                    onDecline={() => { setDpr(1); setHighPerf(false); }} 
+                    onIncline={() => { setDpr(1.5); setHighPerf(true); }}
+                />
+
+                {/* Atmosphere */}
+                <color attach="background" args={['#050505']} />
+                <fog attach="fog" args={['#050505', 5, 25]} /> 
+                <ambientLight intensity={0.2} />
+                
+                {/* Particles - Optimized count */}
+                <Stars radius={100} depth={50} count={1500} factor={4} saturation={0} fade speed={1} />
+                {highPerf && <Sparkles count={100} scale={20} size={2} speed={0.4} opacity={0.4} color="#44aaff" />}
+
+                <Suspense fallback={null}>
+                    <ScrollControls pages={8} damping={0.2}>
+                        <Scene />
+                    </ScrollControls>
+                </Suspense>
+
+                {/* CINEMATIC POST PROCESSING */}
+                <EffectComposer disableNormalPass>
+                    <Bloom 
+                        luminanceThreshold={0.2} 
+                        luminanceSmoothing={0.9} 
+                        height={300} 
+                        intensity={1.5} // Neon Glow
+                    />
+                    <Noise opacity={0.05} /> {/* Film Grain */}
+                    <Vignette eskil={false} offset={0.1} darkness={1.1} />
+                    <ChromaticAberration offset={[0.001, 0.001]} /> {/* Subtle Lens defect */}
+                </EffectComposer>
+            </Canvas>
+
+             {/* Hint UI */}
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 pointer-events-none text-white/30 text-xs uppercase tracking-[0.3em] animate-pulse">
+                Scroll to Float
+            </div>
+            
+            <div className="absolute top-8 left-8 pointer-events-none text-white/20 text-xs uppercase tracking-widest hidden md:block">
+                The Void of Identity
+            </div>
+        </div>
+    );
 }

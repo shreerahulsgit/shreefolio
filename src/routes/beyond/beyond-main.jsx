@@ -1,11 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import LoadingOverlay from '../../lib/components/loading-overlay.jsx';
-import SplineMasking from '../../lib/components/spline-masking.jsx';
-import Spline from '@splinetool/react-spline';
-
-
+import WormholeBackground from '../../lib/components/WormholeBackground.jsx';
 
 // ============================================
 // CARD REFLECTION COMPONENT
@@ -29,7 +25,7 @@ const CardReflection = ({ card, isFront, cardSize }) => {
                 className="w-full h-full rounded-3xl overflow-hidden"
                 style={{
                     background: `url(${card.image}) center center / cover`,
-                    opacity: 0.25,
+                    opacity: 0.1,
                     filter: 'blur(3px)',
                     maskImage: 'linear-gradient(to top, transparent 0%, rgba(0,0,0,0.5) 100%)',
                     WebkitMaskImage: 'linear-gradient(to top, transparent 0%, rgba(0,0,0,0.5) 100%)',
@@ -45,38 +41,78 @@ const CardReflection = ({ card, isFront, cardSize }) => {
 const BeyondMain = () => {
     const navigate = useNavigate();
     const containerRef = useRef(null);
-    const [isVisible, setIsVisible] = useState(false);
-    const [currentIndex, setCurrentIndex] = useState(0);
+    
+    // --- PERSISTENCE LOGIC ---
+    // Check if intro has been shown this session
+    const shouldSkipIntro = sessionStorage.getItem('beyond_intro_done') === 'true';
+    
+    // Check if we have a saved card index
+    const savedIndex = parseInt(sessionStorage.getItem('beyond_active_index') || '0', 10);
+
+    const [isVisible, setIsVisible] = useState(shouldSkipIntro); // Visible immediately if skipping
+    const [currentIndex, setCurrentIndex] = useState(savedIndex); // Restore index
     const [isAnimating, setIsAnimating] = useState(false);
     const [exitingIndex, setExitingIndex] = useState(null);
-    const [passedCards, setPassedCards] = useState([]);
-    const [splineLoaded, setSplineLoaded] = useState(false);
+    const [passedCards, setPassedCards] = useState(() => {
+        // If we restored an index (e.g. 2), we need to mark 0 and 1 as 'passed'
+        // so they sit to the left.
+        return Array.from({ length: savedIndex }, (_, i) => i);
+    });
     
-    // Mouse position for magnetic effect and parallax
-    const [mousePosition, setMousePosition] = useState({ x: 0.5, y: 0.5 });
+    // Mouse tracking with Inertia
+    const targetMouseRef = useRef({ x: 0.5, y: 0.5 });
+    const currentMouseRef = useRef({ x: 0.5, y: 0.5 });
+    const [smoothMouse, setSmoothMouse] = useState({ x: 0.5, y: 0.5 }); 
+    const animationFrameRef = useRef();
     const [hoveredCard, setHoveredCard] = useState(null);
-    
 
-
-    useEffect(() => {
+    const handleIntroComplete = () => {
         setIsVisible(true);
+        sessionStorage.setItem('beyond_intro_done', 'true');
+    };
+
+    // Save scroll position whenever it changes
+    useEffect(() => {
+        sessionStorage.setItem('beyond_active_index', currentIndex.toString());
+    }, [currentIndex]);
+
+    // Inertia Loop
+    useEffect(() => {
+        const updateInertia = () => {
+            const target = targetMouseRef.current;
+            const current = currentMouseRef.current;
+            
+            // Lerp factor (lower = heavier/smoother)
+            const ease = 0.05; 
+            
+            current.x += (target.x - current.x) * ease;
+            current.y += (target.y - current.y) * ease;
+            
+            currentMouseRef.current = { ...current };
+            setSmoothMouse({ ...current }); // Trigger render for style updates
+            
+            animationFrameRef.current = requestAnimationFrame(updateInertia);
+        };
+        
+        updateInertia();
+        return () => cancelAnimationFrame(animationFrameRef.current);
     }, []);
 
-    // Track mouse position for effects
+    // Track mouse target
     const handleMouseMove = useCallback((e) => {
         if (!containerRef.current) return;
         const rect = containerRef.current.getBoundingClientRect();
         const x = (e.clientX - rect.left) / rect.width;
         const y = (e.clientY - rect.top) / rect.height;
-        setMousePosition({ x, y });
+        targetMouseRef.current = { x, y };
     }, []);
 
     const cards = [
         {
-            title: 'BOOKS',
-            subtitle: 'Stories that shaped how I think.',
-            image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1760170029/books_uoldj8.jpg',
-            link: '/beyond/books',
+            title: 'UNFILTERED ME',
+            subtitle: 'The raw, authentic version.',
+            image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2073&auto=format&fit=crop', // Placeholder: Calm beach/nature
+            link: '/beyond/unfiltered',
         },
         {
             title: 'MUSIC',
@@ -97,6 +133,12 @@ const BeyondMain = () => {
             link: '/beyond/sports',
         },
         {
+            title: 'BOOKS',
+            subtitle: 'Stories that shaped how I think.',
+            image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1760170029/books_uoldj8.jpg',
+            link: '/beyond/books',
+        },
+        {
             title: 'RANDOM FACTS',
             subtitle: "Chaos you didn't ask for.",
             image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1760170029/BG_of_the_beyond_s5gpta.webp',
@@ -107,22 +149,22 @@ const BeyondMain = () => {
     const totalCards = cards.length;
     const cardSize = 420;
 
-    // Calculate magnetic tilt based on mouse position
+    // Calculate magnetic tilt based on SMOOTH mouse position
     const getMagneticTilt = (cardIndex) => {
         if (hoveredCard !== cardIndex) return { rotateX: 0, rotateY: 0 };
         
-        const tiltX = (mousePosition.y - 0.5) * -15;
-        const tiltY = (mousePosition.x - 0.5) * 15;
+        const tiltX = (smoothMouse.y - 0.5) * -25; // Increased range allowed by smooth damping
+        const tiltY = (smoothMouse.x - 0.5) * 25;
         
         return { rotateX: tiltX, rotateY: tiltY };
     };
 
     // Calculate parallax offset for UI elements
     const getParallaxOffset = useCallback((intensity = 1) => {
-        const offsetX = (mousePosition.x - 0.5) * 20 * intensity;
-        const offsetY = (mousePosition.y - 0.5) * 10 * intensity;
+        const offsetX = (smoothMouse.x - 0.5) * 40 * intensity; // Increased parallax
+        const offsetY = (smoothMouse.y - 0.5) * 20 * intensity;
         return { x: offsetX, y: offsetY };
-    }, [mousePosition]);
+    }, [smoothMouse]);
 
     const getCardStyle = (cardIndex) => {
         const isPassed = passedCards.includes(cardIndex);
@@ -133,7 +175,7 @@ const BeyondMain = () => {
 
         if (isExiting) {
             return {
-                transform: `translateZ(300px) scale(1.2) rotateX(${magneticTilt.rotateX}deg) rotateY(${magneticTilt.rotateY}deg)`,
+                transform: `translateZ(600px) scale(1.2) rotateX(${magneticTilt.rotateX}deg) rotateY(${magneticTilt.rotateY}deg)`,
                 opacity: 0,
                 zIndex: 60,
                 ...(isOnRight 
@@ -177,7 +219,7 @@ const BeyondMain = () => {
 
         if (depthLevel < 0) {
             return {
-                transform: 'translateZ(-500px) scale(0.3)',
+                transform: 'translateZ(-900px) scale(0.3)',
                 opacity: 0,
                 zIndex: 0,
                 ...(isOnRight 
@@ -189,19 +231,19 @@ const BeyondMain = () => {
             };
         }
 
-        const baseZ = -200 * depthLevel;
-        const baseScale = 1 - depthLevel * 0.1;
-        const baseOpacity = 0.8 - depthLevel * 0.12;
+        const baseZ = -900 * depthLevel;
+        const baseScale = 1 - depthLevel * 0.02; // Minimal scale reduction for deep visibility
+        const baseOpacity = 0.9 - depthLevel * 0.1; // Keep opacity high
 
         return {
             transform: `translateZ(${baseZ}px) scale(${Math.max(baseScale, 0.5)}) rotateX(${magneticTilt.rotateX * 0.5}deg) rotateY(${magneticTilt.rotateY * 0.5}deg)`,
-            opacity: Math.max(baseOpacity, 0.2),
+            opacity: Math.max(baseOpacity, 0),
             zIndex: 40 - depthLevel,
             ...(isOnRight 
                 ? { right: '8%', left: 'auto' }
                 : { left: '8%', right: 'auto' }
             ),
-            filter: `blur(${depthLevel * 0.5}px)`,
+            filter: `blur(${depthLevel * 1}px)`,
             pointerEvents: depthLevel <= 3 ? 'auto' : 'none',
         };
     };
@@ -240,6 +282,7 @@ const BeyondMain = () => {
 
         setTimeout(() => {
             setExitingIndex(null);
+            setExitingIndex(null); // double check cleaner
             setIsAnimating(false);
         }, 1800);
     };
@@ -263,24 +306,28 @@ const BeyondMain = () => {
         <div 
             ref={containerRef}
             className="h-screen text-white overflow-hidden relative" 
-            style={{ perspective: '1400px' }}
+            style={{ perspective: '2500px' }}
             onMouseMove={handleMouseMove}
         >
-            {/* Spline Background */}
-            <div className="absolute inset-0">
-                <Spline
-                    scene="https://prod.spline.design/aBrOEZccG5o-XuUp/scene.splinecode"
-                    className="w-full h-full"
-                    onLoad={() => setSplineLoaded(true)}
+            {/* Wormhole Background - Handles Intro and Persistence */}
+            <div className="absolute inset-0 z-[-1]">
+                 <WormholeBackground 
+                    onIntroComplete={handleIntroComplete} 
+                    skipIntro={shouldSkipIntro}
                 />
-                <div className="absolute inset-0 bg-black/40" />
             </div>
 
-
+            {/* Cinematic Noise Overlay */}
+            <div 
+                className="absolute inset-0 z-50 pointer-events-none opacity-[0.08] mix-blend-overlay"
+                style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E")`,
+                }}
+            />
 
             {/* Header Section with Parallax */}
             <div 
-                className={`absolute top-0 left-0 right-0 z-30 pt-8 flex flex-col items-center text-center transition-all duration-1000 ${
+                className={`absolute top-0 left-0 right-0 z-30 pt-12 flex flex-col items-center text-center transition-all duration-[1500ms] ease-out ${
                     isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'
                 }`}
                 style={{
@@ -289,21 +336,24 @@ const BeyondMain = () => {
                         : 'translateY(-32px)',
                 }}
             >
-                <div className="flex items-center gap-2 mb-3">
-                    <div className="w-1.5 h-1.5 rounded-full bg-white/60 animate-pulse" />
-                    <span className="text-white/60 text-xs uppercase tracking-[0.2em] font-medium">Beyond the Code</span>
+                <div className="flex items-center gap-3 mb-4">
+                    <div className="w-1 h-1 rounded-full bg-blue-200/60 shadow-[0_0_10px_rgba(100,200,255,0.8)]" />
+                    <span className="text-blue-100/50 text-[10px] uppercase tracking-[0.4em] font-medium">Beyond the Code</span>
+                    <div className="w-1 h-1 rounded-full bg-blue-200/60 shadow-[0_0_10px_rgba(100,200,255,0.8)]" />
                 </div>
-                <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-2">
-                    EXPLORE <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white/80 to-white/60">BEYOND</span>
+                <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-3 text-white">
+                    EXPLORE <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-100 via-white to-blue-200">BEYOND</span>
                 </h1>
-                <p className="text-white/50 text-sm max-w-sm leading-relaxed">
+                <p className="text-blue-100/40 text-xs md:text-sm max-w-sm leading-relaxed tracking-wide font-light">
                     Dive into the stories, sounds, and experiences that shape who I am.
                 </p>
             </div>
 
             {/* Cards Container */}
             <div 
-                className="absolute inset-0 flex items-end justify-center pb-32"
+                className={`absolute inset-0 flex items-end justify-center pb-32 transition-all duration-[2000ms] delay-300 ease-out ${
+                    isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+                }`}
                 style={{ transformStyle: 'preserve-3d' }}
             >
                 {cards.map((card, index) => {
@@ -318,7 +368,7 @@ const BeyondMain = () => {
                                 width: `${cardSize}px`,
                                 height: `${cardSize}px`,
                                 ...style,
-                                transition: 'all 1.8s cubic-bezier(0.4, 0, 0.2, 1)',
+                                transition: 'all 1.8s cubic-bezier(0.2, 0.8, 0.2, 1)', // Custom bezier for heavier feel
                                 transformStyle: 'preserve-3d',
                             }}
                             onClick={() => {
@@ -335,74 +385,51 @@ const BeyondMain = () => {
                             <CardReflection card={card} isFront={isFront} cardSize={cardSize} />
 
                             <div 
-                                className={`relative w-full h-full rounded-3xl overflow-hidden border transition-all duration-500 ${
+                                className={`relative w-full h-full rounded-3xl overflow-hidden transition-all duration-700 ${
                                     isFront 
-                                        ? 'border-white/30 shadow-2xl hover:border-white/50' 
-                                        : 'border-white/10 hover:border-white/30'
+                                        ? 'shadow-[0_20px_50px_-10px_rgba(0,0,0,0.8)]' 
+                                        : 'opacity-60 grayscale-[50%] hover:grayscale-0 hover:opacity-100'
                                 }`}
                                 style={{
                                     boxShadow: isFront 
-                                        ? '0 30px 60px -20px rgba(0, 0, 0, 0.6), 0 0 40px rgba(255,255,255,0.05)'
-                                        : '0 15px 30px -10px rgba(0, 0, 0, 0.4)',
+                                        ? '0 30px 60px -20px rgba(0, 0, 0, 0.9), 0 0 30px rgba(0,0,0,0.5)'
+                                        : 'none',
                                 }}
                             >
                                 <img
                                     src={card.image}
                                     alt={card.title}
-                                    className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 ${
-                                        isFront ? 'hover:scale-110' : ''
+                                    className={`absolute inset-0 w-full h-full object-cover transition-transform duration-1000 ${
+                                        isFront ? 'hover:scale-105' : ''
                                     }`}
                                 />
-
-                                {/* Gradient overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
-
-                                {/* Shimmer effect on front card */}
+                                {/* Deep blending overlay - Vignette feel */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90" />
+                                
                                 {isFront && (
                                     <div 
-                                        className="absolute inset-0 opacity-30 pointer-events-none"
+                                        className="absolute inset-0 opacity-10 pointer-events-none"
                                         style={{
-                                            background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.2) 50%, transparent 60%)',
-                                            animation: 'shimmer 3s ease-in-out infinite',
+                                            background: 'linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%)',
+                                            animation: 'shimmer 4s ease-in-out infinite',
                                         }}
                                     />
                                 )}
 
-                                {/* Dark overlay for back cards */}
-                                {!isFront && (
-                                    <div className="absolute inset-0 bg-black/40 transition-opacity duration-300 hover:opacity-20" />
-                                )}
-
-                                {/* Card content */}
-                                <div className="absolute bottom-0 left-0 right-0 p-6">
-                                    <div className={`transition-all duration-300 ${isFront ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-70'}`}>
-                                        <div className={`w-12 h-1 rounded-full mb-4 transition-all duration-300 ${
-                                            isFront ? 'bg-white w-16' : 'bg-white/50'
-                                        }`} />
-                                        <h3 className={`font-black tracking-wide mb-2 transition-all duration-300 ${
-                                            isFront ? 'text-2xl text-white' : 'text-xl text-white/80'
-                                        }`}>
+                                <div className="absolute bottom-0 left-0 right-0 p-8">
+                                    <div className={`transition-all duration-500 transform ${isFront ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
+                                        <h3 className="font-bold tracking-widest mb-2 text-2xl text-white drop-shadow-lg">
                                             {card.title}
                                         </h3>
+                                        <div className="h-[1px] w-12 bg-white/50 mb-3" />
                                         {isFront && (
-                                            <p className="text-white/70 text-base">{card.subtitle}</p>
+                                            <p className="text-white/60 text-sm font-light tracking-wide leading-relaxed drop-shadow-md">{card.subtitle}</p>
                                         )}
                                     </div>
                                 </div>
-
-                                {/* Click hint for back cards */}
-                                {!isFront && !isAnimating && (
-                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
-                                        <div className="px-5 py-3 bg-white/20 backdrop-blur-sm rounded-full text-base font-medium">
-                                            Click to view
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Glow border for front card */}
-                                {isFront && (
-                                    <div className="absolute inset-0 rounded-3xl border-2 border-white/0 hover:border-white/40 transition-all duration-500" />
-                                )}
+                                
+                                {/* Subtle Border Interaction */}
+                                <div className={`absolute inset-0 rounded-3xl border border-white/5 transition-colors duration-500 ${isFront ? 'group-hover:border-white/10' : ''}`} />
                             </div>
                         </div>
                     );
@@ -411,7 +438,7 @@ const BeyondMain = () => {
 
             {/* Navigation Buttons */}
             {!isFirstCard && (
-                <div className="absolute inset-y-0 left-8 flex items-center z-50">
+                <div className={`absolute inset-y-0 left-8 flex items-center z-50 transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
                     <button
                         onClick={goToPrev}
                         disabled={isAnimating}
@@ -424,9 +451,8 @@ const BeyondMain = () => {
                     </button>
                 </div>
             )}
-
             {!isLastCard && (
-                <div className="absolute inset-y-0 right-8 flex items-center z-50">
+                <div className={`absolute inset-y-0 right-8 flex items-center z-50 transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
                     <button
                         onClick={goToNext}
                         disabled={isAnimating}
@@ -456,71 +482,11 @@ const BeyondMain = () => {
 
             {/* CSS Animations */}
             <style>{`
-                @keyframes floatParticle {
-                    0%, 100% {
-                        transform: translate(0, 0) rotate(0deg);
-                        opacity: var(--opacity, 0.3);
-                    }
-                    25% {
-                        transform: translate(10px, -20px) rotate(90deg);
-                    }
-                    50% {
-                        transform: translate(-5px, -40px) rotate(180deg);
-                        opacity: calc(var(--opacity, 0.3) * 1.5);
-                    }
-                    75% {
-                        transform: translate(-15px, -20px) rotate(270deg);
-                    }
-                }
-
-                @keyframes burstParticle {
-                    0% {
-                        transform: translate(-50%, -50%) rotate(var(--burst-angle)) translateX(0);
-                        opacity: 1;
-                    }
-                    100% {
-                        transform: translate(-50%, -50%) rotate(var(--burst-angle)) translateX(var(--burst-distance));
-                        opacity: 0;
-                    }
-                }
-
-                @keyframes pulseGlow {
-                    0%, 100% {
-                        opacity: 0.6;
-                        transform: scale(1);
-                    }
-                    50% {
-                        opacity: 1;
-                        transform: scale(1.1);
-                    }
-                }
-
                 @keyframes shimmer {
-                    0% {
-                        transform: translateX(-100%);
-                    }
-                    50%, 100% {
-                        transform: translateX(100%);
-                    }
-                }
-
-                @keyframes zoomOut {
-                    0% {
-                        transform: translateZ(0) scale(1);
-                        opacity: 1;
-                    }
-                    100% {
-                        transform: translateZ(400px) scale(1.5);
-                        opacity: 0;
-                    }
+                    0% { transform: translateX(-100%); }
+                    50%, 100% { transform: translateX(100%); }
                 }
             `}</style>
-
-            <SplineMasking splineLoaded={splineLoaded} />
-
-            {!splineLoaded && (
-                <LoadingOverlay message="Preparing your beyond experience" />
-            )}
         </div>
     );
 };

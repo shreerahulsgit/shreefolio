@@ -1,106 +1,130 @@
 {
-  "hash": "fa4e8571",
+  "hash": "09847c1d",
   "configHash": "5ab7ff07",
-  "lockfileHash": "1994325a",
-  "browserHash": "4a5c4669",
+  "lockfileHash": "91432398",
+  "browserHash": "822da6e0",
   "optimized": {
     "react": {
       "src": "../../node_modules/react/index.js",
       "file": "react.js",
-      "fileHash": "851836c5",
+      "fileHash": "b8b5ed0d",
       "needsInterop": true
     },
     "react-dom": {
       "src": "../../node_modules/react-dom/index.js",
       "file": "react-dom.js",
-      "fileHash": "b543acb3",
+      "fileHash": "7689cefb",
       "needsInterop": true
     },
     "react/jsx-dev-runtime": {
       "src": "../../node_modules/react/jsx-dev-runtime.js",
       "file": "react_jsx-dev-runtime.js",
-      "fileHash": "57b671b5",
+      "fileHash": "3f2ca4da",
       "needsInterop": true
     },
     "react/jsx-runtime": {
       "src": "../../node_modules/react/jsx-runtime.js",
       "file": "react_jsx-runtime.js",
-      "fileHash": "7f784c04",
+      "fileHash": "6516e43e",
       "needsInterop": true
     },
     "@splinetool/react-spline": {
       "src": "../../node_modules/@splinetool/react-spline/dist/react-spline.js",
       "file": "@splinetool_react-spline.js",
-      "fileHash": "d480120f",
+      "fileHash": "9695ffc6",
       "needsInterop": false
     },
     "gsap": {
       "src": "../../node_modules/gsap/index.js",
       "file": "gsap.js",
-      "fileHash": "bdf0d5f7",
+      "fileHash": "8c29a2e3",
       "needsInterop": false
     },
     "lucide-react": {
       "src": "../../node_modules/lucide-react/dist/esm/lucide-react.js",
       "file": "lucide-react.js",
-      "fileHash": "55c0488d",
+      "fileHash": "429bddf4",
       "needsInterop": false
     },
     "motion/react": {
       "src": "../../node_modules/motion/dist/es/react.mjs",
       "file": "motion_react.js",
-      "fileHash": "ec4207d7",
+      "fileHash": "d2f73906",
       "needsInterop": false
     },
     "ogl": {
       "src": "../../node_modules/ogl/src/index.js",
       "file": "ogl.js",
-      "fileHash": "21e5d1b9",
+      "fileHash": "a09740b8",
       "needsInterop": false
     },
     "react-dom/client": {
       "src": "../../node_modules/react-dom/client.js",
       "file": "react-dom_client.js",
-      "fileHash": "3077fee7",
+      "fileHash": "fd3cb2f3",
       "needsInterop": true
     },
     "react-icons/fa": {
       "src": "../../node_modules/react-icons/fa/index.mjs",
       "file": "react-icons_fa.js",
-      "fileHash": "fed57f29",
+      "fileHash": "d511b8eb",
       "needsInterop": false
     },
     "react-icons/si": {
       "src": "../../node_modules/react-icons/si/index.mjs",
       "file": "react-icons_si.js",
-      "fileHash": "5713aecc",
+      "fileHash": "a48c7736",
       "needsInterop": false
     },
     "react-router-dom": {
       "src": "../../node_modules/react-router-dom/dist/index.mjs",
       "file": "react-router-dom.js",
-      "fileHash": "1dfd1f2d",
+      "fileHash": "d3528b8e",
+      "needsInterop": false
+    },
+    "@react-three/fiber": {
+      "src": "../../node_modules/@react-three/fiber/dist/react-three-fiber.esm.js",
+      "file": "@react-three_fiber.js",
+      "fileHash": "c30b0878",
+      "needsInterop": false
+    },
+    "@react-three/drei": {
+      "src": "../../node_modules/@react-three/drei/index.js",
+      "file": "@react-three_drei.js",
+      "fileHash": "6a293baa",
+      "needsInterop": false
+    },
+    "@react-three/postprocessing": {
+      "src": "../../node_modules/@react-three/postprocessing/dist/index.js",
+      "file": "@react-three_postprocessing.js",
+      "fileHash": "3832f508",
+      "needsInterop": false
+    },
+    "three": {
+      "src": "../../node_modules/three/build/three.module.js",
+      "file": "three.js",
+      "fileHash": "7fb1c0a8",
+      "needsInterop": false
+    },
+    "maath": {
+      "src": "../../node_modules/maath/dist/maath.esm.js",
+      "file": "maath.js",
+      "fileHash": "458cf194",
       "needsInterop": false
     }
   },
   "chunks": {
-    "boolean-CRIEMSF6": {
-      "file": "boolean-CRIEMSF6.js"
-    },
-    "howler-BZW7Y3HP": {
-      "file": "howler-BZW7Y3HP.js"
-    },
-    "opentype-2YECOTX5": {
-      "file": "opentype-2YECOTX5.js"
-    },
     "ui-SWOGCOS7": {
       "file": "ui-SWOGCOS7.js"
     },
     "gaussian-splat-compression-QFCUBMCE": {
       "file": "gaussian-splat-compression-QFCUBMCE.js"
     },
-    "chunk-X7DC3HLF": {
-      "file": "chunk-X7DC3HLF.js"
+    "hls-EGENMUVL": {
+      "file": "hls-EGENMUVL.js"
+    },
+    "vision_bundle-RIQKDQPZ": {
+      "file": "vision_bundle-RIQKDQPZ.js"
     },
     "navmesh-PLPHXRJM": {
       "file": "navmesh-PLPHXRJM.js"
@@ -111,11 +135,38 @@
     "process-EVOBQGWO": {
       "file": "process-EVOBQGWO.js"
     },
-    "chunk-2YVMFDJ2": {
-      "file": "chunk-2YVMFDJ2.js"
+    "boolean-CRIEMSF6": {
+      "file": "boolean-CRIEMSF6.js"
+    },
+    "howler-BZW7Y3HP": {
+      "file": "howler-BZW7Y3HP.js"
+    },
+    "opentype-2YECOTX5": {
+      "file": "opentype-2YECOTX5.js"
+    },
+    "chunk-TXGQJFWJ": {
+      "file": "chunk-TXGQJFWJ.js"
+    },
+    "chunk-E5GHGHKI": {
+      "file": "chunk-E5GHGHKI.js"
+    },
+    "chunk-LANPGG7C": {
+      "file": "chunk-LANPGG7C.js"
+    },
+    "chunk-X7DC3HLF": {
+      "file": "chunk-X7DC3HLF.js"
+    },
+    "chunk-EHGZSJEI": {
+      "file": "chunk-EHGZSJEI.js"
+    },
+    "chunk-4GDEELOX": {
+      "file": "chunk-4GDEELOX.js"
     },
     "chunk-24WYNIL6": {
       "file": "chunk-24WYNIL6.js"
+    },
+    "chunk-2YVMFDJ2": {
+      "file": "chunk-2YVMFDJ2.js"
     },
     "chunk-QLJLW6ED": {
       "file": "chunk-QLJLW6ED.js"
