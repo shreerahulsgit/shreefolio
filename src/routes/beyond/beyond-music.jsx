@@ -1,5 +1,4 @@
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import React from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback, memo } from 'react';
 import CircularGallery from '../../lib/components/circular-gallery';
 
 // ============================================
@@ -124,12 +123,19 @@ const AudioVisualizer = ({ isPlaying }) => {
     // Generate flowing particles - using RAF for smooth animation and throttling
     let rafId;
     let lastUpdate = 0;
-    const throttleMs = 100; // Update every 100ms instead of 60ms for better performance
+    let startTime = null;
+    const throttleMs = 100; // Update every 100ms for better performance
     
     const animate = (timestamp) => {
+      if (startTime === null) {
+        startTime = timestamp;
+      }
+      
       if (timestamp - lastUpdate >= throttleMs) {
+        const elapsedSeconds = (timestamp - startTime) / 1000;
+        const currentWave = elapsedSeconds % (Math.PI * 2);
+        
         setParticles(Array.from({ length: 24 }, (_, i) => {
-          const currentWave = (timestamp / 1000) % (Math.PI * 2);
           const angle = (i / 24) * Math.PI * 2;
           const wobble = Math.sin(currentWave + i * 0.5) * 15;
           const radius = 70 + wobble + Math.random() * 20;
@@ -463,7 +469,7 @@ const AlbumCard = ({ album, isActive, onClick }) => {
 };
 
 // Memoize AlbumCard to prevent unnecessary re-renders
-const MemoizedAlbumCard = React.memo(AlbumCard);
+const MemoizedAlbumCard = memo(AlbumCard);
 
 // ============================================
 // MAIN MUSIC PAGE

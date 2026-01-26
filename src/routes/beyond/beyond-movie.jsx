@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, memo } from "react";
 
 // Film Grain Overlay
 const FilmGrain = () => (
@@ -103,7 +103,7 @@ const Fragment = ({ fragment, index, onHover, onLeave, onClick, isActive, mouseP
 };
 
 // Memoize Fragment component to prevent unnecessary re-renders
-const MemoizedFragment = React.memo(Fragment);
+const MemoizedFragment = memo(Fragment);
 
 // Memory View Component
 const MemoryView = ({ memory, onClose }) => {
