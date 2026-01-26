@@ -110,7 +110,6 @@ const TargetCursor = ({
 
         window.addEventListener('scroll', scrollHandler, { passive: true });
 
-        window.addEventListener('mousemove', moveHandler);
         const mouseDownHandler = () => {
             if (!dotRef.current) return;
             gsap.to(dotRef.current, { scale: 0.4, duration: 0.3 });
@@ -321,6 +320,8 @@ const TargetCursor = ({
             window.removeEventListener('mousemove', moveHandler);
             window.removeEventListener('mouseover', enterHandler);
             window.removeEventListener('scroll', scrollHandler);
+            window.removeEventListener('mousedown', mouseDownHandler);
+            window.removeEventListener('mouseup', mouseUpHandler);
 
             if (activeTarget) {
                 cleanupTarget(activeTarget);

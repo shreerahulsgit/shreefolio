@@ -19,14 +19,17 @@ const Fragment = ({ fragment, index, onHover, onLeave, onClick, isActive, mouseP
 
   // Parallax drift effect
   useEffect(() => {
-    const interval = setInterval(() => {
+    let rafId;
+    const animate = () => {
       setDrift((prev) => ({
         x: Math.sin(Date.now() / (3000 + index * 500)) * 15,
         y: Math.cos(Date.now() / (4000 + index * 700)) * 10,
       }));
-    }, 50);
+      rafId = requestAnimationFrame(animate);
+    };
+    rafId = requestAnimationFrame(animate);
 
-    return () => clearInterval(interval);
+    return () => cancelAnimationFrame(rafId);
   }, [index]);
 
   // Magnetic pull/push on hover
@@ -98,6 +101,9 @@ const Fragment = ({ fragment, index, onHover, onLeave, onClick, isActive, mouseP
     </div>
   );
 };
+
+// Memoize Fragment component to prevent unnecessary re-renders
+const MemoizedFragment = React.memo(Fragment);
 
 // Memory View Component
 const MemoryView = ({ memory, onClose }) => {
@@ -450,7 +456,7 @@ export default function BeyondMusic() {
       {/* Floating Fragments Canvas */}
       <div className="fixed inset-0 z-10">
         {fragmentsWithHover.map((fragment, index) => (
-          <Fragment
+          <MemoizedFragment
             key={index}
             fragment={fragment}
             index={index}

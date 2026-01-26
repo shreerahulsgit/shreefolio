@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import React from 'react';
 import CircularGallery from '../../lib/components/circular-gallery';
 
 // ============================================
@@ -121,26 +122,36 @@ const AudioVisualizer = ({ isPlaying }) => {
       return;
     }
 
-    // Generate flowing particles
-    const interval = setInterval(() => {
-      setWave(prev => (prev + 0.1) % (Math.PI * 2));
-      setParticles(Array.from({ length: 24 }, (_, i) => {
-        const angle = (i / 24) * Math.PI * 2;
-        const wobble = Math.sin(wave + i * 0.5) * 15;
-        const radius = 70 + wobble + Math.random() * 20;
-        return {
-          id: i,
-          x: Math.cos(angle) * radius,
-          y: Math.sin(angle) * radius,
-          scale: 0.5 + Math.random() * 1,
-          opacity: 0.3 + Math.random() * 0.5,
-          hue: 250 + i * 5,
-        };
-      }));
-    }, 60);
+    // Generate flowing particles - using RAF for smooth animation and throttling
+    let rafId;
+    let lastUpdate = 0;
+    const throttleMs = 100; // Update every 100ms instead of 60ms for better performance
+    
+    const animate = (timestamp) => {
+      if (timestamp - lastUpdate >= throttleMs) {
+        setWave(prev => (prev + 0.1) % (Math.PI * 2));
+        setParticles(Array.from({ length: 24 }, (_, i) => {
+          const currentWave = (timestamp / 1000) % (Math.PI * 2);
+          const angle = (i / 24) * Math.PI * 2;
+          const wobble = Math.sin(currentWave + i * 0.5) * 15;
+          const radius = 70 + wobble + Math.random() * 20;
+          return {
+            id: i,
+            x: Math.cos(angle) * radius,
+            y: Math.sin(angle) * radius,
+            scale: 0.5 + Math.random() * 1,
+            opacity: 0.3 + Math.random() * 0.5,
+            hue: 250 + i * 5,
+          };
+        }));
+        lastUpdate = timestamp;
+      }
+      rafId = requestAnimationFrame(animate);
+    };
+    rafId = requestAnimationFrame(animate);
 
-    return () => clearInterval(interval);
-  }, [isPlaying, wave]);
+    return () => cancelAnimationFrame(rafId);
+  }, [isPlaying]);
 
   return (
     <div className="relative flex items-center justify-center h-48">
@@ -453,6 +464,9 @@ const AlbumCard = ({ album, isActive, onClick }) => {
   );
 };
 
+// Memoize AlbumCard to prevent unnecessary re-renders
+const MemoizedAlbumCard = React.memo(AlbumCard);
+
 // ============================================
 // MAIN MUSIC PAGE
 // ============================================
@@ -607,7 +621,7 @@ const MusicPage = () => {
           </h2>
           <div className="flex flex-wrap justify-center gap-8">
             {albums.map((album, idx) => (
-              <AlbumCard
+              <MemoizedAlbumCard
                 key={album.title}
                 album={album}
                 isActive={idx === currentAlbumIndex}
