@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import LoadingOverlay from "../lib/components/loading-overlay.jsx";
 import SplineMasking from "../lib/components/spline-masking.jsx";
@@ -371,12 +371,12 @@ const MobileHomePage = () => {
 
 // Desktop Home Page Component
 const DesktopHomePage = () => {
-  const messages = [
+  const messages = useMemo(() => [
     "Yo! I'm Shree Rahul :)",
     "Oh wait! this thing on the right stole my intro :(",
     "To actually know me, hit the about section.",
-  ];
-  const highlightWords = ["Shree Rahul :)", "stole my intro :(", "About"];
+  ], []);
+  const highlightWords = useMemo(() => ["Shree Rahul :)", "stole my intro :(", "About"], []);
   const [displayedText, setDisplayedText] = useState("");
   const [msgIdx, setMsgIdx] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);

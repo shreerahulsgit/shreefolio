@@ -279,10 +279,20 @@ const NPTELConstellation = ({ certs, isVisible }) => {
   
   // Continuous orbital rotation
   useEffect(() => {
-    const interval = setInterval(() => {
-      setRotation(prev => (prev + 0.3) % 360);
-    }, 50);
-    return () => clearInterval(interval);
+    let rafId;
+    let lastTime = 0;
+    
+    const animate = (timestamp) => {
+      // Throttle to approximately 20 FPS (50ms) for smoother performance
+      if (timestamp - lastTime >= 50) {
+        setRotation(prev => (prev + 0.3) % 360);
+        lastTime = timestamp;
+      }
+      rafId = requestAnimationFrame(animate);
+    };
+    
+    rafId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(rafId);
   }, []);
   
   // Position orbs in a circle around center

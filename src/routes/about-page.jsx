@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   SiJavascript,
@@ -16,6 +16,11 @@ import TiltedCard from "../lib/components/tilted-card.jsx";
 import Footer from "../lib/components/footer.jsx";
 
 // Glass Button Component with Apple-style shine effect
+const GLASS_BUTTON_SIZE_CLASSES = {
+  default: "px-8 py-4",
+  large: "px-10 py-5",
+};
+
 const GlassButton = ({
   onClick,
   children,
@@ -24,17 +29,12 @@ const GlassButton = ({
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
-  const sizeClasses = {
-    default: "px-8 py-4",
-    large: "px-10 py-5",
-  };
-
   return (
     <button
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`group relative overflow-hidden rounded-2xl transition-all duration-500 hover:scale-105 active:scale-95 ${sizeClasses[size]} ${className}`}
+      className={`group relative overflow-hidden rounded-2xl transition-all duration-500 hover:scale-105 active:scale-95 ${GLASS_BUTTON_SIZE_CLASSES[size]} ${className}`}
       style={{
         background: "rgba(255, 255, 255, 0.08)",
         backdropFilter: "blur(20px)",
@@ -150,12 +150,12 @@ const HeroSection = () => {
   const [ref, isVisible] = useScrollAnimation(0.2);
   
   // Typewriter effect messages
-  const messages = [
+  const messages = useMemo(() => [
     "I'm Shree Rahul —\nyeah… guy on the left.\nthe one pretending he knows what he's doing (he kinda does).",
     "I build stuffs.\nThe web stuffs.\nsometimes cool. sometimes not.but always fun.",
     "developer? yh, probably.\ncoffee + creativity? definitely.\nsleep schedule? absolutely elusive.",
     "Scroll around.\nThe fun parts are ahead ↓",
-  ];
+  ], []);
   
   const [displayedText, setDisplayedText] = useState("");
   const [msgIdx, setMsgIdx] = useState(0);
