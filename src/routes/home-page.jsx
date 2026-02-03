@@ -3,8 +3,249 @@ import { useNavigate } from "react-router-dom";
 import LoadingOverlay from "../lib/components/loading-overlay.jsx";
 import SplineMasking from "../lib/components/spline-masking.jsx";
 import Spline from "@splinetool/react-spline";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { PORTFOLIO_CONTEXT } from "../lib/portfolio-context";
 
-// Professional Charge Up Animation Component
+// --- PROFESSIONAL AI CHATBOT COMPONENT ---
+const ChatInterface = () => {
+  const [messages, setMessages] = useState([
+    { 
+      role: 'ai', 
+      content: "Hello! I'm Shree's AI assistant. I can tell you about his projects, skills, and experience. What would you like to know?" 
+    }
+  ]);
+  const [inputValue, setInputValue] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef(null);
+  const [showWelcome, setShowWelcome] = useState(false);
+
+  // Suggestions for new users
+  const suggestions = [
+    "What are your main skills?",
+    "Tell me about your projects",
+    "How can I contact you?"
+  ];
+
+  // Auto-scroll to bottom
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isTyping]);
+
+  // Entrance animation
+  useEffect(() => {
+    setTimeout(() => setShowWelcome(true), 500);
+  }, []);
+
+  const handleSendMessage = async (text = inputValue) => {
+    if (!text.trim()) return;
+
+    // Add user message
+    const userMsg = { role: 'user', content: text };
+    setMessages(prev => [...prev, userMsg]);
+    setInputValue('');
+    setIsTyping(true);
+
+    try {
+      const apiKey = import.meta.env.VITE_GOOGLE_AI_KEY;
+      
+      if (!apiKey) {
+        throw new Error("API_KEY_MISSING");
+      }
+
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+      
+      const chatHistory = [
+        {
+          role: "user",
+          parts: [{ text: PORTFOLIO_CONTEXT }],
+        },
+        {
+          role: "model",
+          parts: [{ text: "Understood. I am ready to answer questions about Shree Rahul as his portfolio assistant." }],
+        },
+        ...messages.slice(1).map(msg => ({
+          role: msg.role === 'ai' ? 'model' : 'user',
+          parts: [{ text: msg.content }],
+        }))
+      ];
+
+      const chat = model.startChat({
+        history: chatHistory,
+      });
+
+      const result = await chat.sendMessage(text);
+      const response = await result.response;
+      const textResponse = response.text();
+
+      setMessages(prev => [...prev, { role: 'ai', content: textResponse }]);
+    } catch (error) {
+      console.error("Chat Error:", error);
+      let errorMessage = "I'm currently offline. Please try again later.";
+      
+      if (error.message?.includes("API_KEY_MISSING")) {
+        errorMessage = "My brain isn't connected yet! Please add the VITE_GOOGLE_AI_KEY to your .env file.";
+      } else if (error.message?.includes("429") || error.message?.includes("quota")) {
+        errorMessage = "I'm thinking too fast! 🤯 Please give me a minute to cool down. (Rate limit exceeded)";
+      } else if (error.message?.includes("404")) {
+         errorMessage = "I couldn't find the model. Please check the model name in the code.";
+      } else {
+         errorMessage = `Connection Error: ${error.message || "Unknown error"}`;
+      }
+
+      setMessages(prev => [...prev, { 
+        role: 'ai', 
+        content: errorMessage
+      }]);
+    } finally {
+      setIsTyping(false);
+    }
+  };
+
+  return (
+    <div 
+      className={`flex flex-col h-[500px] w-full max-w-xl transition-all duration-1000 ease-out ${
+        showWelcome ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+      }`}
+      style={{
+        fontFamily: "'Jura', sans-serif",
+      }}
+    >
+      {/* Header / Welcome Area */}
+      <div className="mb-6">
+        <h1 className="text-3xl font-semibold text-gray-900 mb-2 tracking-wide">
+          Ask me anything regarding <br/>
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-500">
+            Shree Rahul
+          </span>
+        </h1>
+        <p className="text-gray-600 text-sm font-medium tracking-wider uppercase">
+          AI-POWERED PORTFOLIO ASSISTANT
+        </p>
+      </div>
+
+      {/* Chat Area */}
+      <div 
+        className="flex-1 overflow-y-auto mb-4 pr-2 space-y-4 custom-scrollbar"
+        style={{
+          maskImage: 'linear-gradient(to bottom, transparent, black 10%, black 95%, transparent)',
+          WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 10%, black 95%, transparent)'
+        }}
+      >
+        <div className="h-4"></div> {/* Spacer for mask */}
+        
+        {messages.map((msg, idx) => (
+          <div 
+            key={idx} 
+            className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-slide-up`}
+          >
+            <div 
+              className={`
+                max-w-[85%] px-5 py-3 rounded-2xl text-sm font-light backdrop-blur-md
+                ${msg.role === 'user' 
+                  ? 'bg-gray-900 text-white rounded-tr-sm shadow-lg' 
+                  : 'bg-white/40 border border-gray-900/10 text-gray-800 rounded-tl-sm shadow-sm'
+                }
+              `}
+              style={{
+                 boxShadow: msg.role === 'ai' ? '0 4px 15px rgba(0,0,0,0.05)' : '0 4px 15px rgba(0,0,0,0.1)'
+              }}
+            >
+              {msg.content}
+            </div>
+          </div>
+        ))}
+
+        {isTyping && (
+           <div className="flex w-full justify-start animate-slide-up">
+             <div className="bg-white/40 border border-gray-900/10 px-4 py-3 rounded-2xl rounded-tl-sm backdrop-blur-md flex gap-1 items-center shadow-sm">
+               <span className="w-1.5 h-1.5 bg-gray-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+               <span className="w-1.5 h-1.5 bg-gray-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+               <span className="w-1.5 h-1.5 bg-gray-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+             </div>
+           </div>
+        )}
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* Suggestion Chips (Only show if few messages) */}
+      {messages.length < 3 && !isTyping && (
+        <div className="flex gap-2 mb-4 overflow-x-auto pb-1 scrollbar-hide">
+          {suggestions.map((s, i) => (
+            <button
+              key={i}
+              onClick={() => handleSendMessage(s)}
+              className="whitespace-nowrap px-3 py-1.5 rounded-full border border-gray-900/10 bg-white/20 text-gray-700 text-xs font-medium hover:bg-gray-900 hover:text-white hover:border-transparent transition-all duration-300"
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Input Area */}
+      <div className="relative group">
+        <div className="absolute inset-0 bg-gradient-to-r from-gray-200 to-gray-300 rounded-full blur transition-opacity opacity-0 group-hover:opacity-50 duration-500"></div>
+        <div className="relative flex items-center bg-white/60 border border-gray-900/10 rounded-full backdrop-blur-lg transition-all duration-300 focus-within:border-gray-900/30 focus-within:bg-white/80 focus-within:shadow-[0_0_30px_rgba(0,0,0,0.05)]">
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+            placeholder="Ask something..."
+            className="flex-1 bg-transparent text-gray-800 placeholder-gray-500 text-sm px-6 py-4 focus:outline-none font-medium tracking-wide"
+          />
+          <button 
+            onClick={() => handleSendMessage()}
+            disabled={!inputValue.trim()}
+            className="mr-2 p-2 rounded-full hover:bg-gray-900 text-gray-400 hover:text-white transition-all duration-300 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-gray-400"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <style>{`
+        /* Custom Scrollbar for chat */
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(0, 0, 0, 0.1);
+          border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(0, 0, 0, 0.2);
+        }
+        
+        @keyframes slide-up {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slide-up {
+          animation: slide-up 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+      `}</style>
+    </div>
+  );
+};
+
 const ChargeUpAnimation = ({ onComplete }) => {
   const [progress, setProgress] = useState(0);
   const [phase, setPhase] = useState("counting"); // counting, complete, popup, burst, done
@@ -371,47 +612,8 @@ const MobileHomePage = () => {
 
 // Desktop Home Page Component
 const DesktopHomePage = () => {
-  const messages = useMemo(() => [
-    "Yo! I'm Shree Rahul :)",
-    "Oh wait! this thing on the right stole my intro :(",
-    "To actually know me, hit the about section.",
-  ], []);
-  const highlightWords = useMemo(() => ["Shree Rahul :)", "stole my intro :(", "About"], []);
-  const [displayedText, setDisplayedText] = useState("");
-  const [msgIdx, setMsgIdx] = useState(0);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [typingStarted, setTypingStarted] = useState(false);
-  const typingTimeout = useRef(null);
+  /* Replaced auto-typing logic with ChatInterface */
 
-  useEffect(() => {
-    const startTimeout = setTimeout(() => setTypingStarted(true), 2000);
-    return () => clearTimeout(startTimeout);
-  }, []);
-
-  useEffect(() => {
-    if (!typingStarted) return;
-    const currentMessage = messages[msgIdx];
-    let typeSpeed = isDeleting ? (msgIdx === 0 ? 80 : 30) : 55;
-    let holdTime = 2000;
-
-    if (!isDeleting && displayedText.length < currentMessage.length) {
-      typingTimeout.current = setTimeout(() => {
-        setDisplayedText(currentMessage.slice(0, displayedText.length + 1));
-      }, typeSpeed);
-    } else if (!isDeleting && displayedText.length === currentMessage.length) {
-      typingTimeout.current = setTimeout(() => setIsDeleting(true), holdTime);
-    } else if (isDeleting && displayedText.length > 0) {
-      typingTimeout.current = setTimeout(() => {
-        setDisplayedText(currentMessage.slice(0, displayedText.length - 1));
-      }, typeSpeed - 10);
-    } else if (isDeleting && displayedText.length === 0) {
-      typingTimeout.current = setTimeout(() => {
-        setIsDeleting(false);
-        setMsgIdx((prev) => (prev + 1) % messages.length);
-      }, 600);
-    }
-    return () => clearTimeout(typingTimeout.current);
-  }, [displayedText, isDeleting, msgIdx, typingStarted]);
 
   const [splineLoaded, setSplineLoaded] = useState(false);
   const [showOverlays, setShowOverlays] = useState(false);
@@ -448,79 +650,8 @@ const DesktopHomePage = () => {
         />
       </div>
 
-      <div className="absolute top-0 left-0 h-full flex items-center z-10 w-full md:w-1/2 px-6 md:px-16 lg:px-23">
-        <h1
-          className="text-3xl md:text-5xl lg:text-6xl font-semibold transition-all duration-300 ease-in-out cursor-pointer w-full"
-          style={{
-            fontFamily: "'Jura', sans-serif",
-            letterSpacing: "1px",
-            whiteSpace: "pre-line",
-          }}
-        >
-          {(() => {
-            let rendered = [];
-            let text = displayedText;
-            let idx = 0;
-            while (text.length > 0) {
-              let found = highlightWords.find((hw) => text.startsWith(hw));
-              if (found) {
-                rendered.push(
-                  <span key={"highlight-" + idx} className="highlight-word">
-                    {found}
-                  </span>
-                );
-                text = text.slice(found.length);
-                idx++;
-                continue;
-              }
-              let nextPos = Math.min(
-                ...highlightWords.map((hw) => {
-                  let pos = text.indexOf(hw);
-                  return pos === -1 ? text.length : pos;
-                })
-              );
-              let chunk = text.slice(0, nextPos);
-              chunk.split(/(\s+)/).forEach((w, i) => {
-                if (w.trim()) {
-                  rendered.push(
-                    <span
-                      key={"filled-" + idx + "-" + i}
-                      className="filled-word"
-                    >
-                      {w}
-                    </span>
-                  );
-                } else if (w) {
-                  rendered.push(w);
-                }
-              });
-              text = text.slice(nextPos);
-              idx++;
-            }
-            return rendered;
-          })()}
-          <span className="inline-block w-2 h-8 md:h-10 bg-gray-800 align-bottom animate-blink ml-1"></span>
-        </h1>
-        <style>
-          {`
-                        @keyframes blink {
-                            0%, 50% { opacity: 1; }
-                            51%, 100% { opacity: 0; }
-                        }
-                        .animate-blink {
-                            animation: blink 1s steps(2, start) infinite;
-                        }
-                        .filled-word {
-                            color: #1f2937;
-                            font-family: 'Jura', sans-serif !important;
-                        }
-                        .highlight-word {
-                            color: transparent;
-                            -webkit-text-stroke: 2px #1f2937;
-                            font-family: 'Jura', sans-serif !important;
-                        }
-                    `}
-        </style>
+      <div className="absolute top-0 left-0 h-full flex items-center z-10 w-full md:w-1/2 px-6 md:px-16 lg:px-24 pointer-events-auto">
+        <ChatInterface />
       </div>
 
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900/20 via-transparent to-gray-900/30 pointer-events-none"></div>
