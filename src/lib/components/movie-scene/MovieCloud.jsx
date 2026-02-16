@@ -1,95 +1,89 @@
-import React, { useRef, useState, useMemo } from 'react';
+import React, { useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Image, Text, Float } from '@react-three/drei';
 import * as THREE from 'three';
 
-const MovieFrame = ({ movie, position, rotation, onClick, isSelected }) => {
-    const mesh = useRef();
+const MovieFrame = ({ movie, position, onClick, isSelected }) => {
+    const groupRef = useRef();
     const [hovered, setHovered] = useState(false);
     
-    useFrame((state, delta) => {
-        // Look at center (roughly where camera starts) if not selected
-        // If selected, maybe face camera direction more directly?
-        // simple LookAt(0,0,10)
+    // Scale on hover/selection
+    const scale = isSelected ? 1.3 : (hovered ? 1.15 : 1);
+
+    // Billboarding: Face camera continuously
+    useFrame((state) => {
+        if (groupRef.current) {
+            groupRef.current.lookAt(state.camera.position);
+        }
     });
 
-    const scale = isSelected ? 1.5 : (hovered ? 1.2 : 1);
-
     return (
-        <Float speed={2} rotationIntensity={0.2} floatIntensity={0.5}>
+        <Float speed={2} rotationIntensity={0.1} floatIntensity={0.2}>
             <group 
+                ref={groupRef}
                 position={position} 
-                rotation={rotation}
+                scale={[scale, scale, scale]}
                 onClick={(e) => { e.stopPropagation(); onClick(movie); }}
                 onPointerOver={() => setHovered(true)}
                 onPointerOut={() => setHovered(false)}
             >
-                {/* Frame Border - Lighter Silver/Grey for visibility */}
-                <mesh position={[0, 0, -0.02]}>
+                {/* Frame Border */}
+                <mesh position={[0, 0, -0.05]}>
                     <boxGeometry args={[3.2, 4.7, 0.1]} />
-                    <meshStandardMaterial color="#888888" roughness={0.2} metalness={0.8} emissive="#222222" />
+                    <meshStandardMaterial color={isSelected ? "#fff" : "#444"} roughness={0.2} metalness={0.8} />
                 </mesh>
 
                 {/* Movie Poster */}
                 <Image 
-                    url={movie.image || "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1000&auto=format&fit=crop"} // Cinematic placeholder
+                    url={movie.image || "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1000&auto=format&fit=crop"} 
                     scale={[3, 4.5]}
                     position={[0, 0, 0.05]}
                     transparent
-                    opacity={1} // Always fully visible
                 />
                 
-                {/* Title - Always Visible, Larger, and Lower */}
+                {/* Title */}
                 <Text
                     position={[0, -2.8, 0]}
-                    fontSize={0.3} // Bigger font
-                    color="#ffffff" // White
+                    fontSize={0.25}
+                    color="#ffffff"
                     anchorX="center"
                     anchorY="top"
-                    outlineWidth={0.02}
-                    outlineColor="#000000"
+                    maxWidth={3}
+                    textAlign="center"
+                    font="https://fonts.gstatic.com/s/raleway/v14/1Ptrg8zYS_SKggPNwK4vaqI.woff"
                 >
                     {movie.title}
                 </Text>
-
-                {/* Glow Selection */}
-                {isSelected && (
-                     <pointLight position={[0, 0, 2]} intensity={2} color="#ffffff" distance={5} />
-                )}
             </group>
         </Float>
     );
 };
 
 const MovieCloud = ({ onSelectMovie, selectedMovie }) => {
-    // Data from original file
     const movies = [
-        { title: "Arrival", image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1000&auto=format&fit=crop", mainThought: "this movie didn't explain itself. it trusted me.", year: "2016", director: "Denis Villeneuve" },
-        { title: "Lost in Translation", image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1000&auto=format&fit=crop", mainThought: "some stories don't need closure. they need space.", year: "2003", director: "Sofia Coppola" },
-        { title: "Interstellar", image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1000&auto=format&fit=crop", mainThought: "the score carried emotions I didn't know I had.", year: "2014", director: "Christopher Nolan" },
-        { title: "Before Sunrise", image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1000&auto=format&fit=crop", mainThought: "walking and talking never felt this profound.", year: "1995", director: "Richard Linklater" },
-        { title: "In the Mood for Love", image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1000&auto=format&fit=crop", mainThought: "sometimes what's not said matters most.", year: "2000", director: "Wong Kar-wai" },
-        { title: "The Dark Knight", image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1000&auto=format&fit=crop", mainThought: "the best antagonists hold up a mirror.", year: "2008", director: "Christopher Nolan" },
-        { title: "Parasite", image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1000&auto=format&fit=crop", mainThought: "comedy and tragedy are the same thing from different angles.", year: "2019", director: "Bong Joon-ho" },
-        { title: "Spirited Away", image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1000&auto=format&fit=crop", mainThought: "animation can hold more truth than live action.", year: "2001", director: "Hayao Miyazaki" },
+        { title: "Interstellar", image: "/MovieCards/interstellar.jpg", video: "/videos/interstellar.mp4", mainThought: "the score carried emotions I didn't know I had.", year: "2014", director: "Christopher Nolan" },
+        { title: "Avengers: Infinity War", image: "/MovieCards/Avengers Infinity war.jpg", video: "/videos/Avengers Infinity War.mp4", mainThought: "the villain won. and it felt inevitable.", year: "2018", director: "Russo Brothers" },
+        { title: "Avengers: Endgame", image: "/MovieCards/Avengers End Game.jpg", video: "/videos/Avengers_Endgame.mp4", mainThought: "whatever it takes.", year: "2019", director: "Russo Brothers" },
+        { title: "The Dark Knight", image: "/MovieCards/the dark Night.jpg", video: "/videos/The_Dark_Knight.mp4", mainThought: "the best antagonists hold up a mirror.", year: "2008", director: "Christopher Nolan" },
+        { title: "F1", image: "/MovieCards/f1.jpg", video: "/videos/F1.mp4", mainThought: "speed is nothing without the will to push beyond.", year: "2025", director: "Joseph Kosinski" },
+        { title: "Fight Club", image: "/MovieCards/Fight Club.jpg", video: "/videos/Fight Club.mp4", mainThought: "the things you own end up owning you.", year: "1999", director: "David Fincher" },
     ];
 
-    // Spiral / Helix Layout
+    // Neat Arc Layout
     return (
-        <group>
+        <group position={[0, 0, 0]}>
             {movies.map((movie, i) => {
-                const angle = (i / movies.length) * Math.PI * 2; // Circle
-                const radius = 6 + Math.random() * 2; // Random dist
-                const x = Math.cos(angle) * (radius + i * 0.5); // Spiral out slightly
-                const z = Math.sin(angle) * (radius + i * 0.5) - 5; 
-                const y = Math.sin(i * 1.5) * 3; // Vertical wave
-
+                // Tighter arc, closer together
+                const totalWidth = 18; 
+                const step = totalWidth / (movies.length - 1);
+                const x = -totalWidth / 2 + i * step;
+                const z = 0; // Flat line relative to group, since group is placed relative to camera
+                
                 return (
                     <MovieFrame 
                         key={i}
                         movie={movie}
-                        position={[x, y, z]}
-                        rotation={[0, -angle - Math.PI/2, 0]} // Face somewhat inward
+                        position={[x, 0, z]} 
                         onClick={onSelectMovie}
                         isSelected={selectedMovie?.title === movie.title}
                     />

@@ -3,69 +3,56 @@ import { useFrame } from '@react-three/fiber';
 import { SpotLight } from '@react-three/drei';
 import * as THREE from 'three';
 
-const ProjectorLight = ({ highPerf = true }) => {
+const ProjectorLight = ({ highPerf = true, isPlaying = false }) => {
     const light = useRef();
-    
-    useFrame((state) => {
-        if (light.current && highPerf) {
-            // Organic Flicker effect (simulating old arc lamp)
-            const time = state.clock.elapsedTime;
-            const flicker = Math.sin(time * 10) * 0.1 + Math.cos(time * 23) * 0.1 + Math.random() * 0.1; 
-            light.current.intensity = 2 + flicker;
-            
-            // Subtle position shake
-            light.current.position.x = Math.sin(time * 50) * 0.005;
+
+    useFrame((state, delta) => {
+        const targetIntensity = isPlaying ? 8 : 3;
+        if (light.current) {
+            light.current.intensity = THREE.MathUtils.lerp(light.current.intensity, targetIntensity, delta * 2);
         }
     });
 
+    const target = React.useMemo(() => {
+        const t = new THREE.Object3D();
+        t.position.set(0, 4, -25);
+        return t;
+    }, []);
+
     return (
-        <group position={[0, 2, 10]} rotation={[0.2, 0, 0]}>
-            {/* The Source */}
+        <group position={[0, 6, 15]} rotation={[-0.1, 0, 0]}>
+            {/* Projector Body */}
             <mesh>
-                <boxGeometry args={[0.2, 0.2, 0.4]} />
-                <meshStandardMaterial emissive="#ffffff" emissiveIntensity={2} color="#000" />
+                <boxGeometry args={[2, 1, 3]} /> 
+                <meshStandardMaterial 
+                    emissive="#ffffff" 
+                    emissiveIntensity={isPlaying ? 1.5 : 0.5} 
+                    color="#222" 
+                />
             </mesh>
 
-            {/* The Beam (Volumetric Fake) - Only on High Perf */}
-            {highPerf && (
-                <>
-                    <mesh position={[0, 0, -5]} rotation={[Math.PI / 2, 0, 0]}>
-                        <cylinderGeometry args={[0.1, 4, 10, 32, 1, true]} />
-                        <meshBasicMaterial 
-                            color="#b9d2ff" 
-                            transparent 
-                            opacity={0.05} 
-                            side={THREE.DoubleSide} 
-                            blending={THREE.AdditiveBlending} 
-                            depthWrite={false}
-                        />
-                    </mesh>
-                    
-                    <mesh position={[0, 0, -5]} rotation={[Math.PI / 2, 0, 0]}>
-                        <cylinderGeometry args={[0.05, 3, 10, 32, 1, true]} />
-                        <meshBasicMaterial 
-                            color="#ffffff" 
-                            transparent 
-                            opacity={0.1} 
-                            side={THREE.DoubleSide} 
-                            blending={THREE.AdditiveBlending}
-                            depthWrite={false}
-                        />
-                    </mesh>
-                </>
-            )}
+            {/* Lens */}
+            <mesh position={[0, 0, -1.6]}>
+                 <circleGeometry args={[0.3, 32]} />
+                 <meshBasicMaterial color="#fff" transparent opacity={isPlaying ? 1 : 0.6} />
+            </mesh>
 
-            {/* Actual Light Source for scene */}
+            <primitive object={target} />
+
+            {/* Volumetric SpotLight — twinkles when you move around */}
             <SpotLight
                 ref={light}
-                position={[0, 0, 0]}
-                target-position={[0, 0, -20]}
-                angle={0.5}
-                penumbra={0.5}
-                intensity={2}
-                castShadow
+                position={[0, 0, -1.5]}
+                target={target}
+                angle={0.7}
+                penumbra={0.3}
+                intensity={3}
                 color="#dceaff"
-                distance={30}
+                distance={80}
+                attenuation={8}
+                anglePower={4}
+                volumetric
+                opacity={0.15}
             />
         </group>
     );

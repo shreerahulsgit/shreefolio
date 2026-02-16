@@ -43,13 +43,13 @@ function Layout({ children }) {
 
     const currentPage = routeMap[location.pathname] || '';
     const showNavbar = !!currentPage;
-    const showTargetCursor = location.pathname === null;
-
     return (
         <>
-            {showTargetCursor && (
-                <TargetCursor spinDuration={2} hideDefaultCursor={true} />
-            )}
+            {/* <TargetCursor 
+                targetSelector="button, a, .cursor-target, input, [role='button'], h1, p, span" 
+                spinDuration={2} 
+                hideDefaultCursor={true} 
+            /> */}
             {showNavbar && (
                 <NavigationBar
                     currentPage={currentPage}

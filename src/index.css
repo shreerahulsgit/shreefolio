@@ -27,6 +27,14 @@ body::-webkit-scrollbar {
   display: none;
 }
 
+/* Hide scrollbar on all scrollable elements (e.g. drei ScrollControls) */
+*::-webkit-scrollbar {
+  display: none;
+}
+* {
+  scrollbar-width: none;
+}
+
 :root {
   font-family:
     "Jura", system-ui, Avenir, Helvetica, Arial, sans-serif !important;

@@ -81,6 +81,35 @@ const GlassCard = ({ artist, position, rotation, onClick, isSelected }) => {
 const ArtistArc = ({ onSelectArtist, selectedArtist }) => {
     const artists = [
         { 
+            name: 'Kendrick Lamar', 
+            image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1760370259/kendrick-lamar-net-worth_a6enzz.webp',
+            songs: [
+                { title: 'All the Stars', image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1768372140/1900x1900-000000-80-0-0_ehkjll.jpg' },
+                { title: 'Luther', image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1768372140/500x500_fv2bp7.jpg' },
+                { title: 'Not Like Us', image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1768372141/ab67616d0000b2731ea0c62b2339cbf493a999ad_bw6pdb.jpg' },
+            ]
+        },
+        
+        
+        
+        { 
+            name: 'Ariana Grande', 
+            image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1768366152/ariana-grande-di-premiere-film-wicked-australia-6_43_vrgt4k.jpg',
+            songs: [
+                { title: 'thank u, next', image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1768371417/ab67616d0000b27356ac7b86e090f307e218e9c8_knvipp.jpg' },
+                { title: 'God is a woman', image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1768371417/ab67616d0000b2738b58d20f1b77295730db15b4_yo1olr.jpg' },
+            ]
+        },
+        { 
+            name: 'Lana Del Rey',
+            image: ' https://res.cloudinary.com/dqqrrgdwd/image/upload/v1760370617/201f700163f3ea9d2037ee2d4d5fb1fc_jwbdtz.jpg',
+            songs: [
+                { title: 'Summertime Sadness', image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1768371418/artworks-y7Sdw3GRwd2HKmbg-LY7XGw-t1080x1080_kcfgj6.jpg' },
+                { title: 'Young and Beautiful', image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1768371418/artworks-000122831703-5g3ch2-t500x500_uyhzki.jpg' },
+                { title: 'Born to Die', image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1768371417/ab67616d0000b273ebc8cfac8b586bc475b04918_qxlftu.jpg' },
+            ]
+        },
+        { 
             name: 'The Weeknd', 
             image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1768366154/The_Weeknd_Portrait_by_Brian_Ziff_oe6u9d.jpg',
             songs: [
@@ -88,15 +117,6 @@ const ArtistArc = ({ onSelectArtist, selectedArtist }) => {
                 { title: 'Timeless', image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1768371418/timeless-weeknd_xmcz91.jpg' },
                 { title: 'São Paulo', image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1768371417/ab67616d0000b273caa27ecd2d27ea0429fbbcfc_ccimyv.jpg' },
                 { title: 'Save Your Tears', image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1768371417/761816c2d38fe30915cb3b5346c7eb35_rr0vsk.jpg' },
-            ]
-        },
-        { 
-            name: 'Lana Del Rey', 
-            image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1760370525/61m4f1Zu19L._UF1000_1000_QL80__kyazdp.jpg',
-            songs: [
-                { title: 'Summertime Sadness', image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1768371418/artworks-y7Sdw3GRwd2HKmbg-LY7XGw-t1080x1080_kcfgj6.jpg' },
-                { title: 'Young and Beautiful', image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1768371418/artworks-000122831703-5g3ch2-t500x500_uyhzki.jpg' },
-                { title: 'Born to Die', image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1768371417/ab67616d0000b273ebc8cfac8b586bc475b04918_qxlftu.jpg' },
             ]
         },
         { 
@@ -108,23 +128,8 @@ const ArtistArc = ({ onSelectArtist, selectedArtist }) => {
                 { title: 'Happier Than Ever', image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1768371417/ab67616d0000b2732a038d3bf875d23e4aeaa84e_vvla8i.jpg' },
             ]
         },
-        { 
-            name: 'Ariana Grande', 
-            image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1768366152/ariana-grande-di-premiere-film-wicked-australia-6_43_vrgt4k.jpg',
-            songs: [
-                { title: 'thank u, next', image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1768371417/ab67616d0000b27356ac7b86e090f307e218e9c8_knvipp.jpg' },
-                { title: 'God is a woman', image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1768371417/ab67616d0000b2738b58d20f1b77295730db15b4_yo1olr.jpg' },
-            ]
-        },
-        { 
-            name: 'Kendrick Lamar', 
-            image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1760370259/kendrick-lamar-net-worth_a6enzz.webp',
-            songs: [
-                { title: 'All the Stars', image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1768372140/1900x1900-000000-80-0-0_ehkjll.jpg' },
-                { title: 'Luther', image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1768372140/500x500_fv2bp7.jpg' },
-                { title: 'Not Like Us', image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1768372141/ab67616d0000b2731ea0c62b2339cbf493a999ad_bw6pdb.jpg' },
-            ]
-        },
+        
+
         { 
             name: 'Dua Lipa', 
             image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1768366153/Dua_Lipa___Dua_Lipa_cover_art_qw3g24.png',
@@ -136,7 +141,7 @@ const ArtistArc = ({ onSelectArtist, selectedArtist }) => {
         },
         { 
             name: 'Olivia Rodrigo', 
-            image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1760370617/201f700163f3ea9d2037ee2d4d5fb1fc_jwbdtz.jpg',
+            image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1760370525/61m4f1Zu19L._UF1000_1000_QL80__kyazdp.jpg',
             songs: [
                 { title: 'drivers license', image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1768372515/Drivers_License_by_Olivia_Rodrigo_uej24t.png' },
                 { title: 'traitor', image: 'https://res.cloudinary.com/dqqrrgdwd/image/upload/v1768372515/1900x1900-000000-80-0-0_1_v9brbv.jpg' },

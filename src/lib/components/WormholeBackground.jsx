@@ -56,9 +56,9 @@ const WormholeBackground = ({ onIntroComplete, skipIntro = false }) => {
             if (phase === 'drift') {
                 speed = 0.2;
                 warpFactor = 0;
-                if (elapsed > 2000) phase = 'accelerate';
+                if (elapsed > 4000) phase = 'accelerate';
             } else if (phase === 'accelerate') {
-                const progress = Math.min((elapsed - 2000) / 2500, 1);
+                const progress = Math.min((elapsed - 4000) / 4000, 1);
                 // Smooth ease-in accel
                 speed = 0.2 + (progress * progress) * 80; 
                 warpFactor = progress;
@@ -75,10 +75,10 @@ const WormholeBackground = ({ onIntroComplete, skipIntro = false }) => {
                 shake.x = (Math.random() - 0.5) * 15;
                 shake.y = (Math.random() - 0.5) * 15;
                 
-                if (elapsed > 5000) phase = 'flash';
+                if (elapsed > 10000) phase = 'flash';
             } else if (phase === 'flash') {
                 // Flash overlay covers screen here
-                if (elapsed > 5100 && !introDone) {
+                if (elapsed > 10200 && !introDone) {
                      if (onIntroComplete && !skipIntro) onIntroComplete();
                      setIntroDone(true);
                      phase = 'coast';
@@ -161,7 +161,7 @@ const WormholeBackground = ({ onIntroComplete, skipIntro = false }) => {
                     style={{
                          background: 'radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(200,230,255,0.9) 25%, rgba(100,150,255,0.4) 50%, rgba(0,0,0,0) 80%)',
                          opacity: 0,
-                         animation: 'optical-flash 7s linear forwards', 
+                         animation: 'optical-flash 14s linear forwards', 
                     }}
                 />
             )}
@@ -169,8 +169,8 @@ const WormholeBackground = ({ onIntroComplete, skipIntro = false }) => {
             <style>{`
                 @keyframes optical-flash {
                     0% { opacity: 0; transform: scale(0.5); }
-                    70% { opacity: 0; transform: scale(0.8); }
-                    72% { opacity: 1; transform: scale(1.2); } /* EXPLOSION */
+                    68% { opacity: 0; transform: scale(0.8); }
+                    70% { opacity: 1; transform: scale(1.2); } /* EXPLOSION */
                     85% { opacity: 0.8; transform: scale(3.5); } /* EXPAND & FADE */
                     100% { opacity: 0; transform: scale(4.0); }
                 }

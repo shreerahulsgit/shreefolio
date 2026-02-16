@@ -11,9 +11,100 @@ import {
   SiGithub,
 } from "react-icons/si";
 import { FaGithub, FaLinkedin, FaCode, FaRocket, FaEnvelope } from "react-icons/fa";
-import Spline from "@splinetool/react-spline";
 import TiltedCard from "../lib/components/tilted-card.jsx";
 import Footer from "../lib/components/footer.jsx";
+
+// Starfield Background Component (same as contact page)
+const Starfield = () => {
+  const stars = Array.from({ length: 80 }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    size: 1 + Math.random() * 2,
+    duration: 2 + Math.random() * 3,
+    delay: Math.random() * 3,
+  }));
+
+  const shootingStars = Array.from({ length: 3 }, (_, i) => ({
+    id: i,
+    delay: i * 8 + Math.random() * 5,
+    duration: 1.5 + Math.random(),
+  }));
+
+  return (
+    <div className="fixed inset-0 overflow-hidden pointer-events-none">
+      <style>{`
+        @keyframes twinkle {
+          0%, 100% { opacity: 0.3; }
+          50% { opacity: 1; }
+        }
+        @keyframes shootingStar {
+          0% { transform: translateX(-100px) translateY(-100px); opacity: 0; }
+          10% { opacity: 1; }
+          90% { opacity: 1; }
+          100% { transform: translateX(calc(100vw + 100px)) translateY(calc(100vh + 100px)); opacity: 0; }
+        }
+        @keyframes nebulaDrift {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(30px, -20px) scale(1.1); }
+        }
+      `}</style>
+      
+      {/* Stars */}
+      {stars.map((star) => (
+        <div
+          key={star.id}
+          className="absolute rounded-full bg-white"
+          style={{
+            left: `${star.x}%`,
+            top: `${star.y}%`,
+            width: `${star.size}px`,
+            height: `${star.size}px`,
+            animation: `twinkle ${star.duration}s ease-in-out infinite`,
+            animationDelay: `${star.delay}s`,
+          }}
+        />
+      ))}
+
+      {/* Shooting Stars */}
+      {shootingStars.map((star) => (
+        <div
+          key={`shooting-${star.id}`}
+          className="absolute"
+          style={{
+            left: '-100px',
+            top: `${20 + star.id * 25}%`,
+            width: '100px',
+            height: '2px',
+            background: 'linear-gradient(90deg, transparent, rgba(139,92,246,0.8), #fff)',
+            borderRadius: '50%',
+            boxShadow: '0 0 10px rgba(139,92,246,0.5)',
+            animation: `shootingStar ${star.duration}s linear infinite`,
+            animationDelay: `${star.delay}s`,
+          }}
+        />
+      ))}
+
+      {/* Nebula Clouds */}
+      {[...Array(5)].map((_, i) => (
+        <div
+          key={`nebula-${i}`}
+          className="absolute rounded-full pointer-events-none"
+          style={{
+            left: `${10 + i * 20}%`,
+            top: `${20 + (i % 3) * 30}%`,
+            width: `${200 + i * 50}px`,
+            height: `${200 + i * 50}px`,
+            background: `radial-gradient(circle, rgba(139,92,246,0.03) 0%, transparent 70%)`,
+            filter: 'blur(40px)',
+            animation: `nebulaDrift ${15 + i * 3}s ease-in-out infinite`,
+            animationDelay: `${i * 2}s`,
+          }}
+        />
+      ))}
+    </div>
+  );
+};
 
 // Glass Button Component with Apple-style shine effect
 const GLASS_BUTTON_SIZE_CLASSES = {
@@ -1331,30 +1422,10 @@ const ContactSection = () => {
 };
 
 export default function AboutPage() {
-  const [splineLoaded, setSplineLoaded] = useState(false);
-  const [splineError, setSplineError] = useState(false);
-
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Spline Background */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        {!splineError ? (
-          <Spline
-            scene="https://prod.spline.design/pX-RxNY-kD9Fb7ce/scene.splinecode"
-            onLoad={() => setSplineLoaded(true)}
-            onError={() => setSplineError(true)}
-          />
-        ) : (
-          <div
-            style={{
-              background:
-                "linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)",
-              width: "100%",
-              height: "100%",
-            }}
-          />
-        )}
-      </div>
+    <div className="min-h-screen bg-black relative overflow-hidden">
+      {/* Starfield Background */}
+      <Starfield />
 
       {/* Dark Overlay */}
       <div
@@ -1372,48 +1443,6 @@ export default function AboutPage() {
         <CertificatesSection />
         <Footer />
       </div>
-
-      {/* Footer Badge */}
-      <div
-        className={`fixed bottom-4 right-4 z-30 transition-all duration-500 ${
-          splineLoaded ? "opacity-100" : "opacity-0"
-        }`}
-      ></div>
-
-      {/* Loading Screen */}
-      {!splineLoaded && (
-        <div
-          className="fixed inset-0 backdrop-blur-md z-[100] flex items-center justify-center"
-          style={{ backgroundColor: "rgba(34, 34, 34, 0.5)" }}
-        >
-          <div
-            className="flex flex-col items-center p-8 rounded-3xl backdrop-blur-xl"
-            style={{
-              backgroundColor: "rgba(248, 248, 248, 0.025)",
-              borderWidth: "1px",
-              borderStyle: "solid",
-              borderColor: "rgba(248, 248, 248, 0.2)",
-            }}
-          >
-            <div
-              className="w-16 h-16 border-2 rounded-full animate-spin mb-6"
-              style={{
-                borderColor: "rgba(248, 248, 248, 0.2)",
-                borderTopColor: "rgba(248, 248, 248, 0.8)",
-              }}
-            ></div>
-            <p
-              className="text-lg font-medium mb-2"
-              style={{ color: "#F8F8F8" }}
-            >
-              Loading Interactive Experience...
-            </p>
-            <p className="text-sm" style={{ color: "#7B7B7B" }}>
-              Preparing your about page
-            </p>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

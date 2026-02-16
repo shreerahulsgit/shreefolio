@@ -5,32 +5,37 @@ import { ArrowLeft } from 'lucide-react';
 // --- COSMIC VOYAGER SCRIPT ---
 const messages = [
     {
-        text: "SYSTEM ONLINE.",
-        sub: "Booting the vibes.",
+        text: "Caution.",
+        sub: "Only Vibes ahead.",
     },
     {
-        text: "ENTERING DEEP SPACE.",
-        sub: "Uncharted. Unfiltered. Unprofessional.",
+        text: "ENTERING SHREE'S VOID.",
+        sub: "Unprofessional. Unfiltered....",
     },
     {
- text: "GRAVITY: OPTIONAL.",
-sub: "Nothing here follows normal rules."
-
+        text: "Professionalism: None.",
+        sub: "Nothing here follows normal rules."
     },
     {
         text: "POWER CHECK.",
-        sub: "RTX 3050+ recommended.\nCharger stays on.",
+        sub: "RTX 3050+ recommended.\nConnect Charger for smooth sailing.",
+        extra: "(Emotional Damage if ignored...)"
+    },
+    {
+        text: "AUDIO REQUIRED.",
+        sub: "Use earphones for the best experience.",
+        extra: "(Disables Judgment Filter)"
     },
     {
         text: "JUDGMENT FILTER.",
-        sub: "Disabled by default. Appreciate it.",
+        sub: "Judgment isn't appreciated.",
     },
     {
-        text: "STRANGE THINGS AHEAD.",
-        sub: "If you’re okay with the weird…",
+        text: "Weird stuffs onboard.",
+        sub: "If you’re okay with the weird…Continue",
     },
     {
-        text: "READY TO LAUNCH?",
+        text: "Ready for the Travel?",
         sub: "Click anywhere to drift into Void.",
     }
 ];

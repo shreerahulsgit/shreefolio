@@ -6,24 +6,86 @@ import Spline from "@splinetool/react-spline";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { PORTFOLIO_CONTEXT } from "../lib/portfolio-context";
 
+// Helper function to parse markdown in chat messages
+const parseMarkdown = (text) => {
+  if (!text) return text;
+  
+  const parts = [];
+  let remaining = text;
+  let keyIndex = 0;
+  
+  // Regex patterns for markdown
+  const patterns = [
+    { regex: /\*\*(.+?)\*\*/g, component: (match, content) => <strong key={keyIndex++} className="font-semibold">{content}</strong> },
+    { regex: /\*(.+?)\*/g, component: (match, content) => <em key={keyIndex++}>{content}</em> },
+    { regex: /`(.+?)`/g, component: (match, content) => <code key={keyIndex++} className="bg-black/10 px-1 py-0.5 rounded text-xs">{content}</code> },
+  ];
+  
+  // Process bold first, then italic, then code
+  let result = text;
+  
+  // Bold: **text**
+  result = result.split(/(\*\*[^*]+\*\*)/).map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={`b-${i}`} className="font-semibold">{part.slice(2, -2)}</strong>;
+    }
+    // Check for italic within plain text: *text*
+    if (typeof part === 'string' && part.includes('*')) {
+      return part.split(/(\*[^*]+\*)/).map((subpart, j) => {
+        if (subpart.startsWith('*') && subpart.endsWith('*') && !subpart.startsWith('**')) {
+          return <em key={`i-${i}-${j}`}>{subpart.slice(1, -1)}</em>;
+        }
+        // Check for inline code: `text`
+        if (typeof subpart === 'string' && subpart.includes('`')) {
+          return subpart.split(/(`[^`]+`)/).map((codePart, k) => {
+            if (codePart.startsWith('`') && codePart.endsWith('`')) {
+              return <code key={`c-${i}-${j}-${k}`} className="bg-black/10 px-1 py-0.5 rounded text-xs">{codePart.slice(1, -1)}</code>;
+            }
+            return codePart;
+          });
+        }
+        return subpart;
+      });
+    }
+    // Check for inline code in plain text
+    if (typeof part === 'string' && part.includes('`')) {
+      return part.split(/(`[^`]+`)/).map((codePart, j) => {
+        if (codePart.startsWith('`') && codePart.endsWith('`')) {
+          return <code key={`c-${i}-${j}`} className="bg-black/10 px-1 py-0.5 rounded text-xs">{codePart.slice(1, -1)}</code>;
+        }
+        return codePart;
+      });
+    }
+    return part;
+  });
+  
+  return result;
+};
+
 // --- PROFESSIONAL AI CHATBOT COMPONENT ---
 const ChatInterface = () => {
   const [messages, setMessages] = useState([
     { 
       role: 'ai', 
-      content: "Hello! I'm Shree's AI assistant. I can tell you about his projects, skills, and experience. What would you like to know?" 
+      content: "Hello! I'm Zio, Shree's AI assistant. I can tell you about his projects, skills, and experience. What would you like to know?" 
     }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
   const [showWelcome, setShowWelcome] = useState(false);
+  
+  // Rate limiting state
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
+  const lastRequestTimeRef = useRef(0);
+  const responseCacheRef = useRef(new Map());
+  const RATE_LIMIT_MS = 4000; // 4 seconds between requests (15 req/min max)
 
   // Suggestions for new users
   const suggestions = [
     "What are your main skills?",
     "Tell me about your projects",
-    "How can I contact you?"
+    "How can I contact shree?"
   ];
 
   // Auto-scroll to bottom
@@ -42,12 +104,49 @@ const ChatInterface = () => {
 
   const handleSendMessage = async (text = inputValue) => {
     if (!text.trim()) return;
+    
+    // Rate limiting check
+    const now = Date.now();
+    const timeSinceLastRequest = now - lastRequestTimeRef.current;
+    
+    if (timeSinceLastRequest < RATE_LIMIT_MS && lastRequestTimeRef.current !== 0) {
+      const waitTime = Math.ceil((RATE_LIMIT_MS - timeSinceLastRequest) / 1000);
+      setCooldownSeconds(waitTime);
+      
+      // Start countdown
+      const countdown = setInterval(() => {
+        setCooldownSeconds(prev => {
+          if (prev <= 1) {
+            clearInterval(countdown);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      
+      return; // Don't send, user needs to wait
+    }
+    
+    // Normalize query for cache lookup
+    const cacheKey = text.trim().toLowerCase();
+    const cachedResponse = responseCacheRef.current.get(cacheKey);
+    
+    if (cachedResponse) {
+      // Use cached response instead of API call
+      setMessages(prev => [...prev, 
+        { role: 'user', content: text },
+        { role: 'ai', content: cachedResponse + " _(cached)_" }
+      ]);
+      setInputValue('');
+      return;
+    }
 
     // Add user message
     const userMsg = { role: 'user', content: text };
     setMessages(prev => [...prev, userMsg]);
     setInputValue('');
     setIsTyping(true);
+    lastRequestTimeRef.current = now; // Record request time
 
     try {
       const apiKey = import.meta.env.VITE_GOOGLE_AI_KEY;
@@ -57,7 +156,7 @@ const ChatInterface = () => {
       }
 
       const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
       
       const chatHistory = [
         {
@@ -81,6 +180,10 @@ const ChatInterface = () => {
       const result = await chat.sendMessage(text);
       const response = await result.response;
       const textResponse = response.text();
+      
+      // Cache the response for future identical questions
+      const cacheKey = text.trim().toLowerCase();
+      responseCacheRef.current.set(cacheKey, textResponse);
 
       setMessages(prev => [...prev, { role: 'ai', content: textResponse }]);
     } catch (error) {
@@ -155,7 +258,7 @@ const ChatInterface = () => {
                  boxShadow: msg.role === 'ai' ? '0 4px 15px rgba(0,0,0,0.05)' : '0 4px 15px rgba(0,0,0,0.1)'
               }}
             >
-              {msg.content}
+              {parseMarkdown(msg.content)}
             </div>
           </div>
         ))}
@@ -184,6 +287,13 @@ const ChatInterface = () => {
               {s}
             </button>
           ))}
+        </div>
+      )}
+
+      {/* Cooldown Indicator */}
+      {cooldownSeconds > 0 && (
+        <div className="mb-2 text-center text-xs text-gray-500 animate-pulse">
+          ⏳ Please wait {cooldownSeconds}s before sending again...
         </div>
       )}
 

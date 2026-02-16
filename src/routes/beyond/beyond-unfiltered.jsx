@@ -1,7 +1,7 @@
 import React, { useRef, useState, useMemo, Suspense } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { ScrollControls, useScroll, Text, Float, Stars, Sparkles, PerformanceMonitor, Billboard } from '@react-three/drei';
-import { EffectComposer, Bloom, Noise, Vignette, ChromaticAberration, TiltShift2 } from '@react-three/postprocessing';
+import { EffectComposer, Bloom, Noise, Vignette, ChromaticAberration } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { useNavigate } from 'react-router-dom';
 
@@ -14,27 +14,19 @@ const VERTICAL_SPACING = 3.5;
 const ANGLE_STEP = Math.PI / 2; // sharper turn
 const TOTAL_BLOCKS = 8;
 
-// ... (in CloudText, set fontSize={size * 0.8}) ...
-
-// ... (in PostProcessing) ...
-                <EffectComposer disableNormalPass>
-                    <Bloom luminanceThreshold={0.2} luminanceSmoothing={0.9} height={300} intensity={0.5} />
-                    <Noise opacity={0.03} /> 
-                    <Vignette eskil={false} offset={0.1} darkness={1.0} />
-                    <ChromaticAberration offset={[0.0005, 0.0005]} />
-                </EffectComposer>
 
 // --- Content Data (Same as before) ---
 const BLOCKS_DATA = [
   {
     id: 1,
+    accentColor: '#ffffff',
     content: (
       <>
         <Text size={1.4} emissive="#ffffff">
           heyyy, quick heads up —
         </Text>
         <Text size={0.5} position={[0, -1.2, 0]} color="#777">
-          (you’re entering unfiltered me 🧠)
+          (you’re entering unfiltered me )
         </Text>
       </>
     ),
@@ -42,10 +34,11 @@ const BLOCKS_DATA = [
 
   {
     id: 2,
+    accentColor: '#60a5fa',
     content: (
       <>
         <Text size={0.6} position={[0, 1.6, 0]} color="#bdbdbd">
-          i’m more of a laugh-at-the-wrong-time kinda person 😭
+          i’m more of a laugh-at-the-wrong-time kinda person 
         </Text>
         <Text size={0.6} position={[0, 0.6, 0]} color="#bdbdbd">
           i thrive around people who match that energy
@@ -65,6 +58,7 @@ const BLOCKS_DATA = [
 
   {
     id: 3,
+    accentColor: '#f87171',
     content: (
       <>
         <Text size={0.8} position={[-1.2, 2, 0]} color="#a3a3a3">
@@ -79,7 +73,7 @@ const BLOCKS_DATA = [
           color="#f87171"
           emissive="#f87171"
         >
-          yeah… life said “not now bro” 💀
+          yeah… life said “not now bro”
         </Text>
         <Text size={0.6} position={[0, -1.8, 0]} color="#888">
           so for now, i explore places
@@ -93,10 +87,11 @@ const BLOCKS_DATA = [
 
   {
     id: 4,
+    accentColor: '#fb7185',
     content: (
       <>
         <Text size={0.7} position={[-1.4, 1.4, 0]} color="#cfcfcf">
-          not a hardcore cinephile 🎬
+          not a hardcore cinephile
         </Text>
         <Text size={0.7} position={[1.4, 0.5, 0]} color="#cfcfcf">
           but i’ve watched enough
@@ -116,19 +111,20 @@ const BLOCKS_DATA = [
 
   {
     id: 5,
+    accentColor: '#22c55e',
     content: (
       <>
         <Text size={0.8} position={[-1.6, 2.4, 0]} color="#eab308">
           anime? obviously 
         </Text>
         <Text size={0.8} position={[1.6, 1.6, 0]} color="#22c55e">
-          music? mandatory 🎧
+          music? mandatory
         </Text>
         <Text size={0.6} position={[0, 0.2, 0]} color="#a3a3a3">
           some days it’s the weeknd 
         </Text>
         <Text size={0.6} position={[0, -0.6, 0]} color="#a3a3a3">
-          some days it’s raghu dixit 🎶
+          some days it’s raghu dixit 
         </Text>
         <Text
           size={1}
@@ -144,10 +140,11 @@ const BLOCKS_DATA = [
 
   {
     id: 6,
+    accentColor: '#a78bfa',
     content: (
       <>
         <Text size={0.7} position={[0, 1.6, 0]} color="#737373">
-          yeah, i lowkey stay in trend 😌
+          yeah, i lowkey stay in trend
         </Text>
         <Text size={0.7} position={[0, 0.6, 0]} color="#737373">
           by doomscrolling social media
@@ -169,6 +166,7 @@ const BLOCKS_DATA = [
 
   {
     id: 7,
+    accentColor: '#facc15',
     content: (
       <>
         <Text size={0.6} position={[0, 2.2, 0]} color="#d4d4d4">
@@ -197,10 +195,11 @@ const BLOCKS_DATA = [
 
   {
     id: 8,
+    accentColor: '#ffffff',
     content: (
       <>
         <Text size={0.8} position={[0, 1.2, 0]} color="#ffffff">
-          now go around 👀
+          now go around
         </Text>
         <Text
           size={1.6}
@@ -210,7 +209,7 @@ const BLOCKS_DATA = [
           letterSpacing={0.14}
           isAction
         >
-          explore the stuff i love ✨
+          explore the stuff i love
         </Text>
       </>
     ),
@@ -220,6 +219,16 @@ const BLOCKS_DATA = [
 
 // --- Helpers ---
 const CloudText = ({ size = 1, color = "white", emissive = "white", children, isAction, ...props }) => {
+    const matRef = useRef();
+    
+    // Pulsing glow for action/CTA blocks
+    useFrame((state) => {
+        if (matRef.current && isAction) {
+            const pulse = (Math.sin(state.clock.elapsedTime * 2) + 1) / 2; // 0→1 breathing
+            matRef.current.emissiveIntensity = 0.5 + pulse * 1.5;
+        }
+    });
+
     return (
         <Text
             fontSize={size * 0.6}
@@ -230,17 +239,13 @@ const CloudText = ({ size = 1, color = "white", emissive = "white", children, is
         >
             {children}
             <meshStandardMaterial 
+                ref={matRef}
                 color={color} 
                 emissive={emissive} 
-                emissiveIntensity={0.6} 
+                emissiveIntensity={isAction ? 1.0 : 0.6} 
                 toneMapped={false} 
                 transparent
             />
-            {/* Debug Marker - Temporary */}
-            {/* <mesh position={[0, 0.5, 0]}>
-                <boxGeometry args={[0.1, 0.1, 0.1]} />
-                <meshBasicMaterial color="red" />
-            </mesh> */}
         </Text>
     );
 };
@@ -249,25 +254,48 @@ const CloudText = ({ size = 1, color = "white", emissive = "white", children, is
 
 const SpiralBlock = ({ data, index, total, onNavigate }) => {
     const groupRef = useRef();
+    const lightRef = useRef();
     const [hovered, setHovered] = useState(false);
 
     // SPIRAL MATH
-    // Angle increases with index
     const angle = index * ANGLE_STEP;
-    // Y decreases with index (Diving down)
     const y = -index * VERTICAL_SPACING;
-    // Radius constant
     const x = Math.sin(angle) * SPIRAL_RADIUS;
-    const z = -Math.cos(angle) * SPIRAL_RADIUS; // Start in front of camera (-Z)
+    const z = -Math.cos(angle) * SPIRAL_RADIUS;
 
-    useFrame((state) => {
+    // Fade-in config
+    const REVEAL_RANGE = 8; // units of camera distance to fully reveal
+
+    useFrame((state, delta) => {
         if (!groupRef.current) return;
         
-        // Interaction Scale
-        if (data.isAction && hovered) {
-             groupRef.current.scale.setScalar(1.1);
-        } else {
-             groupRef.current.scale.setScalar(1);
+        // --- SCROLL PROXIMITY FADE-IN ---
+        const camY = state.camera.position.y;
+        const distance = Math.abs(camY - y);
+        
+        // visibility: 1 when camera is at block, 0 when far away
+        const visibility = THREE.MathUtils.clamp(1 - distance / REVEAL_RANGE, 0, 1);
+        // Smooth ease-in curve
+        const eased = visibility * visibility * (3 - 2 * visibility); // smoothstep
+        
+        // Apply opacity to all children materials
+        groupRef.current.traverse((child) => {
+            if (child.material) {
+                child.material.opacity = eased;
+                child.material.transparent = true;
+            }
+        });
+        
+        // Scale: from 0.6 to 1 (or 1.1 if hovered action)
+        const baseScale = 0.6 + eased * 0.4;
+        const targetScale = (data.isAction && hovered) ? baseScale * 1.1 : baseScale;
+        const currentScale = groupRef.current.scale.x;
+        const smoothScale = THREE.MathUtils.damp(currentScale, targetScale, 5, delta);
+        groupRef.current.scale.setScalar(smoothScale);
+
+        // --- ACCENT LIGHT ---
+        if (lightRef.current) {
+            lightRef.current.intensity = eased * 3;
         }
     });
 
@@ -300,7 +328,16 @@ const SpiralBlock = ({ data, index, total, onNavigate }) => {
             ref={groupRef} 
             position={[x, y, z]}
         >
-             <Billboard follow={true} lockX={false} lockY={false} lockZ={false}>
+             {/* Accent light that fades with proximity */}
+             <pointLight
+                 ref={lightRef}
+                 color={data.accentColor || '#ffffff'}
+                 intensity={0}
+                 distance={12}
+                 decay={2}
+                 position={[0, 0, 2]}
+             />
+             <Billboard>
                  <Float speed={2} rotationIntensity={0.1} floatIntensity={0.5}>
                     {renderChildren}
                 </Float>
@@ -408,7 +445,7 @@ export default function BeyondUnfiltered() {
                 </Suspense>
 
                 {/* POST PROCESSING */}
-                {/* POST PROCESSING */}
+
                 <EffectComposer disableNormalPass>
                     <Bloom luminanceThreshold={0.2} luminanceSmoothing={0.9} height={300} intensity={0.5} />
                     <Noise opacity={0.03} /> 

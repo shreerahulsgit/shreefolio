@@ -12,7 +12,7 @@ const LibraryCameraRig = ({ activeBook }) => {
         if (activeBook) {
             // READING MODE: Zoom in (but not too close), look slightly up
             // Position: (0, 0.5, 9) looking at (0, 0.5, 0)
-            controls.current.setLookAt(0, 0.5, 9, 0, 0.5, 0, true);
+            controls.current.setLookAt(0, 0.5, 7, 0, 0.5, 0, true);
         } else {
             // EXPLORE MODE: Overview position
             // Position: (0, 0, 14) looking at (0, 0, 0)

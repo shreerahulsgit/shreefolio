@@ -1,80 +1,98 @@
 import React, { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Stars, Sparkles, Cloud } from '@react-three/drei';
+import { Stars, Sparkles } from '@react-three/drei';
 import * as THREE from 'three';
 
 const CosmicBackground = () => {
     const starsRef = useRef();
+    const orbsRef = useRef();
 
     useFrame((state, delta) => {
         if (starsRef.current) {
-            starsRef.current.rotation.y += delta * 0.02; // Slow rotation
+            starsRef.current.rotation.y += delta * 0.015;
+        }
+        if (orbsRef.current) {
+            orbsRef.current.rotation.y += delta * 0.008;
         }
     });
 
     return (
         <group>
-            {/* Deep Space Base Color */}
-            <color attach="background" args={['#030008']} />
-            {/* <fog attach="fog" args={['#030008', 10, 50]} /> DISABLE FOG FOR DIAGNOSTIC */}
+            {/* Deep cosmic gradient background */}
+            <color attach="background" args={['#05010f']} />
 
-            {/* Distant Stars */}
+            {/* Distant Stars — dense field */}
             <group ref={starsRef}>
                 <Stars 
-                    radius={100} 
-                    depth={50} 
-                    count={7000} 
-                    factor={4} 
-                    saturation={0} 
+                    radius={80} 
+                    depth={60} 
+                    count={5000} 
+                    factor={5} 
+                    saturation={0.3} 
                     fade 
-                    speed={1} 
+                    speed={0.8} 
                 />
             </group>
 
-            {/* Floating Space Dust (Sparkles) */}
+            {/* Layer 1: Fine purple dust (close) */}
             <Sparkles 
-                count={300} 
-                scale={20} 
-                size={2} 
-                speed={0.4} 
-                opacity={0.5} 
-                noise={0.2} 
-                color="#8b5cf6" // Purple dust
-            />
-            <Sparkles 
-                count={200} 
-                scale={25} 
-                size={4} 
-                speed={0.2} 
-                opacity={0.3} 
-                noise={0.5} 
-                color="#4c1d95" // Darker purple
+                count={250} 
+                scale={15} 
+                size={1.5} 
+                speed={0.3} 
+                opacity={0.4} 
+                noise={0.3} 
+                color="#a855f7"
             />
 
-            {/* Nebula Clouds (Optimized) */}
-             <Cloud 
-                opacity={0.1} 
-                speed={0.1} 
-                width={15} 
-                depth={1} 
-                segments={8} // Low segments for stability
-                position={[0, -5, -10]}
-                color="#5b2eff"
+            {/* Layer 2: Deeper violet particles (mid) */}
+            <Sparkles 
+                count={150} 
+                scale={25} 
+                size={3} 
+                speed={0.15} 
+                opacity={0.25} 
+                noise={0.5} 
+                color="#6d28d9"
             />
-             <Cloud 
-                opacity={0.05} 
+
+            {/* Layer 3: Warm accent sparkles (far) */}
+            <Sparkles 
+                count={80} 
+                scale={35} 
+                size={5} 
                 speed={0.1} 
-                width={15} 
-                depth={1} 
-                segments={8} // Low segments for stability
-                position={[5, 5, -12]}
+                opacity={0.15} 
+                noise={0.4} 
                 color="#c084fc"
             />
 
-            {/* Ambient Lighting for Atmosphere */}
-            <ambientLight intensity={0.2} color="#2e1065" />
-            <pointLight position={[-10, 10, -10]} color="#7c3aed" intensity={1} distance={50} />
-            <pointLight position={[10, -10, -10]} color="#2563eb" intensity={1} distance={50} />
+            {/* Distant nebula glow orbs — colored point lights */}
+            <group ref={orbsRef}>
+                {/* Purple nebula glow */}
+                <pointLight position={[-15, 8, -20]} color="#7c3aed" intensity={2} distance={60} decay={2} />
+                <mesh position={[-15, 8, -20]}>
+                    <sphereGeometry args={[0.5, 8, 8]} />
+                    <meshBasicMaterial color="#7c3aed" transparent opacity={0.15} />
+                </mesh>
+
+                {/* Blue nebula glow */}
+                <pointLight position={[18, -6, -25]} color="#3b82f6" intensity={1.5} distance={50} decay={2} />
+                <mesh position={[18, -6, -25]}>
+                    <sphereGeometry args={[0.4, 8, 8]} />
+                    <meshBasicMaterial color="#3b82f6" transparent opacity={0.1} />
+                </mesh>
+
+                {/* Pink accent */}
+                <pointLight position={[10, 12, -18]} color="#ec4899" intensity={1} distance={40} decay={2} />
+                <mesh position={[10, 12, -18]}>
+                    <sphereGeometry args={[0.3, 8, 8]} />
+                    <meshBasicMaterial color="#ec4899" transparent opacity={0.08} />
+                </mesh>
+            </group>
+
+            {/* Ambient atmosphere */}
+            <ambientLight intensity={0.15} color="#1e1035" />
         </group>
     );
 };

@@ -6,7 +6,7 @@ import {
 import {
     FaPenNib, FaRulerCombined, FaCode, FaPalette, FaGlobe, FaDatabase, FaTools,
 } from 'react-icons/fa';
-import GalaxyBackground from '../../lib/components/GalaxyBackground';
+import GalaxyBackground from '../../lib/components/GalaxyBackground.jsx';
 
 const skillCategories = [
     {
