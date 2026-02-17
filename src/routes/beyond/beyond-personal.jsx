@@ -151,13 +151,14 @@ const Scene = () => {
 
             {/* 2. ORIGIN - Soil & Time */}
             <Section z={-18}>
-                <FloatingText size={0.8} position={[-2, 3, 0]} color="#ccc">not a loud place.</FloatingText>
-                <FloatingText size={0.8} position={[2, 2, 0]} color="#ccc">no spotlight energy.</FloatingText>
+                <FloatingText size={0.8} position={[-2, 3, 0]} color="#ccc">i carry karnataka quietly.</FloatingText>
+                <FloatingText size={0.8} position={[2, 2, 0]} color="#ccc">in the way i greet.</FloatingText>
                 
-                <FloatingText size={1.2} position={[0, 0, 0]} letterSpacing={0.1}>just soil. time. patience.</FloatingText>
+                <FloatingText size={1.2} position={[0, 0, 0]} letterSpacing={0.1}>kannada isn’t what i speak.</FloatingText>
                 
-                <FloatingText size={0.6} position={[0, -2, 0]} color="#888">it didn’t hype me.</FloatingText>
-                <FloatingText size={0.6} position={[0, -2.8, 0]} color="#fff">it shaped me.</FloatingText>
+                <FloatingText size={0.6} position={[0, -2, 0]} color="#888">
+it’s what i return to.</FloatingText>
+                
             </Section>
 
             {/* 3. LANGUAGE - Kannada (Red/Yellow) */}
@@ -170,7 +171,7 @@ const Scene = () => {
                 <FloatingText size={0.5} position={[2, 3.2, 0]} color="#fff">this one chose me.</FloatingText>
                 
                 <FloatingText size={0.6} position={[0, 1.5, 0]} color="#ccc">kannada runs in the background.</FloatingText>
-                <FloatingText size={0.4} position={[0, 0.8, 0]} color="#888">in my silences. in my spine.</FloatingText>
+                <FloatingText size={0.4} position={[0, 0.8, 0]} color="#888">karnataka runs in my roots.</FloatingText>
 
                 {/* SPLIT PROUDLY KANNADIGA */}
                 <FloatingText size={1.8} position={[0, -1, 0]} letterSpacing={0.2} color="#FF0000" emissive="#FF0000">
@@ -252,19 +253,19 @@ const Scene = () => {
             <Section z={-100}>
                 <DriftingDots count={20} area={12} zPos={0} />
                 <FloatingText size={0.4} position={[-3, 2, -1]} color="#333">still scrolling?</FloatingText>
-                <FloatingText size={0.3} position={[4, 0.5, -2]} color="#222">respect.</FloatingText>
-                <FloatingText size={0.35} position={[-1, -2, 0]} color="#2a2a2a">most people left by now.</FloatingText>
+                <FloatingText size={0.3} position={[4, 0.5, -2]} color="#222">kinda curious huh..?</FloatingText>
+                <FloatingText size={0.35} position={[-1, -2, 0]} color="#2a2a2a">Nah.. this isn't infinite</FloatingText>
             </Section>
 
             {/* 7. THE VOID SPEAKS */}
             <Section z={-118}>
                 <DriftingDots count={15} area={15} zPos={0} />
                 <PulsingText size={0.8} position={[0, 1.5, 0]} color="#44aaff" emissive="#44aaff" pulseSpeed={0.5}>
-                    the void remembers.
+                    There are no more words.
                 </PulsingText>
-                <FloatingText size={0.3} position={[2, -1, -1]} color="#1a1a1a">every scroll.</FloatingText>
-                <FloatingText size={0.3} position={[-2.5, -2, 0]} color="#1a1a1a">every pause.</FloatingText>
-                <FloatingText size={0.3} position={[0, -3, -2]} color="#1a1a1a">every thought you didn't type.</FloatingText>
+                <FloatingText size={0.3} position={[2, -1, -1]} color="#1a1a1a">you again?</FloatingText>
+                <FloatingText size={0.3} position={[-2.5, -2, 0]} color="#1a1a1a">Enough already.</FloatingText>
+                <FloatingText size={0.3} position={[0, -3, -2]} color="#1a1a1a">!!!</FloatingText>
             </Section>
 
             {/* 8. FRAGMENTS - Getting sparser */}
@@ -286,13 +287,13 @@ const Scene = () => {
             <Section z={-168}>
                 <DriftingDots count={5} area={25} zPos={0} />
                 <FloatingText size={0.2} position={[0, 1, -4]} color="#111">this space is yours now.</FloatingText>
-                <FloatingText size={0.15} position={[0, -1, -5]} color="#0a0a0a">breathe.</FloatingText>
+                <FloatingText size={0.15} position={[0, -1, -5]} color="#0a0a0a">breathe....</FloatingText>
             </Section>
 
             {/* 11. FINAL ECHO - The last word */}
             <Section z={-185}>
                 <PulsingText size={0.6} position={[0, 1, 0]} color="#44aaff" emissive="#44aaff" pulseSpeed={0.3}>
-                    see you on the other side.
+                    see you on the other side...
                 </PulsingText>
                 <FloatingText size={0.2} position={[0, -1, 0]} color="#222">— S</FloatingText>
                 <DriftingDots count={40} area={30} zPos={-5} />
