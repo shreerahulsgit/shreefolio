@@ -1,6 +1,8 @@
+
 import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import Hls from 'hls.js';
 
 const GiantScreen = ({ videoUrl, isPlaying, shouldLoad }) => {
     const meshRef = useRef();
@@ -69,19 +71,31 @@ const GiantScreen = ({ videoUrl, isPlaying, shouldLoad }) => {
         }
 
         const video = document.createElement('video');
-        video.src = videoUrl;
         video.crossOrigin = 'anonymous';
         video.loop = true;
         video.muted = true;
         video.playsInline = true;
         videoRef.current = video;
 
+        let hls = null;
+        let isHls = videoUrl.endsWith('.m3u8');
+
+        if (isHls && Hls.isSupported()) {
+            hls = new Hls();
+            hls.loadSource(videoUrl);
+            hls.attachMedia(video);
+        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = videoUrl;
+        } else {
+            video.src = videoUrl;
+        }
+
         const texture = new THREE.VideoTexture(video);
         texture.minFilter = THREE.LinearFilter;
         texture.magFilter = THREE.LinearFilter;
         texture.colorSpace = THREE.SRGBColorSpace;
 
-        // Delay playback by 3 seconds (camera transition time)
+        // Delay playback by 2.5 seconds (camera transition time)
         const playTimer = setTimeout(() => {
             video.play().then(() => {
                 console.log('✅ Video playing successfully');
@@ -106,6 +120,9 @@ const GiantScreen = ({ videoUrl, isPlaying, shouldLoad }) => {
             video.pause();
             video.src = '';
             texture.dispose();
+            if (hls) {
+                hls.destroy();
+            }
             videoRef.current = null;
         };
     }, [videoUrl, shouldLoad]);

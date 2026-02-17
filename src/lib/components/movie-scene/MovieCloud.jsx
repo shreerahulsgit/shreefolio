@@ -61,12 +61,12 @@ const MovieFrame = ({ movie, position, onClick, isSelected }) => {
 
 const MovieCloud = ({ onSelectMovie, selectedMovie }) => {
     const movies = [
-        { title: "Interstellar", image: "/MovieCards/interstellar.jpg", video: "https://pub-9e0e0bb8ae4e4476833076dd00f34008.r2.dev/videos/interstellar.mp4", mainThought: "the score carried emotions I didn't know I had.", year: "2014", director: "Christopher Nolan" },
-        { title: "Avengers: Infinity War", image: "/MovieCards/Avengers Infinity war.jpg", video: "https://pub-9e0e0bb8ae4e4476833076dd00f34008.r2.dev/videos/avengers-infinity-war.mp4", mainThought: "the villain won. and it felt inevitable.", year: "2018", director: "Russo Brothers" },
-        { title: "Avengers: Endgame", image: "/MovieCards/Avengers End Game.jpg", video: "https://pub-9e0e0bb8ae4e4476833076dd00f34008.r2.dev/videos/avengers-endgame.mp4", mainThought: "whatever it takes.", year: "2019", director: "Russo Brothers" },
-        { title: "The Dark Knight", image: "/MovieCards/the dark Night.jpg", video: "https://pub-9e0e0bb8ae4e4476833076dd00f34008.r2.dev/videos/the-dark-knight.mp4", mainThought: "the best antagonists hold up a mirror.", year: "2008", director: "Christopher Nolan" },
-        { title: "F1", image: "/MovieCards/f1.jpg", video: "https://pub-9e0e0bb8ae4e4476833076dd00f34008.r2.dev/videos/f1.mp4", mainThought: "speed is nothing without the will to push beyond.", year: "2025", director: "Joseph Kosinski" },
-        { title: "Fight Club", image: "/MovieCards/Fight Club.jpg", video: "https://pub-9e0e0bb8ae4e4476833076dd00f34008.r2.dev/videos/fight-club.mp4", mainThought: "the things you own end up owning you.", year: "1999", director: "David Fincher" },
+        { title: "Interstellar", image: "/MovieCards/interstellar.jpg", video: "https://pub-9e0e0bb8ae4e4476833076dd00f34008.r2.dev/videos/interstellar/index.m3u8", mainThought: "the score carried emotions I didn't know I had.", year: "2014", director: "Christopher Nolan" },
+        { title: "Avengers: Infinity War", image: "/MovieCards/Avengers Infinity war.jpg", video: "https://pub-9e0e0bb8ae4e4476833076dd00f34008.r2.dev/videos/avengers-infinity-war/index.m3u8", mainThought: "the villain won. and it felt inevitable.", year: "2018", director: "Russo Brothers" },
+        { title: "Avengers: Endgame", image: "/MovieCards/Avengers End Game.jpg", video: "https://pub-9e0e0bb8ae4e4476833076dd00f34008.r2.dev/videos/avengers-endgame/index.m3u8", mainThought: "whatever it takes.", year: "2019", director: "Russo Brothers" },
+        { title: "The Dark Knight", image: "/MovieCards/the dark Night.jpg", video: "https://pub-9e0e0bb8ae4e4476833076dd00f34008.r2.dev/videos/the-dark-knight/index.m3u8", mainThought: "the best antagonists hold up a mirror.", year: "2008", director: "Christopher Nolan" },
+        { title: "F1", image: "/MovieCards/f1.jpg", video: "https://pub-9e0e0bb8ae4e4476833076dd00f34008.r2.dev/videos/f1/index.m3u8", mainThought: "speed is nothing without the will to push beyond.", year: "2025", director: "Joseph Kosinski" },
+        { title: "Fight Club", image: "/MovieCards/Fight Club.jpg", video: "https://pub-9e0e0bb8ae4e4476833076dd00f34008.r2.dev/videos/fight-club/index.m3u8", mainThought: "the things you own end up owning you.", year: "1999", director: "David Fincher" },
     ];
 
     // Neat Arc Layout
