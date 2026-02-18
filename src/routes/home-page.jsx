@@ -1,68 +1,72 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import LoadingOverlay from "../lib/components/loading-overlay.jsx";
-import SplineMasking from "../lib/components/spline-masking.jsx";
+import SplineMasking from "../lib/components/spline-mask.jsx";
 import Spline from "@splinetool/react-spline";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { PORTFOLIO_CONTEXT } from "../lib/portfolio-context";
 
-// Helper function to parse markdown in chat messages
 const parseMarkdown = (text) => {
-  if (!text) return text;
-  
-  const parts = [];
-  let remaining = text;
-  let keyIndex = 0;
-  
-  // Regex patterns for markdown
-  const patterns = [
-    { regex: /\*\*(.+?)\*\*/g, component: (match, content) => <strong key={keyIndex++} className="font-semibold">{content}</strong> },
-    { regex: /\*(.+?)\*/g, component: (match, content) => <em key={keyIndex++}>{content}</em> },
-    { regex: /`(.+?)`/g, component: (match, content) => <code key={keyIndex++} className="bg-black/10 px-1 py-0.5 rounded text-xs">{content}</code> },
-  ];
-  
-  // Process bold first, then italic, then code
-  let result = text;
-  
-  // Bold: **text**
-  result = result.split(/(\*\*[^*]+\*\*)/).map((part, i) => {
-    if (part.startsWith('**') && part.endsWith('**')) {
-      return <strong key={`b-${i}`} className="font-semibold">{part.slice(2, -2)}</strong>;
+  if (!text) return null;
+
+  const renderInline = (line, lineIndex) => {
+    const elements = [];
+    let lastIndex = 0;
+
+    const regex = /(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g;
+    let match;
+
+    while ((match = regex.exec(line)) !== null) {
+      if (match.index > lastIndex) {
+        elements.push(line.slice(lastIndex, match.index));
+      }
+
+      const token = match[0];
+
+      if (token.startsWith("**")) {
+        elements.push(
+          <strong
+            key={`b-${lineIndex}-${match.index}`}
+            className="font-semibold"
+          >
+            {token.slice(2, -2)}
+          </strong>
+        );
+      } else if (token.startsWith("*")) {
+        elements.push(
+          <em key={`i-${lineIndex}-${match.index}`}>
+            {token.slice(1, -1)}
+          </em>
+        );
+      } else if (token.startsWith("`")) {
+        elements.push(
+          <code
+            key={`c-${lineIndex}-${match.index}`}
+            className="bg-black/10 px-1 py-0.5 rounded text-xs"
+          >
+            {token.slice(1, -1)}
+          </code>
+        );
+      }
+
+      lastIndex = regex.lastIndex;
     }
-    // Check for italic within plain text: *text*
-    if (typeof part === 'string' && part.includes('*')) {
-      return part.split(/(\*[^*]+\*)/).map((subpart, j) => {
-        if (subpart.startsWith('*') && subpart.endsWith('*') && !subpart.startsWith('**')) {
-          return <em key={`i-${i}-${j}`}>{subpart.slice(1, -1)}</em>;
-        }
-        // Check for inline code: `text`
-        if (typeof subpart === 'string' && subpart.includes('`')) {
-          return subpart.split(/(`[^`]+`)/).map((codePart, k) => {
-            if (codePart.startsWith('`') && codePart.endsWith('`')) {
-              return <code key={`c-${i}-${j}-${k}`} className="bg-black/10 px-1 py-0.5 rounded text-xs">{codePart.slice(1, -1)}</code>;
-            }
-            return codePart;
-          });
-        }
-        return subpart;
-      });
+
+    if (lastIndex < line.length) {
+      elements.push(line.slice(lastIndex));
     }
-    // Check for inline code in plain text
-    if (typeof part === 'string' && part.includes('`')) {
-      return part.split(/(`[^`]+`)/).map((codePart, j) => {
-        if (codePart.startsWith('`') && codePart.endsWith('`')) {
-          return <code key={`c-${i}-${j}`} className="bg-black/10 px-1 py-0.5 rounded text-xs">{codePart.slice(1, -1)}</code>;
-        }
-        return codePart;
-      });
-    }
-    return part;
-  });
-  
-  return result;
+
+    return elements;
+  };
+
+  return text.split("\n").map((line, index, arr) => (
+    <React.Fragment key={`line-${index}`}>
+      {renderInline(line, index)}
+      {index !== arr.length - 1 && <br />}
+    </React.Fragment>
+  ));
 };
 
-// --- PROFESSIONAL AI CHATBOT COMPONENT ---
 const ChatInterface = () => {
   const [messages, setMessages] = useState([
     { 
@@ -75,20 +79,17 @@ const ChatInterface = () => {
   const messagesEndRef = useRef(null);
   const [showWelcome, setShowWelcome] = useState(false);
   
-  // Rate limiting state
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
   const lastRequestTimeRef = useRef(0);
   const responseCacheRef = useRef(new Map());
-  const RATE_LIMIT_MS = 4000; // 4 seconds between requests (15 req/min max)
+  const RATE_LIMIT_MS = 4000;
 
-  // Suggestions for new users
   const suggestions = [
-    "What are your main skills?",
-    "Tell me about your projects",
-    "How can I contact shree?"
+    "What are his main skills?",
+    "Tell me about his projects",
+    "How can I contact Shree?"
   ];
 
-  // Auto-scroll to bottom
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -97,7 +98,6 @@ const ChatInterface = () => {
     scrollToBottom();
   }, [messages, isTyping]);
 
-  // Entrance animation
   useEffect(() => {
     setTimeout(() => setShowWelcome(true), 500);
   }, []);
@@ -105,7 +105,6 @@ const ChatInterface = () => {
   const handleSendMessage = async (text = inputValue) => {
     if (!text.trim()) return;
     
-    // Rate limiting check
     const now = Date.now();
     const timeSinceLastRequest = now - lastRequestTimeRef.current;
     
@@ -113,7 +112,6 @@ const ChatInterface = () => {
       const waitTime = Math.ceil((RATE_LIMIT_MS - timeSinceLastRequest) / 1000);
       setCooldownSeconds(waitTime);
       
-      // Start countdown
       const countdown = setInterval(() => {
         setCooldownSeconds(prev => {
           if (prev <= 1) {
@@ -124,15 +122,13 @@ const ChatInterface = () => {
         });
       }, 1000);
       
-      return; // Don't send, user needs to wait
+      return;
     }
     
-    // Normalize query for cache lookup
     const cacheKey = text.trim().toLowerCase();
     const cachedResponse = responseCacheRef.current.get(cacheKey);
     
     if (cachedResponse) {
-      // Use cached response instead of API call
       setMessages(prev => [...prev, 
         { role: 'user', content: text },
         { role: 'ai', content: cachedResponse + " _(cached)_" }
@@ -141,12 +137,11 @@ const ChatInterface = () => {
       return;
     }
 
-    // Add user message
     const userMsg = { role: 'user', content: text };
     setMessages(prev => [...prev, userMsg]);
     setInputValue('');
     setIsTyping(true);
-    lastRequestTimeRef.current = now; // Record request time
+    lastRequestTimeRef.current = now;
 
     try {
       const apiKey = import.meta.env.VITE_GOOGLE_AI_KEY;
@@ -181,7 +176,6 @@ const ChatInterface = () => {
       const response = await result.response;
       const textResponse = response.text();
       
-      // Cache the response for future identical questions
       const cacheKey = text.trim().toLowerCase();
       responseCacheRef.current.set(cacheKey, textResponse);
 
@@ -218,7 +212,6 @@ const ChatInterface = () => {
         fontFamily: "'Jura', sans-serif",
       }}
     >
-      {/* Header / Welcome Area */}
       <div className="mb-6">
         <h1 className="text-3xl font-semibold text-gray-900 mb-2 tracking-wide">
           Ask me anything regarding <br/>
@@ -231,7 +224,6 @@ const ChatInterface = () => {
         </p>
       </div>
 
-      {/* Chat Area */}
       <div 
         className="flex-1 overflow-y-auto mb-4 pr-2 space-y-4 custom-scrollbar"
         style={{
@@ -239,7 +231,7 @@ const ChatInterface = () => {
           WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 10%, black 95%, transparent)'
         }}
       >
-        <div className="h-4"></div> {/* Spacer for mask */}
+        <div className="h-4"></div>
         
         {messages.map((msg, idx) => (
           <div 
@@ -275,7 +267,6 @@ const ChatInterface = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Suggestion Chips (Only show if few messages) */}
       {messages.length < 3 && !isTyping && (
         <div className="flex gap-2 mb-4 overflow-x-auto pb-1 scrollbar-hide">
           {suggestions.map((s, i) => (
@@ -290,14 +281,12 @@ const ChatInterface = () => {
         </div>
       )}
 
-      {/* Cooldown Indicator */}
       {cooldownSeconds > 0 && (
         <div className="mb-2 text-center text-xs text-gray-500 animate-pulse">
           ⏳ Please wait {cooldownSeconds}s before sending again...
         </div>
       )}
 
-      {/* Input Area */}
       <div className="relative group">
         <div className="absolute inset-0 bg-gradient-to-r from-gray-200 to-gray-300 rounded-full blur transition-opacity opacity-0 group-hover:opacity-50 duration-500"></div>
         <div className="relative flex items-center bg-white/60 border border-gray-900/10 rounded-full backdrop-blur-lg transition-all duration-300 focus-within:border-gray-900/30 focus-within:bg-white/80 focus-within:shadow-[0_0_30px_rgba(0,0,0,0.05)]">
@@ -322,7 +311,6 @@ const ChatInterface = () => {
       </div>
 
       <style>{`
-        /* Custom Scrollbar for chat */
         .custom-scrollbar::-webkit-scrollbar {
           width: 4px;
         }
@@ -358,17 +346,16 @@ const ChatInterface = () => {
 
 const ChargeUpAnimation = ({ onComplete }) => {
   const [progress, setProgress] = useState(0);
-  const [phase, setPhase] = useState("counting"); // counting, complete, popup, burst, done
+  const [phase, setPhase] = useState("counting");
   const [ballScale, setBallScale] = useState(0);
   const [burstScale, setBurstScale] = useState(0);
   const [ringScales, setRingScales] = useState([0, 0, 0]);
   const animationRef = useRef(null);
 
-  // Phase 1: Count from 0 to 100
   useEffect(() => {
     if (phase !== "counting") return;
 
-    const duration = 2000; // 2 seconds
+    const duration = 2000;
     const startTime = Date.now();
 
     const animate = () => {
@@ -389,32 +376,29 @@ const ChargeUpAnimation = ({ onComplete }) => {
     return () => cancelAnimationFrame(animationRef.current);
   }, [phase]);
 
-  // Phase 2: Hold at 100%, then move to popup
   useEffect(() => {
     if (phase !== "complete") return;
     
     const timer = setTimeout(() => {
       setPhase("popup");
-    }, 600); // Hold for 600ms
+    }, 600);
     
     return () => clearTimeout(timer);
   }, [phase]);
 
-  // Phase 3: Ball pops up in center
   useEffect(() => {
     if (phase !== "popup") return;
 
     let scale = 0;
-    const targetScale = 60; // Ball size in pixels
+    const targetScale = 60;
 
     const animate = () => {
-      // Elastic pop-up effect
       scale += (targetScale - scale) * 0.15;
       setBallScale(scale);
 
       if (scale >= targetScale - 1) {
         setBallScale(targetScale);
-        setTimeout(() => setPhase("burst"), 300); // Hold ball briefly
+        setTimeout(() => setPhase("burst"), 300);
         return;
       }
 
@@ -425,7 +409,6 @@ const ChargeUpAnimation = ({ onComplete }) => {
     return () => cancelAnimationFrame(animationRef.current);
   }, [phase]);
 
-  // Phase 4: Ball bursts with expanding rings
   useEffect(() => {
     if (phase !== "burst") return;
 
@@ -437,16 +420,13 @@ const ChargeUpAnimation = ({ onComplete }) => {
     const animate = () => {
       frame++;
       
-      // Main burst expansion - SLOWER for cinematic effect
       scale *= 1.04;
       setBurstScale(scale);
 
-      // Trigger rings at intervals
       if (frame === 5) rings[0] = 1;
       if (frame === 15) rings[1] = 1;
       if (frame === 25) rings[2] = 1;
 
-      // Expand rings
       rings = rings.map((r, i) => {
         if (r > 0) return r * 1.08;
         return 0;
@@ -473,7 +453,6 @@ const ChargeUpAnimation = ({ onComplete }) => {
       className="fixed inset-0 z-[10000] flex items-center justify-center overflow-hidden"
       style={{ backgroundColor: "#000000" }}
     >
-      {/* Progress counter - bottom left */}
       {(phase === "counting" || phase === "complete") && (
         <div 
           className="absolute bottom-16 left-16 z-20"
@@ -497,14 +476,12 @@ const ChargeUpAnimation = ({ onComplete }) => {
         </div>
       )}
 
-      {/* 100% Complete indicator - center */}
       {phase === "complete" && (
         <div className="text-white text-2xl font-light tracking-[0.5em] uppercase animate-pulse">
           READY
         </div>
       )}
 
-      {/* Ball popup */}
       {phase === "popup" && (
         <div 
           className="rounded-full"
@@ -521,10 +498,8 @@ const ChargeUpAnimation = ({ onComplete }) => {
         />
       )}
 
-      {/* Burst expansion */}
       {phase === "burst" && (
         <>
-          {/* Main burst with dynamic glow */}
           <div 
             className="absolute rounded-full"
             style={{
@@ -540,7 +515,6 @@ const ChargeUpAnimation = ({ onComplete }) => {
             }}
           />
           
-          {/* Expanding rings */}
           {ringScales.map((scale, i) => scale > 0 && (
             <div 
               key={i}
@@ -555,7 +529,6 @@ const ChargeUpAnimation = ({ onComplete }) => {
         </>
       )}
 
-      {/* Minimal branding - bottom right */}
       {phase === "counting" && (
         <div className="absolute bottom-16 right-16 z-20">
           <span className="text-white/20 text-xs uppercase tracking-[0.4em] font-light">
@@ -568,7 +541,6 @@ const ChargeUpAnimation = ({ onComplete }) => {
 };
 
 
-// Mobile Home Page Component
 const MobileHomePage = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const navigate = useNavigate();
@@ -586,7 +558,6 @@ const MobileHomePage = () => {
         fontFamily: "Poppins, system-ui, -apple-system, sans-serif",
       }}
     >
-      {/* Top Left - Code by text */}
       <div
         className={`absolute top-6 left-5 z-20 transform transition-all duration-700 ${
           isLoaded ? "translate-x-0 opacity-100" : "-translate-x-4 opacity-0"
@@ -597,7 +568,6 @@ const MobileHomePage = () => {
         </p>
       </div>
 
-      {/* Top Right - Description text */}
       <div
         className={`absolute top-6 right-5 z-20 max-w-[180px] text-right transform transition-all duration-700 delay-100 ${
           isLoaded ? "translate-x-0 opacity-100" : "translate-x-4 opacity-0"
@@ -610,14 +580,12 @@ const MobileHomePage = () => {
         </p>
       </div>
 
-      {/* Center - Profile Image */}
       <div className="absolute inset-0 flex items-center justify-center z-10">
         <div
           className={`relative transform transition-all duration-1000 delay-300 ${
             isLoaded ? "scale-100 opacity-100" : "scale-95 opacity-0"
           }`}
         >
-          {/* Profile Image Container */}
           <div
             className="relative w-[280px] h-[350px] overflow-hidden"
             style={{
@@ -634,7 +602,6 @@ const MobileHomePage = () => {
             />
           </div>
 
-          {/* Arrow Button */}
           <div
             className={`absolute right-0 top-1/2 transform translate-x-1/2 -translate-y-1/2 transition-all duration-700 delay-500 ${
               isLoaded ? "scale-100 opacity-100" : "scale-75 opacity-0"
@@ -666,7 +633,6 @@ const MobileHomePage = () => {
         </div>
       </div>
 
-      {/* Bottom - Large Marquee Text */}
       <div
         className={`absolute bottom-24 left-0 right-0 z-10 overflow-hidden transform transition-all duration-1000 delay-600 ${
           isLoaded ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
@@ -686,7 +652,6 @@ const MobileHomePage = () => {
         </div>
       </div>
 
-      {/* Styles */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Jura:wght@300;400;500;600;700&display=swap');
         
@@ -720,11 +685,7 @@ const MobileHomePage = () => {
   );
 };
 
-// Desktop Home Page Component
 const DesktopHomePage = () => {
-  /* Replaced auto-typing logic with ChatInterface */
-
-
   const [splineLoaded, setSplineLoaded] = useState(false);
   const [showOverlays, setShowOverlays] = useState(false);
 
@@ -766,8 +727,6 @@ const DesktopHomePage = () => {
 
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900/20 via-transparent to-gray-900/30 pointer-events-none"></div>
 
-
-
       <SplineMasking splineLoaded={splineLoaded} />
 
       {!splineLoaded && (
@@ -777,11 +736,9 @@ const DesktopHomePage = () => {
   );
 };
 
-// Main HomePage Component - switches between Mobile and Desktop
 const HomePage = () => {
   const [isMobile, setIsMobile] = useState(false);
   
-  // Check if animation was already shown this session
   const hasSeenAnimation = sessionStorage.getItem('hasSeenChargeUp') === 'true';
   const [showChargeUp, setShowChargeUp] = useState(!hasSeenAnimation);
   const [animationComplete, setAnimationComplete] = useState(hasSeenAnimation);
@@ -799,7 +756,6 @@ const HomePage = () => {
   const handleChargeUpComplete = () => {
     setShowChargeUp(false);
     setAnimationComplete(true);
-    // Remember that animation was shown
     sessionStorage.setItem('hasSeenChargeUp', 'true');
   };
 

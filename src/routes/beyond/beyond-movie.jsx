@@ -1,24 +1,19 @@
-import React, { useState, useRef, Suspense, useEffect, useMemo } from "react";
+import { useState, useRef, Suspense, useEffect, useMemo } from "react";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
-import { CameraControls, Environment, PerformanceMonitor, AdaptiveDpr } from "@react-three/drei";
+import { CameraControls, PerformanceMonitor, AdaptiveDpr } from "@react-three/drei";
 import { EffectComposer, Bloom, Noise, Vignette, ChromaticAberration } from "@react-three/postprocessing";
 import * as THREE from 'three';
-
-// 3D Components
-
-// 3D Components
-import CinemaEnvironment from "../../lib/components/movie-scene/CinemaEnvironment";
-import ProjectorLight from "../../lib/components/movie-scene/ProjectorLight";
-import MovieCloud from "../../lib/components/movie-scene/MovieCloud";
-import ReflectiveFloor from "../../lib/components/movie-scene/ReflectiveFloor"; // Kept if needed, but Env has floor now
-import CinemaSeats from "../../lib/components/movie-scene/CinemaSeats";
-import GiantScreen from "../../lib/components/movie-scene/GiantScreen";
-
 import { useNavigate } from "react-router-dom";
 
-// ------------------------------------------
-// CAMERA RIG (Fly-to-seat, then lock)
-// ------------------------------------------
+import CinemaEnvironment from "../../lib/components/movie-scene/cinema-environment.jsx";
+import ProjectorLight from "../../lib/components/movie-scene/projector-light.jsx";
+import MovieCloud from "../../lib/components/movie-scene/movie-cloud.jsx";
+// import ReflectiveFloor from "../../lib/components/movie-scene/reflective_floor.jsx";
+import CinemaSeats from "../../lib/components/movie-scene/cinema-seats.jsx";
+import GiantScreen from "../../lib/components/movie-scene/giant-screen.jsx";
+
+const R2_PUBLIC_URL = import.meta.env.VITE_R2_PUBLIC_URL;
+
 const CameraRig = ({ selectedMovie, onTransitionComplete }) => {
     const controls = useRef();
     const camera = useThree((state) => state.camera);
@@ -28,7 +23,6 @@ const CameraRig = ({ selectedMovie, onTransitionComplete }) => {
     const startPos = useRef(new THREE.Vector3());
     const startQuat = useRef(new THREE.Quaternion());
 
-    // Seat position: center row, eye-height, facing screen
     const targetPos = useMemo(() => new THREE.Vector3(0, -2, 5), []);
     const targetLookAt = useMemo(() => new THREE.Vector3(0, 4, -25), []);
     const targetQuat = useMemo(() => {
@@ -40,7 +34,6 @@ const CameraRig = ({ selectedMovie, onTransitionComplete }) => {
 
     useEffect(() => {
         if (selectedMovie) {
-            // Start transition
             setIsTransitioning(true);
             setIsLocked(false);
             controls.current.enabled = false;
@@ -48,7 +41,6 @@ const CameraRig = ({ selectedMovie, onTransitionComplete }) => {
             startQuat.current.copy(camera.quaternion);
             transitionStartTime.current = null;
         } else {
-            // Go back to overview
             setIsTransitioning(false);
             setIsLocked(false);
             if (controls.current) {
@@ -75,14 +67,12 @@ const CameraRig = ({ selectedMovie, onTransitionComplete }) => {
             if (t >= 1) {
                 setIsTransitioning(false);
                 setIsLocked(true);
-                // Hard-set final position
                 camera.position.copy(targetPos);
                 camera.quaternion.copy(targetQuat);
                 if (onTransitionComplete) onTransitionComplete();
             }
         }
 
-        // Keep camera locked after transition
         if (isLocked) {
             camera.position.copy(targetPos);
             camera.quaternion.copy(targetQuat);
@@ -92,9 +82,6 @@ const CameraRig = ({ selectedMovie, onTransitionComplete }) => {
     return <CameraControls ref={controls} maxPolarAngle={Math.PI / 1.6} minPolarAngle={Math.PI / 3} minDistance={5} maxDistance={60} />;
 };
 
-// ------------------------------------------
-// LIGHTING RIG
-// ------------------------------------------
 const TheaterLighting = ({ isPlaying }) => {
     const ambientRef = useRef();
     const warmL = useRef();
@@ -102,7 +89,6 @@ const TheaterLighting = ({ isPlaying }) => {
     const overheadRef = useRef();
 
     useFrame((state, delta) => {
-        // Bright before playing, dim (but not black) during playback
         const tAmbient = isPlaying ? 0.08 : 0.6;
         const tWarm = isPlaying ? 0.3 : 2.0;
         const tOverhead = isPlaying ? 0.1 : 1.0;
@@ -119,34 +105,24 @@ const TheaterLighting = ({ isPlaying }) => {
 
     return (
         <>
-            {/* Warm ambient */}
             <ambientLight ref={ambientRef} intensity={0.6} color="#FFE0C0" />
-            {/* Violet wall sconces */}
             <pointLight ref={warmL} position={[-22, 2, 5]} intensity={2.0} color="#9B59B6" distance={50} decay={2} />
             <pointLight ref={warmR} position={[22, 2, 5]} intensity={2.0} color="#9B59B6" distance={50} decay={2} />
-            {/* Cool overhead */}
             <pointLight ref={overheadRef} position={[0, 12, 5]} intensity={1.0} color="#C8B8E8" distance={60} decay={2} />
         </>
     );
 };
 
-// ------------------------------------------
-// MAIN PAGE
-// ------------------------------------------
 export default function BeyondMovie() {
     const navigate = useNavigate();
     const [selectedMovie, setSelectedMovie] = useState(null);
     const [highPerf, setHighPerf] = useState(true);
     const [videoPlaying, setVideoPlaying] = useState(false);
 
-    // Use selected movie's video
-    const movieVideo = selectedMovie?.video || "/videos/interstellar.mp4";
-
     const handleTransitionComplete = () => {
         setVideoPlaying(true);
     };
 
-    // Reset when movie deselected
     useEffect(() => {
         if (!selectedMovie) setVideoPlaying(false);
     }, [selectedMovie]);
@@ -159,10 +135,8 @@ export default function BeyondMovie() {
 
                 <CameraRig selectedMovie={selectedMovie} onTransitionComplete={handleTransitionComplete} />
                 
-                {/* Dynamic Lighting */}
                 <TheaterLighting isPlaying={videoPlaying} />
 
-                {/* Scene Content */}
                 <Suspense fallback={null}>
                     <CinemaEnvironment highPerf={highPerf} dimmed={videoPlaying} />
                     <ProjectorLight highPerf={highPerf} isPlaying={videoPlaying} />
@@ -170,19 +144,17 @@ export default function BeyondMovie() {
                     <CinemaSeats />
                     
                     <GiantScreen 
-                        videoUrl={movieVideo} 
+                        videoUrl={R2_PUBLIC_URL?.replace("{dir}", selectedMovie?.id)}
                         isPlaying={videoPlaying}
                         shouldLoad={!!selectedMovie}
                     />
 
-                    {/* Movie Menu - Hidden when playing */}
                     <group position={[0, 6, 20]} visible={!selectedMovie}> 
                         <MovieCloud onSelectMovie={setSelectedMovie} selectedMovie={selectedMovie} />
                     </group>
                     
                 </Suspense>
 
-                {/* Cinematic Post Processing */}
                 <EffectComposer disableNormalPass>
                     <Bloom luminanceThreshold={0.5} luminanceSmoothing={0.9} height={300} intensity={1.2} />
                     <Noise opacity={0.02} /> 
@@ -191,7 +163,6 @@ export default function BeyondMovie() {
                 </EffectComposer>
             </Canvas>
 
-            {/* UI Overlay */}
             <div className={`absolute top-0 left-0 w-full p-8 pointer-events-none flex justify-between items-start z-10 transition-opacity duration-1000 ${selectedMovie ? 'opacity-0' : 'opacity-100'}`}>
                 <div>
                      <h1 className="text-5xl font-thin text-white tracking-[0.2em] mb-2 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]" style={{ fontFamily: 'Georgia, serif' }}>
@@ -203,7 +174,6 @@ export default function BeyondMovie() {
                 </div>
             </div>
 
-            {/* Movie Detail Overlay - Minimized when playing */}
             {selectedMovie && (
                 <div className="absolute bottom-12 left-1/2 -translate-x-1/2 pointer-events-none flex flex-col items-center z-20 transition-opacity duration-1000 animate-in fade-in slide-in-from-bottom-5">
                      <h2 className="text-2xl text-white/50 font-light tracking-widest mb-1 uppercase">
@@ -216,8 +186,7 @@ export default function BeyondMovie() {
                 </div>
             )}
 
-            {/* Controls */}
-             <div className="absolute top-8 right-8 z-50 flex gap-4">
+            <div className="absolute top-8 right-8 z-50 flex gap-4">
                 {selectedMovie && (
                     <button 
                         className="text-white/50 hover:text-white uppercase tracking-widest text-xs pointer-events-auto border border-white/20 px-4 py-2 hover:bg-white/10 transition-all rounded-full bg-black/50 backdrop-blur-sm"

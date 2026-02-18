@@ -20,7 +20,7 @@ logs/
 
 # Development
 .cache/
-.vite-cache-portfolio/
+.vite-cache/
 *.local
 
 # IDE specific

@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
-import TargetCursor from './lib/components/target-cursor.jsx';
+// import TargetCursor from './lib/components/target-cursor.jsx';
 import NavigationBar from './lib/components/navigation-bar.jsx';
 
 const HomePage = lazy(() => import('./routes/home-page.jsx'));
@@ -16,11 +16,11 @@ const BeyondSport = lazy(() => import('./routes/beyond/beyond-sport.jsx'));
 const BeyondRandom = lazy(() => import('./routes/beyond/beyond-personal.jsx'));
 const BeyondDisclaimer = lazy(() => import('./routes/beyond/beyond-disclaimer.jsx'));
 
-const ResumeMain = lazy(() => import('./routes/resume-main.jsx'));
-const ContactMain = lazy(() => import('./routes/contact-main.jsx'));
-const CertificatesPage = lazy(() => import('./routes/certificates-page.jsx'));
+const ResumeMain = lazy(() => import('./routes/resume-page.jsx'));
+const ContactMain = lazy(() => import('./routes/contact-page.jsx'));
+const CertificatesPage = lazy(() => import('./routes/skills/certificates-page.jsx'));
 
-const SkillsMain = lazy(() => import('./routes/skills/skills-main.jsx'));
+const SkillsMain = lazy(() => import('./routes/skills/skills-page.jsx'));
 
 const routeMap = {
     '/': 'Home',
@@ -92,13 +92,13 @@ export default function App() {
                         />
 
                         <Route path="/beyond" element={<BeyondMain />} />
-                        <Route path="/beyond/unfiltered" element={<BeyondUnfiltered />} />
+                        <Route path="/beyond/disclaimer" element={<BeyondDisclaimer />} />
                         <Route path="/beyond/books" element={<BeyondBooks />} />
                         <Route path="/beyond/music" element={<BeyondMusic />} />
                         <Route path="/beyond/movies" element={<BeyondMovie />} />
                         <Route path="/beyond/sports" element={<BeyondSport />} />
                         <Route path="/beyond/random" element={<BeyondRandom />} />
-                        <Route path="/beyond/disclaimer" element={<BeyondDisclaimer />} />
+                        <Route path="/beyond/unfiltered" element={<BeyondUnfiltered />} />
                         <Route
                             path="/beyond/*"
                             element={<Navigate to="/beyond" replace />}
@@ -123,7 +123,6 @@ export default function App() {
                         />
 
                         <Route path="/skills" element={<SkillsMain />} />
-                        <Route path="/skills/certificates" element={<CertificatesPage />} />
                         <Route
                             path="/skills/*"
                             element={<Navigate to="/skills" replace />}

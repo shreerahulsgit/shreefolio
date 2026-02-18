@@ -1,21 +1,15 @@
-import React, { useRef, useState, useMemo, Suspense } from 'react';
+import React, { useRef, useState, Suspense } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { ScrollControls, useScroll, Text, Float, Stars, Sparkles, PerformanceMonitor, Billboard } from '@react-three/drei';
 import { EffectComposer, Bloom, Noise, Vignette, ChromaticAberration } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { useNavigate } from 'react-router-dom';
 
-// --- Assets ---
-const FONT_URL = 'https://fonts.gstatic.com/s/raleway/v14/1Ptrg8zYS_SKggPNwK4vaqI.woff';
-
-// --- Configuration ---
 const SPIRAL_RADIUS = 5;
 const VERTICAL_SPACING = 3.5; 
-const ANGLE_STEP = Math.PI / 2; // sharper turn
+const ANGLE_STEP = Math.PI / 2;
 const TOTAL_BLOCKS = 8;
 
-
-// --- Content Data (Same as before) ---
 const BLOCKS_DATA = [
   {
     id: 1,
@@ -217,11 +211,9 @@ const BLOCKS_DATA = [
   },
 ];
 
-// --- Helpers ---
 const CloudText = ({ size = 1, color = "white", emissive = "white", children, isAction, ...props }) => {
     const matRef = useRef();
     
-    // Pulsing glow for action/CTA blocks
     useFrame((state) => {
         if (matRef.current && isAction) {
             const pulse = (Math.sin(state.clock.elapsedTime * 2) + 1) / 2; // 0→1 breathing
@@ -250,35 +242,27 @@ const CloudText = ({ size = 1, color = "white", emissive = "white", children, is
     );
 };
 
-// --- Components ---
-
 const SpiralBlock = ({ data, index, total, onNavigate }) => {
     const groupRef = useRef();
     const lightRef = useRef();
     const [hovered, setHovered] = useState(false);
 
-    // SPIRAL MATH
     const angle = index * ANGLE_STEP;
     const y = -index * VERTICAL_SPACING;
     const x = Math.sin(angle) * SPIRAL_RADIUS;
     const z = -Math.cos(angle) * SPIRAL_RADIUS;
 
-    // Fade-in config
-    const REVEAL_RANGE = 8; // units of camera distance to fully reveal
+    const REVEAL_RANGE = 8;
 
     useFrame((state, delta) => {
         if (!groupRef.current) return;
         
-        // --- SCROLL PROXIMITY FADE-IN ---
         const camY = state.camera.position.y;
         const distance = Math.abs(camY - y);
         
-        // visibility: 1 when camera is at block, 0 when far away
         const visibility = THREE.MathUtils.clamp(1 - distance / REVEAL_RANGE, 0, 1);
-        // Smooth ease-in curve
-        const eased = visibility * visibility * (3 - 2 * visibility); // smoothstep
+        const eased = visibility * visibility * (3 - 2 * visibility);
         
-        // Apply opacity to all children materials
         groupRef.current.traverse((child) => {
             if (child.material) {
                 child.material.opacity = eased;
@@ -286,14 +270,12 @@ const SpiralBlock = ({ data, index, total, onNavigate }) => {
             }
         });
         
-        // Scale: from 0.6 to 1 (or 1.1 if hovered action)
         const baseScale = 0.6 + eased * 0.4;
         const targetScale = (data.isAction && hovered) ? baseScale * 1.1 : baseScale;
         const currentScale = groupRef.current.scale.x;
         const smoothScale = THREE.MathUtils.damp(currentScale, targetScale, 5, delta);
         groupRef.current.scale.setScalar(smoothScale);
 
-        // --- ACCENT LIGHT ---
         if (lightRef.current) {
             lightRef.current.intensity = eased * 3;
         }
@@ -328,7 +310,6 @@ const SpiralBlock = ({ data, index, total, onNavigate }) => {
             ref={groupRef} 
             position={[x, y, z]}
         >
-             {/* Accent light that fades with proximity */}
              <pointLight
                  ref={lightRef}
                  color={data.accentColor || '#ffffff'}
@@ -351,48 +332,17 @@ const SpiralScene = ({ onNavigate }) => {
     const { camera } = useThree();
     
     useFrame((state, delta) => {
-        // SCROLL DRIVES CAMERA DESCENT
-        // We need to move Camera Y down.
-        // Total height = TOTAL_BLOCKS * VERTICAL_SPACING
         const scrollOffset = scroll.offset;
         const totalHeight = (TOTAL_BLOCKS - 1) * VERTICAL_SPACING;
         
         const targetY = -(scrollOffset * totalHeight); 
         camera.position.y = THREE.MathUtils.damp(camera.position.y, targetY, 3, delta);
-        
-        // SCROLL DRIVES CAMERA ROTATION (SPIRAL)
-        // We rotate the camera around the Y axis to match the spiral angle.
-        // Current Angle should match the Index we are at.
-        // Index = scrollOffset * (TOTAL - 1)
-        // Angle = Index * ANGLE_STEP
-        
         const currentAngle = scrollOffset * (TOTAL_BLOCKS - 1) * ANGLE_STEP;
-        
-        // Camera Position relative to center
-        // We want to be inside the spiral, looking slightly out or at the wall?
-        // Let's stay in the center x=0, z=0.
-        // And rotate the camera Y to look at the current wall.
-        
-        // Actually, better visual: Camera describes a smaller inner spiral?
-        // Or just rotate the camera itself.
-        
-        // Simple: Camera at 0,y,0. Rotating Y.
-        // Target Rotation Y = -currentAngle + Offset to center text
-        // Adding Math.PI to face the text which is at 'currentAngle'
-        
-        // We control camera.rotation.y directly or use lookAt
-        // Damp rotation
+
         const targetRotY = currentAngle;
-        
-        // We manually update camera rotation (quaternion is better but Euler is fine here for Y axis)
-        // Note: We need to respect the initial Camera setup.
-        // Let's dampen the rotation value
-        
-        // To make it smooth continuous rotation:
         const smoothRot = THREE.MathUtils.damp(camera.rotation.y, -targetRotY, 2, delta);
-        camera.rotation.y = smoothRot; // This might fight transparent OrbitControls if we had them. ScrollControls doesn't rotate cam.
+        camera.rotation.y = smoothRot;
         
-        // Floating effect
         camera.position.x = Math.sin(state.clock.elapsedTime * 0.5) * 0.5;
         camera.position.z = Math.cos(state.clock.elapsedTime * 0.5) * 0.5;
     });
@@ -419,7 +369,6 @@ export default function BeyondUnfiltered() {
     return (
         <div className="w-full h-screen bg-black">
             <Canvas 
-                // Camera starts at 0,0,0
                 camera={{ position: [0, 0, 0], fov: 60 }}
                 dpr={dpr}
                 gl={{ powerPreference: "high-performance", antialias: false, stencil: false, depth: true }}
@@ -427,24 +376,19 @@ export default function BeyondUnfiltered() {
                 <PerformanceMonitor onDecline={() => setDpr(1)} onIncline={() => setDpr(1.5)} />
 
                 <color attach="background" args={['#030303']} />
-                {/* Fog: Linear or Exp2. Exp2 covers the bottom well. */}
                 <fogExp2 attach="fog" args={['#030303', 0.05]} /> 
                 <ambientLight intensity={0.2} />
 
                 <Stars radius={50} depth={50} count={3000} factor={4} saturation={0} fade speed={1} />
-                {/* Tall sparkle field for the spiral */}
                 <group position={[0, -20, 0]} scale={[1, 5, 1]}>
                     <Sparkles count={200} scale={20} size={3} speed={0.4} opacity={0.3} color="#64748b" />
                 </group>
 
                 <Suspense fallback={null}>
-                    {/* Pages needs to match the length of the spiral */}
                     <ScrollControls pages={6} damping={0.4}>
                         <SpiralScene onNavigate={navigate} />
                     </ScrollControls>
                 </Suspense>
-
-                {/* POST PROCESSING */}
 
                 <EffectComposer disableNormalPass>
                     <Bloom luminanceThreshold={0.2} luminanceSmoothing={0.9} height={300} intensity={0.5} />
@@ -454,7 +398,6 @@ export default function BeyondUnfiltered() {
                 </EffectComposer>
             </Canvas>
 
-             {/* Hint UI */}
             <div className="absolute bottom-8 left-1/2 -translate-x-1/2 pointer-events-none text-white/30 text-xs uppercase tracking-[0.3em] animate-pulse">
                 Descend
             </div>

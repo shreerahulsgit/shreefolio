@@ -1,18 +1,15 @@
-import React, { useState, Suspense, useRef } from 'react';
+import { useState, Suspense, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { PerformanceMonitor, AdaptiveDpr } from '@react-three/drei';
 import { EffectComposer, Bloom, Vignette, ChromaticAberration } from '@react-three/postprocessing';
 import { useNavigate } from 'react-router-dom';
 import * as THREE from 'three';
 
-// Modular Components
-import CosmicBackground from '../../lib/components/books-scene/CosmicBackground';
-import FloatingRack from '../../lib/components/books-scene/FloatingRack';
-import LibraryCameraRig from '../../lib/components/books-scene/LibraryCameraRig';
-import FloatingThoughts from '../../lib/components/books-scene/FloatingThoughts';
+import CosmicBackground from '../../lib/components/books-scene/cosmic-background.jsx';
+import FloatingRack from '../../lib/components/books-scene/floating-rack.jsx';
+import LibraryCameraRig from '../../lib/components/books-scene/library-camera-rig.jsx';
+import FloatingThoughts from '../../lib/components/books-scene/floating-thoughts.jsx';
 
-// ── Animated Scene Lighting ──
-// Smoothly transitions from near-dark to full cinematic lighting
 const SceneLighting = ({ lampOn }) => {
     const ambientRef = useRef();
     const keyRef = useRef();
@@ -45,7 +42,6 @@ const SceneLighting = ({ lampOn }) => {
     );
 };
 
-// Data
 const BOOKS = [
     {
       title: "Atomic Habits",
@@ -120,10 +116,8 @@ export default function BeyondBooks() {
                 <PerformanceMonitor onDecline={() => setHighPerf(false)} />
                 <AdaptiveDpr pixelated />
 
-                {/* Camera */}
                 <LibraryCameraRig activeBook={activeBook} />
 
-                {/* Animated Scene Lighting — dark until lamp is toggled */}
                 <SceneLighting lampOn={lampOn} />
 
                 <Suspense fallback={null}>
@@ -141,7 +135,6 @@ export default function BeyondBooks() {
                     </group>
                 </Suspense>
 
-                {/* Post Processing */}
                 {highPerf && (
                     <EffectComposer disableNormalPass>
                         <Bloom luminanceThreshold={0.3} mipmapBlur intensity={1.5} radius={0.4} />
@@ -151,9 +144,6 @@ export default function BeyondBooks() {
                 )}
             </Canvas>
 
-            {/* ═══ UI OVERLAY ═══ */}
-
-            {/* Title header — fades when reading, hidden when lamp off */}
             <div className={`absolute top-0 left-0 w-full p-8 pointer-events-none flex justify-between items-start z-10 transition-opacity duration-1000 ${!lampOn || activeBook ? 'opacity-0' : 'opacity-100'}`}>
                 <div>
                      <h1 
@@ -171,7 +161,6 @@ export default function BeyondBooks() {
                 </div>
             </div>
 
-            {/* Active book detail panel */}
             {activeBook && (
                 <div 
                     className="absolute bottom-10 left-1/2 -translate-x-1/2 pointer-events-none z-20 flex flex-col items-center px-8 py-5 rounded-2xl"
@@ -196,12 +185,10 @@ export default function BeyondBooks() {
                 </div>
             )}
 
-            {/* Bottom hint — changes based on lamp state */}
             <div className={`absolute bottom-8 left-8 text-purple-300/30 text-xs tracking-[0.3em] font-light pointer-events-none transition-opacity duration-1000 ${lampOn ? 'opacity-100' : 'opacity-0'}`}>
                 {activeBook ? "CLICK TO CLOSE" : "CLICK TO READ • SCROLL TO EXPLORE"}
             </div>
             
-            {/* Navigation */}
             <div className="absolute top-8 right-8 z-50 flex gap-4">
                 {activeBook && (
                     <button 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   SiJavascript,
@@ -10,11 +10,10 @@ import {
   SiAmazonwebservices,
   SiGithub,
 } from "react-icons/si";
-import { FaGithub, FaLinkedin, FaCode, FaRocket, FaEnvelope } from "react-icons/fa";
+import { FaGithub, FaLinkedin, FaCode, FaRocket } from "react-icons/fa";
 import TiltedCard from "../lib/components/tilted-card.jsx";
-import Footer from "../lib/components/footer.jsx";
+import Footer from "../lib/components/footer-main.jsx";
 
-// Starfield Background Component (same as contact page)
 const Starfield = () => {
   const stars = Array.from({ length: 80 }, (_, i) => ({
     id: i,
@@ -50,7 +49,6 @@ const Starfield = () => {
         }
       `}</style>
       
-      {/* Stars */}
       {stars.map((star) => (
         <div
           key={star.id}
@@ -66,7 +64,6 @@ const Starfield = () => {
         />
       ))}
 
-      {/* Shooting Stars */}
       {shootingStars.map((star) => (
         <div
           key={`shooting-${star.id}`}
@@ -85,7 +82,6 @@ const Starfield = () => {
         />
       ))}
 
-      {/* Nebula Clouds */}
       {[...Array(5)].map((_, i) => (
         <div
           key={`nebula-${i}`}
@@ -106,7 +102,6 @@ const Starfield = () => {
   );
 };
 
-// Glass Button Component with Apple-style shine effect
 const GLASS_BUTTON_SIZE_CLASSES = {
   default: "px-8 py-4",
   large: "px-10 py-5",
@@ -136,7 +131,6 @@ const GlassButton = ({
           : "0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)",
       }}
     >
-      {/* Top shine gradient */}
       <div
         className="absolute inset-x-0 top-0 h-1/2 pointer-events-none"
         style={{
@@ -146,7 +140,6 @@ const GlassButton = ({
         }}
       />
 
-      {/* Shimmer effect on hover */}
       <div
         className="absolute inset-0 pointer-events-none transition-opacity duration-500"
         style={{
@@ -158,12 +151,10 @@ const GlassButton = ({
         }}
       />
 
-      {/* Button content */}
       <span className="relative z-10 flex items-center gap-3 text-white font-semibold text-lg">
         {children}
       </span>
 
-      {/* Border glow on hover */}
       <div
         className="absolute inset-0 rounded-2xl pointer-events-none transition-opacity duration-500"
         style={{
@@ -175,7 +166,6 @@ const GlassButton = ({
   );
 };
 
-// Glass Card Component with shine effect
 const GlassCard = ({
   children,
   className = "",
@@ -196,7 +186,6 @@ const GlassCard = ({
         ...style,
       }}
     >
-      {/* Top shine */}
       <div
         className="absolute inset-x-0 top-0 h-px pointer-events-none"
         style={{
@@ -240,9 +229,8 @@ const useScrollAnimation = (threshold = 0.1) => {
 const HeroSection = () => {
   const [ref, isVisible] = useScrollAnimation(0.2);
   
-  // Typewriter effect messages
   const messages = useMemo(() => [
-    "I'm Shree Rahul —\nyeah… guy on the left.\nthe one pretending he knows what he's doing (he kinda does).",
+    "I'm Shree Rahul —\nyeah… guy on the right.\nthe one pretending he knows what he's doing (he kinda does).",
     "I build stuffs.\nThe web stuffs.\nsometimes cool. sometimes not.but always fun.",
     "developer? yh, probably.\ncoffee + creativity? definitely.\nsleep schedule? absolutely elusive.",
     "Scroll around.\nThe fun parts are ahead ↓",
@@ -254,7 +242,6 @@ const HeroSection = () => {
   const [typingStarted, setTypingStarted] = useState(false);
   const typingTimeout = useRef(null);
 
-  // 3 second delay before typing starts
   useEffect(() => {
     const startTimeout = setTimeout(() => setTypingStarted(true), 3000);
     return () => clearTimeout(startTimeout);
@@ -264,8 +251,8 @@ const HeroSection = () => {
     if (!typingStarted) return;
     
     const currentMessage = messages[msgIdx];
-    let typeSpeed = isDeleting ? 40 : 70; // Slower typing
-    let holdTime = 3500; // Longer pause before deleting
+    let typeSpeed = isDeleting ? 40 : 70;
+    let holdTime = 3500;
 
     if (!isDeleting && displayedText.length < currentMessage.length) {
       typingTimeout.current = setTimeout(() => {
@@ -318,7 +305,6 @@ const HeroSection = () => {
               <br />shh, the sentence below is doing a thing ↓</span>
           </div>
           
-          {/* Typewriter Text */}
           <div className="min-h-[280px] md:min-h-[320px] lg:min-h-[350px]">
             <h1 
               className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-relaxed"
@@ -349,8 +335,8 @@ const HeroSection = () => {
         <div className="flex justify-center lg:justify-end">
           <TiltedCard
             imageSrc="https://i.scdn.co/image/ab67616d0000b273d9985092cd88bffd97653b58"
-            altText="Kendrick Lamar - GNX Album Cover"
-            captionText="Kendrick Lamar - GNX"
+            altText="Shree Rahul S - Album Cover"
+            captionText="Shree Rahul S"
             containerHeight="300px"
             containerWidth="300px"
             imageHeight="350px"
@@ -392,7 +378,6 @@ const SkillCard = ({ skill, delay, isVisible }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Top shine line */}
       <div
         className="absolute inset-x-0 top-0 h-px pointer-events-none"
         style={{
@@ -400,7 +385,6 @@ const SkillCard = ({ skill, delay, isVisible }) => {
           transition: "all 0.5s",
         }}
       />
-      {/* Glass shine gradient */}
       <div
         className="absolute inset-x-0 top-0 h-1/2 pointer-events-none"
         style={{
@@ -409,7 +393,6 @@ const SkillCard = ({ skill, delay, isVisible }) => {
           borderRadius: "16px 16px 0 0",
         }}
       />
-      {/* Shimmer effect */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -418,7 +401,6 @@ const SkillCard = ({ skill, delay, isVisible }) => {
           transition: "transform 0.8s ease-in-out",
         }}
       />
-      {/* Radial glow on hover */}
       <div
         className="absolute inset-0 pointer-events-none transition-opacity duration-500"
         style={{
@@ -520,7 +502,6 @@ const ExperienceSection = () => {
       className="min-h-screen flex items-center justify-center px-6 md:px-12 lg:px-24 py-24 relative z-10"
     >
       <div className="w-full max-w-4xl">
-        {/* Header */}
         <div className="mb-16">
           <div className="flex items-center gap-4 mb-4">
             <h2 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-200 via-white to-gray-300">
@@ -552,9 +533,7 @@ const ExperienceSection = () => {
           </p>
         </div>
 
-        {/* Timeline */}
         <div className="relative">
-          {/* Timeline Line */}
           <div
             className="absolute left-6 md:left-8 top-0 bottom-0 w-px"
             style={{
@@ -562,7 +541,6 @@ const ExperienceSection = () => {
             }}
           />
 
-          {/* Experience Cards */}
           <div className="space-y-8">
             {experiences.map((exp, index) => (
               <div
@@ -570,7 +548,6 @@ const ExperienceSection = () => {
                 className={`relative pl-16 md:pl-20 transition-all duration-700 ${isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"}`}
                 style={{ transitionDelay: `${index * 150}ms` }}
               >
-                {/* Timeline Dot */}
                 <div
                   className="absolute left-4 md:left-6 w-4 h-4 rounded-full cursor-pointer transition-all duration-300 hover:scale-150"
                   style={{
@@ -585,7 +562,6 @@ const ExperienceSection = () => {
                   onClick={() => toggleExpand(index)}
                 />
 
-                {/* Card */}
                 <div
                   className="relative rounded-2xl cursor-pointer transition-all duration-500 overflow-hidden group"
                   style={{
@@ -600,7 +576,6 @@ const ExperienceSection = () => {
                   }}
                   onClick={() => toggleExpand(index)}
                 >
-                  {/* Top shine line */}
                   <div
                     className="absolute inset-x-0 top-0 h-px pointer-events-none"
                     style={{
@@ -609,7 +584,6 @@ const ExperienceSection = () => {
                     }}
                   />
 
-                  {/* Collapsed View */}
                   <div className="p-6">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                       <div>
@@ -628,7 +602,6 @@ const ExperienceSection = () => {
                       </span>
                     </div>
 
-                    {/* Expand indicator */}
                     <div className="flex items-center gap-2 mt-3 text-gray-500 text-sm">
                       <span>{expandedIndex === index ? "tap to collapse" : "tap to expand"}</span>
                       <svg
@@ -642,7 +615,6 @@ const ExperienceSection = () => {
                     </div>
                   </div>
 
-                  {/* Expanded View */}
                   <div
                     className="overflow-hidden transition-all duration-500 ease-in-out"
                     style={{
@@ -651,7 +623,6 @@ const ExperienceSection = () => {
                     }}
                   >
                     <div className="px-6 pb-6 space-y-5">
-                      {/* Divider */}
                       <div
                         className="h-px"
                         style={{
@@ -659,10 +630,8 @@ const ExperienceSection = () => {
                         }}
                       />
 
-                      {/* Description */}
                       <p className="text-gray-300 leading-relaxed">{exp.description}</p>
 
-                      {/* Tech Stack */}
                       <div className="flex flex-wrap gap-2">
                         {exp.techStack.map((tech, techIdx) => (
                           <span
@@ -679,7 +648,6 @@ const ExperienceSection = () => {
                         ))}
                       </div>
 
-                      {/* XP Meters */}
                       <div className="space-y-2 font-mono text-sm">
                         <div className="flex items-center gap-3">
                           <span className="w-32 text-gray-400"> Learning:</span>
@@ -702,7 +670,6 @@ const ExperienceSection = () => {
           </div>
         </div>
 
-        {/* Footer Line */}
         <div className="mt-16 text-center">
           <p className="text-gray-500 text-sm italic">
             Still leveling up. More XP loading…
@@ -856,7 +823,6 @@ const FeaturedProjects = () => {
               className={`relative flex flex-col lg:flex-row items-center justify-center transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : `opacity-0 translate-y-12`}`}
               style={{ transitionDelay: `${index * 200}ms` }}
             >
-              {/* Left Content (for even index) or Right Content (for odd index) */}
               <div
                 className={`relative z-10 flex flex-col ${index % 2 === 0 ? "lg:order-1 items-start" : "lg:order-2 items-start lg:items-end"}`}
                 style={{
@@ -866,7 +832,6 @@ const FeaturedProjects = () => {
                   marginLeft: index % 2 === 0 ? "0" : "-60px",
                 }}
               >
-                {/* Title outside the card */}
                 <div className={`mb-4 ${index % 2 === 0 ? "text-left" : "text-left lg:text-right"}`}>
                   <span
                     className="text-sm font-medium mb-2 block"
@@ -879,7 +844,6 @@ const FeaturedProjects = () => {
                   </h3>
                 </div>
 
-                {/* Description Card - overlaps image */}
                 <div
                   className="p-6 rounded-2xl space-y-3 relative overflow-hidden transition-all duration-500"
                   style={{
@@ -895,7 +859,6 @@ const FeaturedProjects = () => {
                   onMouseEnter={() => setHoveredProject(index)}
                   onMouseLeave={() => setHoveredProject(null)}
                 >
-                  {/* Top shine line */}
                   <div
                     className="absolute inset-x-0 top-0 h-px pointer-events-none"
                     style={{
@@ -903,7 +866,6 @@ const FeaturedProjects = () => {
                         "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent)",
                     }}
                   />
-                  {/* Glass shine gradient */}
                   <div
                     className="absolute inset-x-0 top-0 h-1/3 pointer-events-none"
                     style={{
@@ -918,7 +880,6 @@ const FeaturedProjects = () => {
                 </div>
               </div>
 
-              {/* Image Container */}
               <div
                 className={`relative ${index % 2 === 0 ? "lg:order-2" : "lg:order-1"}`}
                 style={{ 
@@ -948,7 +909,6 @@ const FeaturedProjects = () => {
                   onMouseEnter={() => setHoveredProject(index)}
                   onMouseLeave={() => setHoveredProject(null)}
                 >
-                  {/* Top shine line */}
                   <div
                     className="absolute inset-x-0 top-0 h-px pointer-events-none"
                     style={{
@@ -956,7 +916,6 @@ const FeaturedProjects = () => {
                         "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent)",
                     }}
                   />
-                  {/* Glass overlay */}
                   <div
                     className="absolute inset-0 transition-opacity duration-500"
                     style={{
@@ -965,7 +924,6 @@ const FeaturedProjects = () => {
                       opacity: hoveredProject === index ? 1 : 0.5,
                     }}
                   />
-                  {/* Shimmer effect */}
                   <div
                     className="absolute inset-0 pointer-events-none"
                     style={{
@@ -1067,7 +1025,6 @@ const CertificatesSection = () => {
       className="min-h-screen flex items-center justify-center px-6 md:px-12 lg:px-24 py-24 relative z-10"
     >
       <div className="w-full max-w-7xl">
-        {/* Header */}
         <div className="mb-16">
           <div className="flex items-center gap-4 mb-4">
             <h2 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-200 via-white to-gray-300">
@@ -1099,9 +1056,7 @@ const CertificatesSection = () => {
           </p>
         </div>
 
-        {/* Carousel Container */}
         <div className="relative">
-          {/* Main Display - Triangle Layout */}
           <div
             className={`flex items-center justify-center mb-12 min-h-[400px] relative overflow-hidden transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
           >
@@ -1148,7 +1103,6 @@ const CertificatesSection = () => {
                   }}
                 >
                   <div className="group relative transform transition-all duration-700 hover:scale-105">
-                    {/* Glow Background */}
                     <div
                       className="absolute -inset-1 rounded-2xl blur-xl transition-all duration-700 opacity-0 group-hover:opacity-60"
                       style={{
@@ -1157,7 +1111,6 @@ const CertificatesSection = () => {
                       }}
                     />
 
-                    {/* Glass Card */}
                     <div
                       className="relative rounded-2xl border shadow-2xl transition-all duration-700 group-hover:border-white/20"
                       style={{
@@ -1175,7 +1128,6 @@ const CertificatesSection = () => {
                           : "rgba(255, 255, 255, 0.08)",
                       }}
                     >
-                      {/* Top shine line */}
                       <div
                         className="absolute inset-x-0 top-0 h-px pointer-events-none"
                         style={{
@@ -1184,7 +1136,6 @@ const CertificatesSection = () => {
                         }}
                       />
 
-                      {/* Icon */}
                       <div
                         className="text-5xl mb-4 transition-transform duration-500 group-hover:scale-110"
                         style={{
@@ -1194,7 +1145,6 @@ const CertificatesSection = () => {
                         {cert.icon}
                       </div>
 
-                      {/* Certificate Info */}
                       <h3
                         className={`font-bold text-white mb-2 tracking-tight ${
                           isCenter ? "text-xl" : "text-lg"
@@ -1211,7 +1161,6 @@ const CertificatesSection = () => {
                         {cert.issuer}
                       </p>
 
-                      {/* Accent line */}
                       {isCenter && (
                         <div
                           className="mt-4 h-1 w-16 rounded-full transition-all duration-500"
@@ -1227,7 +1176,6 @@ const CertificatesSection = () => {
             })}
           </div>
 
-          {/* Arrow Navigation */}
           <button
             onClick={() => {
               const newIndex =
@@ -1374,7 +1322,6 @@ const ContactSection = () => {
                   onMouseEnter={() => setHoveredSocial(index)}
                   onMouseLeave={() => setHoveredSocial(null)}
                 >
-                  {/* Top shine line */}
                   <div
                     className="absolute inset-x-0 top-0 h-px pointer-events-none"
                     style={{
@@ -1382,7 +1329,6 @@ const ContactSection = () => {
                       transition: "all 0.5s",
                     }}
                   />
-                  {/* Glass shine gradient */}
                   <div
                     className="absolute inset-x-0 top-0 h-1/2 pointer-events-none"
                     style={{
@@ -1391,7 +1337,6 @@ const ContactSection = () => {
                       borderRadius: "16px 16px 0 0",
                     }}
                   />
-                  {/* Shimmer effect */}
                   <div
                     className="absolute inset-0 pointer-events-none"
                     style={{
@@ -1424,16 +1369,13 @@ const ContactSection = () => {
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-black relative overflow-hidden">
-      {/* Starfield Background */}
       <Starfield />
 
-      {/* Dark Overlay */}
       <div
-        className="fixed inset-0 z-1 pointer-events-none"
+        className="fixed inset-0 z-[1] pointer-events-none"
         style={{ background: "rgba(0, 0, 0, 0.3)" }}
       />
 
-      {/* Content */}
       <div className="relative z-10">
         <HeroSection />
 

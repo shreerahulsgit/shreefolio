@@ -1,28 +1,24 @@
-import React, { useRef, useState, useMemo, Suspense } from 'react';
+import { useRef, useState, useMemo, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Text, Float, Stars, Sparkles, PerformanceMonitor, CameraShake } from '@react-three/drei';
 import { EffectComposer, Bloom, Noise, ChromaticAberration, Vignette } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { useNavigate } from 'react-router-dom';
 
-// --- Assets ---
 const FONT_URL = 'https://fonts.gstatic.com/s/raleway/v14/1Ptrg8zYS_SKggPNwK4vaqI.woff';
-
-// --- Components ---
 
 const ChaoticText = ({ 
     children, 
     position, 
     rotation = [0, 0, 0], 
     scale = 1, 
-    onNavigate, // Changed from onClickPath
+    onNavigate,
     color = "white",
     hoverColor = "#44aaff" 
 }) => {
     const [hovered, setHovered] = useState(false);
     const meshRef = useRef();
     
-    // Random float parameters for "chaos"
     const floatSpeed = useMemo(() => Math.random() * 2 + 1, []);
     const floatIntensity = useMemo(() => Math.random() * 0.5 + 0.2, []);
     const floatRotation = useMemo(() => Math.random() * 0.5 + 0.1, []);
@@ -30,7 +26,6 @@ const ChaoticText = ({
     useFrame((state) => {
         if (!meshRef.current) return;
         
-        // Glitch/Shake effect on hover
         if (hovered) {
              meshRef.current.position.x += (Math.random() - 0.5) * 0.05;
              meshRef.current.position.y += (Math.random() - 0.5) * 0.05;
@@ -50,7 +45,7 @@ const ChaoticText = ({
                 onPointerOut={() => { document.body.style.cursor = 'auto'; setHovered(false); }}
                 onClick={(e) => {
                     e.stopPropagation();
-                    if(onNavigate) onNavigate(); // Call the passed function
+                    if(onNavigate) onNavigate();
                 }}
             >
                 <Text
@@ -76,8 +71,7 @@ const ChaoticText = ({
     );
 };
 
-const Scene = ({ navigate }) => { // Receive navigate here
-    // Mouse interaction for subtle parallax
+const Scene = ({ navigate }) => {
     useFrame((state) => {
         const { x, y } = state.pointer;
         state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, x * 2, 0.05);
@@ -87,7 +81,6 @@ const Scene = ({ navigate }) => { // Receive navigate here
 
     return (
         <group>
-            {/* CENTRAL TITLE */}
             <ChaoticText 
                 position={[0, 0, 0]} 
                 scale={1.5} 
@@ -106,9 +99,6 @@ const Scene = ({ navigate }) => { // Receive navigate here
                 (choose your chaos)
             </ChaoticText>
 
-            {/* SCATTERED LINKS */}
-            
-            {/* Top Left - Unfiltered */}
             <ChaoticText 
                 position={[-4, 2.5, -2]} 
                 rotation={[0, 0.2, 0.1]}
@@ -119,7 +109,6 @@ const Scene = ({ navigate }) => { // Receive navigate here
                 UNFILTERED_ME
             </ChaoticText>
 
-            {/* Top Right - Music */}
             <ChaoticText 
                 position={[4, 2, -3]} 
                 rotation={[0, -0.2, -0.05]}
@@ -130,7 +119,6 @@ const Scene = ({ navigate }) => { // Receive navigate here
                 AUDIO_HAVEN
             </ChaoticText>
 
-            {/* Mid Left - Movies */}
             <ChaoticText 
                 position={[-3.5, -0.5, 1]} 
                 rotation={[0.1, 0.1, 0]}
@@ -141,7 +129,6 @@ const Scene = ({ navigate }) => { // Receive navigate here
                 CINEMA_REALM
             </ChaoticText>
 
-            {/* Mid Right - Sports */}
             <ChaoticText 
                 position={[3, -1.5, 0]} 
                 rotation={[-0.1, -0.2, 0.05]}
@@ -152,7 +139,6 @@ const Scene = ({ navigate }) => { // Receive navigate here
                 ADRENALINE
             </ChaoticText>
 
-            {/* Bottom Left - Books */}
             <ChaoticText 
                 position={[-2, -3, -1]} 
                 rotation={[0, 0.1, -0.1]}
@@ -163,7 +149,6 @@ const Scene = ({ navigate }) => { // Receive navigate here
                 MIND_ARCHIVE
             </ChaoticText>
 
-              {/* Bottom Right - Random */}
             <ChaoticText 
                 position={[2.5, 3.5, -4]} 
                 rotation={[0, -0.1, 0.1]}
@@ -174,7 +159,6 @@ const Scene = ({ navigate }) => { // Receive navigate here
                 CHAOS_THEORY
             </ChaoticText>
             
-             {/* Deep Background Noise Text */}
              <Float speed={0.5} rotationIntensity={0.1} floatIntensity={0.1}>
                  <Text 
                     position={[0, 0, -10]} 
@@ -191,14 +175,13 @@ const Scene = ({ navigate }) => { // Receive navigate here
     );
 };
 
-import WormholeBackground from '../../lib/components/WormholeBackground.jsx';
+import WormholeBackground from '../../lib/components/backgrounds/wormhole-bg.jsx';
 
 export default function BeyondMain() {
     const navigate = useNavigate();
     const [dpr, setDpr] = useState(1.5);
     const [highPerf, setHighPerf] = useState(true);
     
-    // --- INTRO LOGIC ---
     const shouldSkipIntro = sessionStorage.getItem('beyond_intro_done') === 'true';
     const [introDone, setIntroDone] = useState(shouldSkipIntro);
 
@@ -210,7 +193,6 @@ export default function BeyondMain() {
     return (
         <div className="w-full h-screen bg-black overflow-hidden relative">
             
-            {/* INTRO LAYER */}
             {!introDone && (
                 <div className="absolute inset-0 z-[100]">
                     <WormholeBackground 
@@ -220,7 +202,6 @@ export default function BeyondMain() {
                 </div>
             )}
 
-            {/* MAIN 3D SCENE - Fade in when intro is done */}
             <div className={`w-full h-full transition-opacity duration-1000 ${introDone ? 'opacity-100' : 'opacity-0'}`}>
                 <Canvas 
                     camera={{ position: [0, 0, 8], fov: 45 }}
@@ -243,7 +224,6 @@ export default function BeyondMain() {
                     <ambientLight intensity={0.5} />
                     <pointLight position={[10, 10, 10]} intensity={1} />
                     
-                    {/* Background Particles */}
                     <Stars radius={100} depth={50} count={2000} factor={4} saturation={0} fade speed={1} />
                     {highPerf && <Sparkles count={150} scale={20} size={3} speed={0.4} opacity={0.2} color="#ffffff" />}
 
@@ -262,13 +242,12 @@ export default function BeyondMain() {
                         <Noise opacity={0.1} />
                         <Vignette eskil={false} offset={0.1} darkness={1.1} />
                         <ChromaticAberration 
-                             offset={[0.002, 0.002]} // RGB Shift for "Chaos"
+                             offset={[0.002, 0.002]}
                              radialModulation={false}
                              modulationOffset={0}
                         /> 
                     </EffectComposer>
                     
-                    {/* Camera Shake for hand-held feel */}
                     <CameraShake 
                         maxYaw={0.05} 
                         maxPitch={0.05} 
@@ -281,7 +260,6 @@ export default function BeyondMain() {
 
                 </Canvas>
 
-                {/* Static UI Overlay */}
                 <div className="absolute bottom-8 left-1/2 -translate-x-1/2 pointer-events-none text-white/20 text-xs uppercase tracking-[0.5em] animate-pulse">
                     Explore the Void
                 </div>

@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
-import Footer from "../lib/components/footer.jsx";
+import { useState, useEffect, useRef } from "react";
+import Footer from "../lib/components/footer-main.jsx";
 
-// Custom hook for scroll animation
 const useScrollAnimation = (threshold = 0.2) => {
   const ref = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -30,7 +29,6 @@ const useScrollAnimation = (threshold = 0.2) => {
   return [ref, isVisible];
 };
 
-// Status Badge Component with pulse animation
 const StatusBadge = ({ status }) => {
   const statusConfig = {
     shipped: {
@@ -74,7 +72,6 @@ const StatusBadge = ({ status }) => {
   );
 };
 
-// Tech Tag Chip
 const TechChip = ({ tech }) => (
   <span
     className="px-2 py-0.5 rounded-md text-xs"
@@ -88,7 +85,6 @@ const TechChip = ({ tech }) => (
   </span>
 );
 
-// Reality Check Badge
 const RealityBadge = ({ type }) => {
   const badges = {
     "harder than expected": "🔥",
@@ -111,7 +107,6 @@ const RealityBadge = ({ type }) => {
   );
 };
 
-// Starfield Background Component
 const Starfield = () => {
   const stars = Array.from({ length: 150 }, (_, i) => ({
     id: i,
@@ -124,7 +119,6 @@ const Starfield = () => {
 
   return (
     <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-      {/* Pure black background */}
       <div
         style={{
           position: "absolute",
@@ -132,7 +126,6 @@ const Starfield = () => {
           background: "#000000",
         }}
       />
-      {/* Stars */}
       {stars.map((star) => (
         <div
           key={star.id}
@@ -160,27 +153,23 @@ const Starfield = () => {
   );
 };
 
-// Holographic Orbit System - Black/White with Violet Energy
 const HolographicOrbit = ({ projects, onOpenProject }) => {
   const [activeProject, setActiveProject] = useState(null);
   const [rotation, setRotation] = useState(0);
 
-  // Unified violet energy color
   const energyColor = "#8B5CF6";
 
-  // FASTER rotation when not hovering
   useEffect(() => {
     if (activeProject !== null) return;
     const interval = setInterval(() => {
-      setRotation((prev) => (prev + 0.09) % 360); // Faster: 0.03 -> 0.12
+      setRotation((prev) => (prev + 0.09) % 360);
     }, 50);
     return () => clearInterval(interval);
   }, [activeProject]);
 
-  // Calculate project position in orbit - BIGGER radius
   const getProjectPosition = (index, total) => {
     const angle = ((index / total) * 360 + rotation) * (Math.PI / 180);
-    const radius = 400; // Increased from 320
+    const radius = 400;
     return {
       x: Math.cos(angle) * radius,
       y: Math.sin(angle) * radius * 0.35,
@@ -189,7 +178,7 @@ const HolographicOrbit = ({ projects, onOpenProject }) => {
   };
 
   return (
-    <div className="relative flex items-center justify-center" style={{ minHeight: "1000px" }}>
+    <div className="relative flex items-center justify-center" style={{ minHeight: "680px" }}>
       <style>{`
         @keyframes scanLine { 0% { top: -10%; } 100% { top: 110%; } }
         @keyframes pulseCore { 
@@ -223,7 +212,6 @@ const HolographicOrbit = ({ projects, onOpenProject }) => {
         }
       `}</style>
 
-      {/* Orbital Ring - BIGGER */}
       <div 
         className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none"
         style={{ width: "820px", height: "290px", border: `1px solid rgba(139,92,246,0.25)`, animation: "orbitGlow 4s ease-in-out infinite" }}
@@ -233,7 +221,6 @@ const HolographicOrbit = ({ projects, onOpenProject }) => {
         style={{ width: "860px", height: "300px", border: "1px dashed rgba(255,255,255,0.08)" }}
       />
 
-      {/* Central Core - BIGGER */}
       <div 
         className="absolute left-1/2 top-1/2 z-20 flex flex-col items-center justify-center"
         style={{
@@ -249,7 +236,6 @@ const HolographicOrbit = ({ projects, onOpenProject }) => {
         <span className="text-white/40 text-[11px] font-mono">{projects.length} ACTIVE</span>
       </div>
 
-      {/* Orbiting Cards */}
       {projects.map((project, index) => {
         const pos = getProjectPosition(index, projects.length);
         const isActive = activeProject === index;
@@ -270,7 +256,6 @@ const HolographicOrbit = ({ projects, onOpenProject }) => {
             onMouseLeave={() => setActiveProject(null)}
             onClick={() => onOpenProject(project)}
           >
-            {/* Card - BIGGER, Black/White with Energy Pulse */}
             <div
               className="relative overflow-hidden card-energy"
               style={{
@@ -280,14 +265,12 @@ const HolographicOrbit = ({ projects, onOpenProject }) => {
                   ? "linear-gradient(180deg, rgba(30,30,30,0.98) 0%, rgba(15,15,15,0.99) 100%)"
                   : "linear-gradient(180deg, rgba(20,20,20,0.95) 0%, rgba(10,10,10,0.98) 100%)",
                 borderRadius: "12px",
-                // Hover overrides animation visually
                 ...(isActive && {
                   border: `1px solid ${energyColor}`,
                   boxShadow: `0 0 50px ${energyColor}60, 0 20px 40px rgba(0,0,0,0.6)`,
                 }),
               }}
             >
-              {/* Scan line - violet */}
               <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-xl" style={{ opacity: isActive ? 0.5 : 0.15 }}>
                 <div 
                   className="absolute w-full h-px"
@@ -298,7 +281,6 @@ const HolographicOrbit = ({ projects, onOpenProject }) => {
                 />
               </div>
 
-              {/* Corner decorations - white default, violet on hover */}
               <div className="absolute top-2 left-2 w-3 h-px transition-all" style={{ background: isActive ? energyColor : 'rgba(255,255,255,0.3)' }} />
               <div className="absolute top-2 left-2 w-px h-3 transition-all" style={{ background: isActive ? energyColor : 'rgba(255,255,255,0.3)' }} />
               <div className="absolute top-2 right-2 w-3 h-px transition-all" style={{ background: isActive ? energyColor : 'rgba(255,255,255,0.3)' }} />
@@ -308,7 +290,6 @@ const HolographicOrbit = ({ projects, onOpenProject }) => {
               <div className="absolute bottom-2 right-2 w-3 h-px transition-all" style={{ background: isActive ? energyColor : 'rgba(255,255,255,0.3)' }} />
               <div className="absolute bottom-2 right-2 w-px h-3 transition-all" style={{ background: isActive ? energyColor : 'rgba(255,255,255,0.3)' }} />
 
-              {/* Status - violet energy */}
               <div className="flex items-center gap-2 mb-2">
                 <div 
                   className="w-2 h-2 rounded-full transition-all" 
@@ -323,10 +304,8 @@ const HolographicOrbit = ({ projects, onOpenProject }) => {
                 </span>
               </div>
 
-              {/* ID */}
               <span className="text-[9px] text-white/30 font-mono block mb-1">{project.id.toUpperCase()}</span>
 
-              {/* Name */}
               <h3 
                 className="text-sm font-bold text-white leading-tight mb-2 transition-all" 
                 style={{ textShadow: isActive ? `0 0 15px ${energyColor}60` : "none" }}
@@ -334,10 +313,8 @@ const HolographicOrbit = ({ projects, onOpenProject }) => {
                 {project.name}
               </h3>
 
-              {/* Hypothesis */}
               <p className="text-[10px] text-white/40 leading-relaxed line-clamp-2 mb-3">{project.hypothesis}</p>
 
-              {/* Tech - black/white, violet on hover */}
               <div className="flex flex-wrap gap-1 mb-5">
                 {project.techPreview.slice(0, 3).map((tech, idx) => (
                   <span 
@@ -367,7 +344,6 @@ const HolographicOrbit = ({ projects, onOpenProject }) => {
   );
 };
 
-// Experiment Card Component
 const ExperimentCard = ({ project, index, isVisible, onOpen }) => {
   const [isHovered, setIsHovered] = useState(false);
   return (
@@ -388,7 +364,6 @@ const ExperimentCard = ({ project, index, isVisible, onOpen }) => {
       onMouseLeave={() => setIsHovered(false)}
       onClick={onOpen}
     >
-      {/* Top shine line */}
       <div
         className="absolute inset-x-0 top-0 h-px pointer-events-none"
         style={{
@@ -398,7 +373,6 @@ const ExperimentCard = ({ project, index, isVisible, onOpen }) => {
         }}
       />
 
-      {/* Glow effect */}
       <div
         className="absolute -inset-1 rounded-2xl blur-xl transition-all duration-500 pointer-events-none"
         style={{
@@ -408,7 +382,6 @@ const ExperimentCard = ({ project, index, isVisible, onOpen }) => {
       />
 
       <div className="relative z-10 p-6">
-        {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <span className="text-xs text-gray-500 font-mono tracking-wide">
             {project.id}
@@ -416,10 +389,8 @@ const ExperimentCard = ({ project, index, isVisible, onOpen }) => {
           <StatusBadge status={project.status} />
         </div>
 
-        {/* Project Name */}
         <h3 className="text-xl font-semibold text-white mb-3">{project.name}</h3>
 
-        {/* Hypothesis / Result Flip */}
         <div className="mb-4 min-h-[48px]">
           <p
             className="text-sm text-gray-400 leading-relaxed transition-all duration-500"
@@ -442,14 +413,12 @@ const ExperimentCard = ({ project, index, isVisible, onOpen }) => {
           </p>
         </div>
 
-        {/* Tech Tags */}
         <div className="flex flex-wrap gap-2 mb-4">
           {project.techPreview.map((tech, idx) => (
             <TechChip key={idx} tech={tech} />
           ))}
         </div>
 
-        {/* Hover CTA */}
         <div
           className="text-center transition-all duration-300"
           style={{
@@ -464,7 +433,6 @@ const ExperimentCard = ({ project, index, isVisible, onOpen }) => {
   );
 };
 
-// Dossier Modal Component
 const DossierModal = ({ project, onClose }) => {
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -483,7 +451,6 @@ const DossierModal = ({ project, onClose }) => {
       className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8"
       onClick={onClose}
     >
-      {/* Backdrop */}
       <div
         className="absolute inset-0 transition-all duration-500"
         style={{
@@ -493,7 +460,6 @@ const DossierModal = ({ project, onClose }) => {
         }}
       />
 
-      {/* Modal Content */}
       <div
         className="relative w-full max-w-3xl max-h-[85vh] overflow-y-auto rounded-3xl transition-all duration-500"
         style={{
@@ -507,7 +473,6 @@ const DossierModal = ({ project, onClose }) => {
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Top shine line */}
         <div
           className="absolute inset-x-0 top-0 h-px pointer-events-none rounded-t-3xl"
           style={{
@@ -515,7 +480,6 @@ const DossierModal = ({ project, onClose }) => {
           }}
         />
 
-        {/* Close button */}
         <button
           onClick={onClose}
           className="absolute top-6 right-6 p-2 rounded-full transition-all duration-300 hover:bg-white/10 z-10"
@@ -526,7 +490,6 @@ const DossierModal = ({ project, onClose }) => {
         </button>
 
         <div className="p-8 md:p-10">
-          {/* Header */}
           <div className="mb-8">
             <span className="text-xs text-gray-500 font-mono tracking-wide">{project.id}</span>
             <h2 className="text-3xl md:text-4xl font-bold text-white mt-2 mb-4">{project.name}</h2>
@@ -541,9 +504,7 @@ const DossierModal = ({ project, onClose }) => {
             </div>
           </div>
 
-          {/* Dossier Sections */}
           <div className="space-y-6">
-            {/* The Problem */}
             <div className="p-5 rounded-xl" style={{ background: "rgba(255, 255, 255, 0.03)" }}>
               <h4 className="text-sm font-semibold text-gray-400 mb-2 flex items-center gap-2">
                 <span>✯</span> The Problem
@@ -551,7 +512,6 @@ const DossierModal = ({ project, onClose }) => {
               <p className="text-gray-300 leading-relaxed">{project.problem}</p>
             </div>
 
-            {/* The Idea */}
             <div className="p-5 rounded-xl" style={{ background: "rgba(255, 255, 255, 0.03)" }}>
               <h4 className="text-sm font-semibold text-gray-400 mb-2 flex items-center gap-2">
                 <span>✯</span> The Idea
@@ -559,7 +519,6 @@ const DossierModal = ({ project, onClose }) => {
               <p className="text-gray-300 leading-relaxed">{project.idea}</p>
             </div>
 
-            {/* The Mess */}
             <div className="p-5 rounded-xl" style={{ background: "rgba(255, 255, 255, 0.03)" }}>
               <h4 className="text-sm font-semibold text-gray-400 mb-2 flex items-center gap-2">
                 <span>✯</span> The Mess
@@ -567,7 +526,6 @@ const DossierModal = ({ project, onClose }) => {
               <p className="text-gray-300 leading-relaxed">{project.mess}</p>
             </div>
 
-            {/* The Fix */}
             <div className="p-5 rounded-xl" style={{ background: "rgba(255, 255, 255, 0.03)" }}>
               <h4 className="text-sm font-semibold text-gray-400 mb-2 flex items-center gap-2">
                 <span>✯</span> The Fix
@@ -575,7 +533,6 @@ const DossierModal = ({ project, onClose }) => {
               <p className="text-gray-300 leading-relaxed">{project.fix}</p>
             </div>
 
-            {/* The Outcome */}
             <div className="p-5 rounded-xl" style={{ background: "rgba(255, 255, 255, 0.03)" }}>
               <h4 className="text-sm font-semibold text-gray-400 mb-2 flex items-center gap-2">
                 <span>✯</span> The Outcome
@@ -584,7 +541,6 @@ const DossierModal = ({ project, onClose }) => {
             </div>
           </div>
 
-          {/* Tech Stack & Details */}
           <div className="mt-8 pt-6" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.1)" }}>
             <div className="flex flex-wrap items-center gap-3 mb-4">
               <span className="text-xs text-gray-500">Tech Stack:</span>
@@ -593,7 +549,6 @@ const DossierModal = ({ project, onClose }) => {
               ))}
             </div>
 
-            {/* Reality Check */}
             {project.realityCheck && (
               <div className="flex flex-wrap gap-2">
                 {project.realityCheck.map((check, idx) => (
@@ -603,7 +558,6 @@ const DossierModal = ({ project, onClose }) => {
             )}
           </div>
 
-          {/* Links */}
           {(project.liveUrl || project.repoUrl) && (
             <div className="mt-6 flex gap-4">
               {project.liveUrl && (
@@ -651,14 +605,12 @@ const DossierModal = ({ project, onClose }) => {
   );
 };
 
-// Main Projects Page
 export default function ProjectPage() {
   const [selectedProject, setSelectedProject] = useState(null);
 
   const [heroRef, heroVisible] = useScrollAnimation(0.2);
   const [projectsRef, projectsVisible] = useScrollAnimation(0.1);
 
-  // Sample Projects Data
   const projects = [
     {
       id: "experiment_01",
@@ -771,19 +723,16 @@ export default function ProjectPage() {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Starfield Background */}
       <Starfield />
 
-      {/* Content */}
       <div className="relative z-10">
-        {/* Hero Section */}
         <section
           ref={heroRef}
-          className="flex items-center justify-center px-6 md:px-12 lg:px-24 pt-24 pb-0"
+          className="flex items-center justify-center px-6 md:px-12 lg:px-24 pt-16 pb-0"
         >
           <div className="text-center max-w-4xl">
             <h1
-              className={`text-5xl md:text-6xl lg:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-200 via-white to-purple-200 transform transition-all duration-1000 ${heroVisible ? "translate-y-0 opacity-100" : "translate-y-12 opacity-0"}`}
+              className={`text-3xl md:text-4xl lg:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-200 via-white to-purple-200 transform transition-all duration-1000 ${heroVisible ? "translate-y-0 opacity-100" : "translate-y-12 opacity-0"}`}
               style={{ transitionDelay: "200ms" }}
             >
               Experiments Lab
@@ -805,7 +754,6 @@ export default function ProjectPage() {
           </div>
         </section>
 
-        {/* Holographic Orbit Section */}
         <section ref={projectsRef} className="relative">
           <HolographicOrbit 
             projects={projects} 
@@ -813,18 +761,9 @@ export default function ProjectPage() {
           />
         </section>
 
-        {/* Ending Line */}
-        <div className="text-center py-20 px-6">
-          <p className="text-gray-600 text-lg font-mono">
-            // more experiments loading... stay curious 🚀
-          </p>
-        </div>
-
-        {/* Footer */}
         <Footer />
       </div>
 
-      {/* Dossier Modal */}
       {selectedProject && (
         <DossierModal
           project={selectedProject}

@@ -1,31 +1,20 @@
+import { useState, useEffect, useRef, Suspense } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { CameraControls } from '@react-three/drei';
 
-import React, { useState, useEffect, useRef, Suspense, useMemo } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, CameraControls } from '@react-three/drei';
-import * as THREE from 'three';
+import VioletBackground from '../../lib/components/music-scene/violet-background.jsx';
+import ArtistArc from '../../lib/components/music-scene/artist-arc.jsx';
+import NeonPlayer from '../../lib/components/music-scene/neon-player.jsx';
+import SoundwaveTerrain from '../../lib/components/music-scene/soundwave-terrain.jsx';
 
-// Hooks
-// import { useAudioAnalyzer } from '../../lib/hooks/useAudioAnalyzer'; // DISABLED FOR STABILITY
-
-// 3D Components
-import VioletBackground from '../../lib/components/music-scene/VioletBackground';
-import ArtistArc from '../../lib/components/music-scene/ArtistArc';
-import NeonPlayer from '../../lib/components/music-scene/NeonPlayer';
-import SoundwaveTerrain from '../../lib/components/music-scene/SoundwaveTerrain'; 
-
-// ------------------------------------------
-// CAMERA CONTROLLER (Simplified)
-// ------------------------------------------
 const CameraRig = ({ selectedArtist }) => {
     const controls = useRef();
 
     useEffect(() => {
         if (controls.current) {
             if (selectedArtist) {
-                // Focus on Player
                 controls.current.setLookAt(0, 2, 12, 0, 0, 0, true);
             } else {
-                // Overview
                 controls.current.setLookAt(0, 4, 14, 0, 0, 0, true);
             }
         }
@@ -34,25 +23,15 @@ const CameraRig = ({ selectedArtist }) => {
     return <CameraControls ref={controls} maxPolarAngle={Math.PI / 1.8} minPolarAngle={Math.PI / 3} />;
 };
 
-// ------------------------------------------
-// MAIN PAGE
-// ------------------------------------------
 const MusicPage = () => {
     const [selectedArtist, setSelectedArtist] = useState(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTrackUrl, setCurrentTrackUrl] = useState('/mp3/golden-brown-slowed.mp3'); 
     
-    // Performance State - FIXED LOW
     const dpr = 1.0; 
-
-    // Audio Ref
     const audioRef = useRef(null);
-    
-    // NOTE: Audio Analyzer is disabled to prevent crashes. 
-    // We pass a mock or null analyzer.
     const analyzer = null; 
 
-    // Current Album State
     const currentAlbum = selectedArtist ? 
         { 
             title: selectedArtist.name + " Essentials", 
@@ -93,18 +72,14 @@ const MusicPage = () => {
 
     return (
         <div className="w-full h-screen bg-black relative overflow-hidden">
-            {/* 3D Scene */}
-            {/* SAFE MODE: No shadows, Fixed DPR, No PerfMonitor */}
             <Canvas dpr={[1, 1.5]}>
                 
                 <CameraRig selectedArtist={selectedArtist} />
                 
-                {/* Global Lighting */}
                 <ambientLight intensity={0.5} color="#2A0E4F" />
                 <pointLight position={[10, 10, 10]} intensity={1} color="#8A4FFF" />
                 <spotLight position={[0, 10, 0]} angle={0.5} penumbra={1} intensity={2} color="#5B2EFF" />
 
-                {/* Background */}
                 <Suspense fallback={<color attach="background" args={['black']} />}>
                     <group position={[0, 0, -20]} scale={[30, 30, 1]}>
                         <VioletBackground />
@@ -112,7 +87,6 @@ const MusicPage = () => {
                 </Suspense>
                 
                 <group position={[0, 0, 0]}>
-                    {/* Central Player */}
                     <Suspense fallback={null}>
                         <NeonPlayer 
                             isPlaying={isPlaying} 
@@ -123,7 +97,6 @@ const MusicPage = () => {
                         />
                     </Suspense>
 
-                    {/* Artist Cards Arc */}
                     <Suspense fallback={null}>
                         <ArtistArc 
                             onSelectArtist={setSelectedArtist} 
@@ -131,7 +104,6 @@ const MusicPage = () => {
                         />
                     </Suspense>
 
-                    {/* Terrain */}
                     <Suspense fallback={null}>
                         <group position={[0, -2, 0]}>
                              <SoundwaveTerrain analyser={analyzer} />
@@ -139,10 +111,8 @@ const MusicPage = () => {
                     </Suspense>
                 </group>
 
-                {/* POST-PROCESSING DISABLED FOR STABILITY */}
             </Canvas>
 
-            {/* UI Overlay */}
             <div className={`absolute top-0 left-0 w-full p-8 pointer-events-none flex justify-between items-start z-10 transition-opacity duration-1000 ${selectedArtist ? 'opacity-0 hover:opacity-100' : 'opacity-100'}`}>
                 <div>
                      <h1 className="text-6xl font-thin text-white tracking-widest mb-2 drop-shadow-[0_0_15px_rgba(138,79,255,0.6)]" style={{ fontFamily: 'BonVivant, serif' }}>
@@ -154,7 +124,6 @@ const MusicPage = () => {
                 </div>
             </div>
 
-            {/* Artist Info Overlay */}
             {selectedArtist && (
                 <div className="absolute top-1/2 left-8 -translate-y-1/2 pointer-events-none transition-all duration-700 animate-in fade-in slide-in-from-left-10">
                     <h2 className="text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-purple-400 opacity-20 rotate-90 origin-left whitespace-nowrap">
@@ -163,7 +132,6 @@ const MusicPage = () => {
                 </div>
             )}
             
-            {/* Back Button */}
             {selectedArtist && (
                 <button 
                     className="absolute top-8 left-8 z-50 text-white/50 hover:text-white uppercase tracking-widest text-xs pointer-events-auto"
@@ -173,7 +141,6 @@ const MusicPage = () => {
                 </button>
             )}
 
-            {/* Hidden Audio */}
             <audio
                 ref={audioRef}
                 src={currentTrackUrl}
