@@ -83,9 +83,9 @@ const ChatInterface = () => {
 
   // Suggestions for new users
   const suggestions = [
-    "What are your main skills?",
-    "Tell me about your projects",
-    "How can I contact shree?"
+    "What are his main skills?",
+    "Tell me about his projects",
+    "How can I contact Shree?"
   ];
 
   // Auto-scroll to bottom

@@ -6,7 +6,23 @@
         transform: perspective(1000px) rotateY(5deg) rotateX(5deg) translateZ(25px) translateY(-5px);
     }
 }
+
+/* Violet Glow Pulse Animation */
+@keyframes violet-pulse {
+    0%, 100% {
+        box-shadow: 0 8px 20px rgba(138,43,226,0.28), 0 15px 30px rgba(138,43,226,0.16);
+    }
+    50% {
+      /* Stronger glow */
+        box-shadow: 0 8px 25px rgba(138,43,226,0.6), 0 15px 40px rgba(138,43,226,0.4);
+    }
+}
+
 .special-glow {
     pointer-events: none;
     animation: float 3s ease-in-out infinite;
+}
+
+.infinite-void-glow {
+    animation: violet-pulse 2s ease-in-out infinite;
 }

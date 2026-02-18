@@ -21,7 +21,7 @@ const NavigationBar = ({
     { icon: Briefcase, label: "Projects", hideOnMobile: false },
     {
       icon: "custom-image",
-      label: "Special",
+      label: "Infinite Void",
       special: true,
       hideOnMobile: true,
     },
@@ -39,6 +39,7 @@ const NavigationBar = ({
       Resume: 4,
       Contact: 5,
       Skills: 6,
+      
     };
     return pageToIndex[currentPage] ?? 0;
   };
@@ -51,7 +52,7 @@ const NavigationBar = ({
     let translateZ = isActive ? "20px" : isSpecial ? "15px" : "0px";
     let scale = isActive ? 1.1 : 1;
 
-    if (hoverIndex === index && !isSpecial && !isActive) {
+    if (hoverIndex === index && !isActive) {
       rotateY = "-10deg";
       rotateX = "-5deg";
       translateZ = "30px";
@@ -65,7 +66,7 @@ const NavigationBar = ({
       boxShadow: isActive
         ? "0 10px 25px rgba(0,0,0,0.3), 0 20px 40px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.08)"
         : isSpecial
-          ? "0 8px 20px rgba(255,100,0,0.28), 0 15px 30px rgba(255,100,0,0.16)"
+          ? undefined // Handled by CSS class .infinite-void-glow
           : "0 4px 10px rgba(0,0,0,0.08)",
     };
   };
@@ -100,14 +101,16 @@ const NavigationBar = ({
                   <button
                     onClick={() => {
                       if (
-                        item.label === "Special" &&
+                        item.label === "Infinite Void" &&
                         typeof onSpecialClick === "function"
                       )
                         onSpecialClick();
                     }}
                     onMouseEnter={() => setHoverIndex(index)}
                     onMouseLeave={() => setHoverIndex(null)}
-                    className="relative transition-all duration-300 group outline-none border-none focus:outline-none p-2.5 sm:p-3 rounded-xl"
+                    className={`relative transition-all duration-300 group outline-none border-none focus:outline-none p-2.5 sm:p-3 rounded-xl ${
+                      isSpecial && !isActive ? "infinite-void-glow" : ""
+                    }`}
                     style={getButtonStyle(index, isActive, isSpecial)}
                     title={item.label}
                     aria-pressed={isActive}
@@ -125,8 +128,8 @@ const NavigationBar = ({
                       aria-hidden
                       style={{
                         background:
-                          "linear-gradient(90deg, rgba(96,165,250,0.18), rgba(147,197,253,0.12))",
-                        transform: "translateZ(-5px)",
+                          "linear-gradient(90deg, rgba(138,43,226,0.3), rgba(138,43,226,0.2))",
+                        transform: "translateZ(0px)",
                       }}
                     />
 
