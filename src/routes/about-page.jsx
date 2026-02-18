@@ -13,7 +13,6 @@ import {
 import { FaGithub, FaLinkedin, FaCode, FaRocket, FaEnvelope } from "react-icons/fa";
 import TiltedCard from "../lib/components/tilted-card.jsx";
 import Footer from "../lib/components/footer.jsx";
-import Galaxy from "../components/about/Galaxy.jsx";
 
 // Starfield Background Component (same as contact page)
 const Starfield = () => {
@@ -350,8 +349,8 @@ const HeroSection = () => {
         <div className="flex justify-center lg:justify-end">
           <TiltedCard
             imageSrc="https://i.scdn.co/image/ab67616d0000b273d9985092cd88bffd97653b58"
-            altText="Shree Rahul S - Album Cover"
-            captionText="Shree Rahul S"
+            altText="Kendrick Lamar - GNX Album Cover"
+            captionText="Kendrick Lamar - GNX"
             containerHeight="300px"
             containerWidth="300px"
             imageHeight="350px"
@@ -1425,27 +1424,12 @@ const ContactSection = () => {
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-black relative overflow-hidden">
-      {/* Galaxy Background - Fixed */}
-      <div className="fixed inset-0 z-0">
-        <Galaxy
-          mouseRepulsion={true}
-          mouseInteraction={true}
-          density={1}
-          glowIntensity={0.3}
-          saturation={0}
-          hueShift={140}
-          twinkleIntensity={0.3}
-          rotationSpeed={0.1}
-          repulsionStrength={2}
-          autoCenterRepulsion={0}
-          starSpeed={0.5}
-          speed={1}
-        />
-      </div>
+      {/* Starfield Background */}
+      <Starfield />
 
       {/* Dark Overlay */}
       <div
-        className="fixed inset-0 z-[1] pointer-events-none"
+        className="fixed inset-0 z-1 pointer-events-none"
         style={{ background: "rgba(0, 0, 0, 0.3)" }}
       />
 

@@ -73,7 +73,6 @@ const Starfield = () => {
 const CosmicCloudOverlay = ({ onUnlock }) => {
   const [isKeyHovered, setIsKeyHovered] = useState(false);
   const [btnPos, setBtnPos] = useState({ top: '80%', left: '50%' });
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     // Randomize button position on mount
@@ -83,29 +82,40 @@ const CosmicCloudOverlay = ({ onUnlock }) => {
     });
   }, []);
 
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      setMousePos({ x: e.clientX, y: e.clientY });
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+  // Smoke particles for nebula effect
+  const smokeParticles = Array.from({ length: 60 }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    size: 50 + Math.random() * 150,
+    opacity: 0.3 + Math.random() * 0.5,
+    duration: 12 + Math.random() * 20,
+    delay: Math.random() * 10,
+  }));
 
+  // Cosmic dust particles - MORE
+  const cosmicDust = Array.from({ length: 50 }, (_, i) => ({
+    id: i,
+    size: 1 + Math.random() * 3,
+    duration: 15 + Math.random() * 20,
+    delay: Math.random() * 15,
+    startY: Math.random() * 100,
+  }));
 
-
-
+  // Energy Nerve tendrils - MORE and structured
+  const energyNerves = Array.from({ length: 20 }, (_, i) => ({
+    id: i,
+    // Generate curved paths
+    d: `M ${Math.random() * 100}% ${Math.random() * 100}% Q ${Math.random() * 100}% ${Math.random() * 100}%, ${Math.random() * 100}% ${Math.random() * 100}% T ${Math.random() * 100}% ${Math.random() * 100}%`,
+    duration: 6 + Math.random() * 10,
+    delay: Math.random() * 5,
+    opacity: 0.1 + Math.random() * 0.3,
+    width: 0.5 + Math.random() * 1.5,
+  }));
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center overflow-hidden cursor-none">
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center overflow-hidden">
       <style>{`
-        .scanner-mask {
-          mask-image: radial-gradient(circle 250px at var(--x) var(--y), black 0%, transparent 100%);
-          -webkit-mask-image: radial-gradient(circle 250px at var(--x) var(--y), black 0%, transparent 100%);
-        }
-        @keyframes scanSweep {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
         @keyframes smokeDrift {
           0%, 100% { transform: translate(0, 0) scale(1); }
           25% { transform: translate(30px, -20px) scale(1.1); }
@@ -141,51 +151,61 @@ const CosmicCloudOverlay = ({ onUnlock }) => {
         }
       `}</style>
 
+      <div className="absolute inset-0 bg-black intro-animate" />
 
-      
-      {/* Dark Base Layer */}
-      <div className="absolute inset-0 bg-black" />
+      <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ opacity: 0.6 }}>
+        {energyNerves.map((n) => (
+          <path
+            key={n.id}
+            d={n.d}
+            fill="none"
+            stroke="rgba(139,92,246,0.4)"
+            strokeWidth={n.width}
+            strokeDasharray="10 30"
+            style={{
+              animation: `nerveFlow ${n.duration}s linear infinite`,
+              animationDelay: `${n.delay}s`,
+              filter: 'drop-shadow(0 0 2px rgba(139,92,246,0.3))',
+            }}
+          />
+        ))}
+      </svg>
 
-      {/* Grid Pattern Background - Faint */}
-      <div 
-        className="absolute inset-0 opacity-20"
-        style={{
-          backgroundImage: 'linear-gradient(rgba(139, 92, 246, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(139, 92, 246, 0.1) 1px, transparent 1px)',
-          backgroundSize: '50px 50px',
-        }}
-      />
-      
-      {/* Scanner Beam / Flashlight */}
-      <div 
-        className="pointer-events-none fixed z-10 rounded-full blur-3xl"
-        style={{
-          top: mousePos.y,
-          left: mousePos.x,
-          width: '600px',
-          height: '600px',
-          transform: 'translate(-50%, -50%)',
-          background: 'radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%)',
-        }}
-      />
-      
-      {/* Scanner Visual Ring */}
-      <div 
-        className="pointer-events-none fixed z-50 rounded-full border border-violet-500/30"
-        style={{
-          top: mousePos.y,
-          left: mousePos.x,
-          width: '150px',
-          height: '150px',
-          transform: 'translate(-50%, -50%)',
-          boxShadow: '0 0 30px rgba(139, 92, 246, 0.2), inset 0 0 20px rgba(139, 92, 246, 0.1)',
-        }}
-      >
-        <div className="absolute inset-0 rounded-full border-t border-violet-400/80 animate-[spin_4s_linear_infinite]" />
-        <div className="absolute inset-2 rounded-full border-b border-violet-500/50 animate-[spin_3s_linear_infinite_reverse]" />
-      </div>
+      {smokeParticles.map((p) => (
+        <div
+          key={p.id}
+          className="absolute rounded-full pointer-events-none"
+          style={{
+            left: `${p.x}%`,
+            top: `${p.y}%`,
+            width: `${p.size}px`,
+            height: `${p.size}px`,
+            background: `radial-gradient(circle, rgba(30,30,30,${p.opacity}) 0%, rgba(15,15,15,${p.opacity * 0.5}) 40%, transparent 70%)`,
+            filter: 'blur(20px)',
+            animation: `smokeDrift ${p.duration}s ease-in-out infinite`,
+            animationDelay: `${p.delay}s`,
+          }}
+        />
+      ))}
 
-      {/* Title Section - VISIBLE */}
-      <div className="absolute top-1/4 text-center z-10 pointer-events-none">
+      {cosmicDust.map((d) => (
+        <div
+          key={`dust-${d.id}`}
+          className="absolute rounded-full pointer-events-none"
+          style={{
+            left: '-5%',
+            top: `${d.startY}%`,
+            width: `${d.size}px`,
+            height: `${d.size}px`,
+            background: '#A78BFA',
+            boxShadow: `0 0 ${d.size * 2}px rgba(139,92,246,0.6), 0 0 ${d.size}px rgba(139,92,246,0.8)`,
+            animation: `dustDrift ${d.duration}s linear infinite`,
+            animationDelay: `${d.delay}s`,
+          }}
+        />
+      ))}\n
+      {/* Title Section */}
+      <div className="absolute top-1/4 text-center z-10">
         <Mountain className="w-14 h-14 mx-auto mb-5 text-white/30" />
         <h2 className="text-2xl md:text-3xl font-bold text-white/80 mb-3">
           BLOCKED BY DEBRIS
@@ -195,32 +215,22 @@ const CosmicCloudOverlay = ({ onUnlock }) => {
         </div>
       </div>
 
-      {/* Signal Beacon - VISIBLE OUTSIDE SCANNER */}
       <div 
-        className="absolute rounded-full pointer-events-none z-20"
+        className="absolute rounded-full pointer-events-none"
         style={{
           top: btnPos.top,
           left: btnPos.left,
-          width: '80px',
-          height: '80px',
-          border: '2px solid rgba(139,92,246,0.8)',
-          boxShadow: '0 0 30px rgba(139,92,246,0.6), inset 0 0 20px rgba(139,92,246,0.4)',
-          transform: 'translate(-50%, -50%)',
+          width: '48px',
+          height: '48px',
+          border: '2px solid rgba(139,92,246,0.5)',
+          transform: 'translate(-50%, -50%)', // Centering adjustment if needed, but button uses top/left directly. 
+          // Wait, button uses top/left directly without translate(-50%, -50%). 
+          // Actually, let's wrap button and beacon in a container or just position beacon same as button.
+          // The button has w-12 h-12 (48px). 
+          // Let's position this div exactly like the button.
           animation: 'signalBeacon 2s cubic-bezier(0, 0, 0.2, 1) infinite',
         }}
       />
-
-      {/* Content Revealed by Scanner (Particles, Nerves, and Button) */}
-      <div 
-        className="absolute inset-0 intro-animate scanner-mask"
-        style={{ '--x': `${mousePos.x}px`, '--y': `${mousePos.y}px` }}
-      >
-
-      <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ opacity: 0.6 }}>
-      </svg>\n
-
-
-
 
       <button
         onClick={onUnlock}
@@ -248,7 +258,6 @@ const CosmicCloudOverlay = ({ onUnlock }) => {
         />
       </button>
 
-      </div> {/* Close Scanner Mask */}
 
       <div className="absolute bottom-6 font-mono text-xs text-gray-600 text-center w-full">
         <p>Click the button to unleash the energy beam</p>
@@ -268,9 +277,9 @@ const BeamUnlockAnimation = ({ onComplete }) => {
   // Phase timing - SLOWER
   useEffect(() => {
     const timers = [
-      setTimeout(() => setPhase(1), 200),     // Beam starts slower
-      setTimeout(() => setPhase(2), 1200),    // Impact + ball forms later
-      setTimeout(() => setPhase(3), 1800),    // Burst expansion starts even later
+      setTimeout(() => setPhase(1), 100),    // Beam starts
+      setTimeout(() => setPhase(2), 1200),   // Impact + ball forms (was 500)
+      setTimeout(() => setPhase(3), 1800),   // Burst expansion starts (was 800)
     ];
     return () => timers.forEach(clearTimeout);
   }, []);
@@ -287,8 +296,8 @@ const BeamUnlockAnimation = ({ onComplete }) => {
     const animate = () => {
       frame++;
       
-      // Main burst expansion - SLOWER
-      scale *= 1.05;
+      // Main burst expansion - SLOWER for cinematic effect
+      scale *= 1.03;
       setBurstScale(scale);
 
       // Trigger rings at intervals
@@ -320,18 +329,9 @@ const BeamUnlockAnimation = ({ onComplete }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden" style={{ pointerEvents: phase >= 4 ? 'none' : 'auto' }}>
       <style>{`
         @keyframes aggressiveBeam {
-          0% { transform: scaleY(0); opacity: 0; filter: blur(2px); }
-          10% { transform: scaleY(1); opacity: 1; filter: blur(0px); }
-          50% { opacity: 0.8; }
+          0% { transform: scaleY(0); opacity: 0; }
+          20% { opacity: 1; }
           100% { transform: scaleY(1); opacity: 1; }
-        }
-        @keyframes beamPulse {
-          0%, 100% { opacity: 0.8; width: 4px; }
-          50% { opacity: 1; width: 8px; }
-        }
-        @keyframes beamGlow {
-          0%, 100% { opacity: 0.4; width: 60px; filter: blur(15px); }
-          50% { opacity: 0.6; width: 80px; filter: blur(20px); }
         }
         @keyframes checkPop {
           0% { transform: scale(0) rotate(-45deg); opacity: 0; }
@@ -346,87 +346,37 @@ const BeamUnlockAnimation = ({ onComplete }) => {
           0%, 100% { filter: drop-shadow(0 0 15px rgba(139,92,246,0.8)) drop-shadow(0 0 30px rgba(139,92,246,0.4)); }
           50% { filter: drop-shadow(0 0 25px rgba(139,92,246,1)) drop-shadow(0 0 50px rgba(139,92,246,0.6)); }
         }
-        @keyframes shake {
-          0%, 100% { transform: translate(0, 0); }
-          25% { transform: translate(-5px, 5px); }
-          50% { transform: translate(5px, -5px); }
-          75% { transform: translate(-5px, -5px); }
-        }
-        .shake-screen { animation: shake 0.1s linear infinite; }
       `}</style>
-      
-      {/* Shake/Glitch Container */}
-      <div className={phase >= 2 && phase < 4 ? "shake-screen" : ""} style={{ position: 'fixed', inset: 0, pointerEvents: 'none' }}>
-      
+
       {/* Dark overlay that fades */}
       <div 
         className="absolute inset-0 bg-black transition-opacity duration-1000"
-        style={{ opacity: phase >= 4 ? 0 : 0.8 }}
+        style={{ opacity: phase >= 4 ? 0 : 1 }}
       />
-      
-      {/* REALISTIC BEAM - Multiple Layers */}
+
+      {/* SLIM but INTENSE Beam */}
       {phase >= 1 && phase < 4 && (
         <>
-          {/* 1. Core White Beam */}
+          {/* Main beam core - SLIM but intense glow */}
           <div 
             className="absolute top-0 left-1/2 -translate-x-1/2 h-full origin-top"
             style={{
               width: '4px',
-              background: '#fff',
-              boxShadow: `0 0 20px #fff, 0 0 40px ${energyColor}`,
-              animation: 'aggressiveBeam 0.2s ease-out forwards, beamPulse 0.1s infinite',
-              zIndex: 60,
+              background: `linear-gradient(180deg, #fff 0%, ${energyColor} 5%, ${energyColor} 60%, transparent 100%)`,
+              boxShadow: `0 0 20px ${energyColor}, 0 0 50px ${energyColor}, 0 0 80px ${energyColor}, 0 0 120px ${energyColor}60`,
+              animation: 'aggressiveBeam 0.8s ease-out forwards',
             }}
           />
-          
-          {/* 2. Inner colored glow */}
+          {/* Intense glow layer */}
           <div 
             className="absolute top-0 left-1/2 -translate-x-1/2 h-full origin-top"
             style={{
-              width: '20px',
-              background: `linear-gradient(90deg, transparent, ${energyColor}, transparent)`,
-              animation: 'aggressiveBeam 0.2s ease-out forwards',
-              opacity: 0.8,
-              zIndex: 59,
+              width: '60px',
+              background: `linear-gradient(180deg, ${energyColor}80 0%, ${energyColor}50 50%, transparent 100%)`,
+              filter: 'blur(15px)',
+              animation: 'aggressiveBeam 0.8s ease-out forwards',
             }}
           />
-
-          {/* 3. Outer diffuse glow */}
-          <div 
-            className="absolute top-0 left-1/2 -translate-x-1/2 h-full origin-top"
-            style={{
-              width: '100px',
-              background: energyColor,
-              filter: 'blur(30px)',
-              animation: 'aggressiveBeam 0.2s ease-out forwards, beamGlow 0.2s infinite',
-              zIndex: 58,
-              opacity: 0.4,
-            }}
-          />
-          
-          {/* 4. Electrical Arcs / Noise (Simulated with thin lines) */}
-           <div 
-            className="absolute top-0 left-1/2 -translate-x-1/2 h-full origin-top"
-             style={{
-               width: '2px',
-               height: '100%',
-               background: '#fff',
-               opacity: 0.3,
-               transform: 'translateX(-10px)',
-               animation: 'aggressiveBeam 0.3s ease-out forwards',
-             }}
-           />
-           <div 
-            className="absolute top-0 left-1/2 -translate-x-1/2 h-full origin-top"
-             style={{
-               width: '2px',
-               height: '100%',
-               background: '#fff',
-               opacity: 0.3,
-               transform: 'translateX(10px)',
-               animation: 'aggressiveBeam 0.4s ease-out forwards',
-             }}
-           />
         </>
       )}
 
@@ -458,8 +408,8 @@ const BeamUnlockAnimation = ({ onComplete }) => {
         </>
       )}
 
-      {/* Impact Ball - Phase 1 & 2 - at BOTTOM where beam ends, ball appears immediately */}
-      {(phase === 1 || phase === 2) && (
+      {/* Impact Ball - Phase 2 - at BOTTOM where beam ends */}
+      {phase === 2 && (
         <div 
           className="absolute rounded-full"
           style={{
@@ -506,7 +456,46 @@ const BeamUnlockAnimation = ({ onComplete }) => {
         </>
       )}
 
-      </div>
+      {/* Path Cleared - Phase 4 */}
+      {phase >= 4 && (
+        <div className="absolute text-center">
+          <div className="relative inline-block">
+            <Flame 
+              className="w-24 h-24 mx-auto" 
+              style={{ 
+                color: '#fff',
+                filter: 'drop-shadow(0 0 15px rgba(139,92,246,0.8)) drop-shadow(0 0 30px rgba(139,92,246,0.5))',
+                animation: 'glowPulse 2s ease-in-out infinite',
+              }} 
+            />
+            <CheckCircle2 
+              className="w-10 h-10 absolute -bottom-1 -right-1" 
+              style={{ 
+                color: '#22C55E',
+                filter: 'drop-shadow(0 0 10px #22C55E)',
+                animation: 'checkPop 0.5s ease-out forwards',
+              }} 
+            />
+          </div>
+          <h2 
+            className="text-3xl md:text-4xl font-bold tracking-wider mt-6"
+            style={{ 
+              color: '#fff',
+              textShadow: `0 0 20px ${energyColor}60`,
+              animation: 'textSlide 0.5s ease-out forwards 0.3s',
+              opacity: 0,
+            }}
+          >
+            PATH CLEARED
+          </h2>
+          <p 
+            className="font-mono text-sm text-gray-400 mt-3"
+            style={{ animation: 'textSlide 0.5s ease-out forwards 0.5s', opacity: 0 }}
+          >
+            Debris cleared • Resume revealed
+          </p>
+        </div>
+      )}
     </div>
   );
 };
@@ -515,13 +504,12 @@ const BeamUnlockAnimation = ({ onComplete }) => {
 const ClassifiedDocument = ({ onDownload, isVisible }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
-  // Removed holographic tilt state as requested
-  
+
   if (!isVisible) return null;
 
   return (
     <div 
-      className="relative max-w-4xl mx-auto py-12"
+      className="relative max-w-4xl mx-auto"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{ animation: 'fadeSlideUp 0.8s ease-out forwards' }}
@@ -532,13 +520,9 @@ const ClassifiedDocument = ({ onDownload, isVisible }) => {
           0%, 100% { border-color: rgba(255,255,255,0.15); box-shadow: 0 0 20px rgba(0,0,0,0.5); }
           50% { border-color: rgba(255,255,255,0.3); box-shadow: 0 0 30px rgba(0,0,0,0.5), 0 0 2px rgba(255,255,255,0.1); }
         }
-        @keyframes holographicScan {
-          0% { background-position: 0% 0%; }
-          100% { background-position: 0% 100%; }
-        }
         @keyframes fadeSlideUp {
-          0% { opacity: 0; transform: translateY(30px) scale(0.9); }
-          100% { opacity: 1; transform: translateY(0) scale(1); }
+          0% { opacity: 0; transform: translateY(30px); }
+          100% { opacity: 1; transform: translateY(0); }
         }
         @keyframes heartbeat {
           0%, 100% { box-shadow: 0 0 15px rgba(139,92,246,0.1); }
@@ -551,29 +535,17 @@ const ClassifiedDocument = ({ onDownload, isVisible }) => {
         .heartbeat { animation: heartbeat 1.5s ease-in-out infinite; }
       `}</style>
 
-      {/* Document Container - 3D Holographic Card */}
+      {/* Document Container - Heartbeat with violet glow */}
       <div 
-        className="relative rounded-lg overflow-hidden transition-all duration-200 ease-out"
+        className="relative rounded-lg overflow-hidden transition-all duration-300 heartbeat"
         style={{
-          background: 'rgba(8, 8, 12, 0.95)',
-          boxShadow: isHovered 
-            ? '0 20px 50px rgba(139,92,246,0.3)' 
-            : '0 10px 30px rgba(0,0,0,0.5)',
-          border: '1px solid rgba(139,92,246,0.3)',
+          background: 'linear-gradient(180deg, rgba(15,15,18,0.99) 0%, rgba(8,8,10,1) 100%)',
+          border: isHovered ? '2px solid rgba(139,92,246,0.5)' : '2px solid rgba(255,255,255,0.15)',
         }}
       >
-        {/* Simple Overlay Texture */}
-        <div 
-          className="absolute inset-0 pointer-events-none z-10 opacity-10"
-          style={{
-            backgroundImage: 'linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px)',
-            backgroundSize: '100% 4px',
-          }}
-        />
-
         {/* Header Bar - Clean, professional */}
         <div 
-          className="flex items-center justify-between px-6 py-4 flex-wrap gap-4 relative z-20"
+          className="flex items-center justify-between px-6 py-4 flex-wrap gap-4"
           style={{ 
             background: 'linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 100%)',
             borderBottom: '1px solid rgba(255,255,255,0.1)',
